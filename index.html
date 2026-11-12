@@ -687,6 +687,13 @@ details.adv{margin:12px 0 10px}details.adv>summary{cursor:pointer;font-weight:90
 .admcode{font-family:var(--mono);font-weight:800;font-size:calc(17px*var(--fz));letter-spacing:.08em}
 .admbtn{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .modalbg.adm{z-index:9996}
+#gate .gtabs{display:flex;gap:6px;background:#EFE6D3;border-radius:12px;padding:4px;margin:0 0 14px}
+#gate .gtabs button{flex:1;border:0;background:transparent;border-radius:9px;padding:10px 6px;font-weight:800;color:var(--ink2);min-height:42px}
+#gate .gtabs button.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.admsum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+.admsum div{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
+.admsum b{display:block;font-size:calc(20px*var(--fz));font-weight:900}.admsum span{font-size:calc(11px*var(--fz));color:var(--muted)}
+.admf{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.admf .chip.on{background:var(--green-soft);border-color:var(--green);color:var(--green)}
 
 </style>
 </head>
@@ -2707,14 +2714,20 @@ async function gateVerify() {
   if (r.s === 403 || r.s === 409) { const why = r.s === 403 ? 'revoked' : 'device'; gateDrop(); gateScreen(why); return; }
   if (Date.now() - (GATE.t || 0) > GATE_GRACE) gateScreen('offline');   // lỗi mạng/máy chủ: cho dùng tiếp trong hạn
 }
+async function gateAdminLogin(raw) {   // kiểm tra mã quản trị bằng /admin/list (không gắn máy, không ảnh hưởng mã nào)
+  const r = await gateApi('/admin/list', undefined, raw);
+  if (r.s === 200) { GATE = { role: 'admin', h: '', name: 'Quản trị', admin: raw, t: Date.now() }; gateSave(); gateLast = Date.now(); return { ok: true, admin: true }; }
+  return { err: r.s === 401 ? 'bad_admin' : r.s === 0 ? 'network' : 'server' };
+}
 async function gateClaim(raw) {
   const r = await gateApi('/claim', { code: raw, device: devId() });
-  if (r.s === 200 && r.j.ok) { GATE = { role: r.j.role, h: r.j.h || '', name: r.j.name || '', admin: r.j.role === 'admin' ? raw : '', t: Date.now() }; gateSave(); gateLast = Date.now(); return { ok: true }; }
+  if (r.s === 200 && r.j.ok) { GATE = { role: r.j.role, h: r.j.h || '', name: r.j.name || '', admin: r.j.role === 'admin' ? raw : '', t: Date.now() }; gateSave(); gateLast = Date.now(); return { ok: true, admin: r.j.role === 'admin' }; }
   return { err: (r.j && r.j.error) || 'server' };
 }
 
 /* ---------- màn nhập mã ---------- */
 const GATE_MSG = {
+  bad_admin: 'Mã quản trị không đúng. Đó là giá trị ADMIN_CODE đã đặt trong Cloudflare.',
   invalid: 'Mã không đúng. Kiểm tra lại từng ký tự (mã gồm 10 ký tự, dạng ABCDE-FGHJK).',
   revoked: 'Mã này đã bị thu hồi. Hãy liên hệ người đã gửi mã cho bạn.',
   code_used: 'Mã này đã được dùng trên một máy khác. Nếu bạn vừa đổi máy, nhờ người quản trị bấm “Gỡ máy” rồi nhập lại.',
@@ -2728,7 +2741,11 @@ const GATE_TITLE = {
   device: ['Cần nhập lại mã', 'Máy này chưa được gắn với mã (có thể người quản trị vừa gỡ máy). Nhập lại mã của bạn để tiếp tục.'],
   offline: ['Cần kết nối mạng', 'Đã lâu app chưa xác minh được với máy chủ. Hãy bật mạng rồi bấm “Thử lại”.'],
 };
+let gateTab = 'user';
+function gateSetTab(t) { gateTab = t; gateScreen(gateMode, ''); }
+let gateMode = '';
 function gateScreen(mode, msg) {
+  gateMode = mode || '';
   try { TTS.stop(); } catch (e) { }
   try { $('#modal').innerHTML = ''; } catch (e) { }
   let el = document.getElementById('gate');
@@ -2739,13 +2756,18 @@ function gateScreen(mode, msg) {
     el.innerHTML = `<div class="gbox">${panda}<h1>English Lab</h1><div class="gsub">Chưa cài địa chỉ máy chủ mã truy cập</div>
       <div class="gmsg">Mở file <b>gate-config.js</b> trong kho GitHub của app, dán địa chỉ Worker Cloudflare vào giữa hai dấu nháy rồi lưu (Commit).</div></div>`; return;
   }
-  const t = GATE_TITLE[mode] || ['English Lab', 'Nhập mã truy cập để bắt đầu học'];
+  if (mode === 'offline') {
+    const t = GATE_TITLE.offline;
+    el.innerHTML = `<div class="gbox">${panda}<h1>${t[0]}</h1><div class="gsub">${t[1]}</div><button class="btn block" onclick="gateRetry()">Thử lại</button><div class="gmsg" id="gmsg">${esc(msg || '')}</div></div>`; return;
+  }
+  const adm = gateTab === 'admin';
+  const t = adm ? ['Quản trị', 'Nhập mã quản trị để vào app và quản lý mã truy cập'] : (GATE_TITLE[mode] || ['English Lab', 'Nhập mã truy cập để bắt đầu học']);
   el.innerHTML = `<div class="gbox">${panda}<h1>${t[0]}</h1><div class="gsub">${t[1]}</div>
-    ${mode === 'offline' ? `<button class="btn block" onclick="gateRetry()">Thử lại</button><div class="gmsg" id="gmsg">${esc(msg || '')}</div>` :
-    `<form onsubmit="gateSubmit(event)" autocomplete="off"><input id="gcode" class="gin" placeholder="ABCDE-FGHJK" maxlength="40" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" aria-label="Mã truy cập" oninput="gateFmt(this)">
-    <button class="btn block mt" id="gbtn" type="submit">Vào học</button></form><div class="gmsg" id="gmsg">${esc(msg || '')}</div>`}
-    ${ios ? `<div class="gtip">📱 iPhone/iPad: hãy bấm <b>Chia sẻ → Thêm vào MH chính</b> trước, rồi mở app từ biểu tượng và nhập mã ở đó. App đã cài và trang Safari là hai nơi lưu riêng, nhập ở Safari rồi chuyển sang app sẽ bị báo “mã đã dùng trên máy khác”.</div>` : ''}
-    <div class="gtip">Mỗi mã chỉ dùng được trên một máy. Chưa có mã? Hãy xin người đã gửi link app cho bạn.</div></div>`;
+    <div class="gtabs" role="tablist"><button role="tab" class="${adm ? '' : 'on'}" onclick="gateSetTab('user')">📗 Vào app</button><button role="tab" class="${adm ? 'on' : ''}" onclick="gateSetTab('admin')">🔑 Admin</button></div>
+    <form onsubmit="gateSubmit(event)" autocomplete="off"><input id="gcode" class="gin" placeholder="${adm ? 'MÃ QUẢN TRỊ' : 'ABCDE-FGHJK'}" maxlength="40" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" aria-label="${adm ? 'Mã quản trị' : 'Mã truy cập'}" oninput="gateFmt(this)">
+    <button class="btn ${adm ? 'amber' : ''} block mt" id="gbtn" type="submit">${adm ? 'Vào quản trị' : 'Vào học'}</button></form><div class="gmsg" id="gmsg">${esc(msg || '')}</div>
+    ${ios && !adm ? `<div class="gtip">📱 iPhone/iPad: hãy bấm <b>Chia sẻ → Thêm vào MH chính</b> trước, rồi mở app từ biểu tượng và nhập mã ở đó. App đã cài và trang Safari là hai nơi lưu riêng, nhập ở Safari rồi chuyển sang app sẽ bị báo “mã đã dùng trên máy khác”.</div>` : ''}
+    <div class="gtip">${adm ? 'Admin vào học luôn bằng mã quản trị, không cần tạo thêm mã cho mình. Trong app: <b>Tôi → Quản trị mã truy cập</b>.' : 'Nhập mã một lần, các lần sau app tự vào. Mỗi mã chỉ dùng được trên một máy. Chưa có mã? Hãy xin người đã gửi link app cho bạn.'}</div></div>`;
   setTimeout(() => { const i = $('#gcode'); if (i) i.focus(); }, 80);
 }
 function gateFmt(i) {   // chỉ giữ chữ + số; mã người dùng (10 ký tự) tự thêm gạch giữa, mã quản trị dài hơn thì để nguyên
@@ -2757,9 +2779,9 @@ async function gateSubmit(e) {
   const raw = ($('#gcode').value || '').trim(); const m = $('#gmsg'), b = $('#gbtn');
   if (raw.replace(/[^A-Za-z0-9]/g, '').length < 4) { m.textContent = 'Hãy nhập mã truy cập.'; return; }
   gateSending = true; b.disabled = true; b.textContent = 'Đang kiểm tra…'; m.textContent = '';
-  const r = await gateClaim(raw); gateSending = false;
-  if (r.ok) { gateOpen(); return; }
-  b.disabled = false; b.textContent = 'Vào học'; m.textContent = GATE_MSG[r.err] || GATE_MSG.server;
+  const r = gateTab === 'admin' ? await gateAdminLogin(raw) : await gateClaim(raw); gateSending = false;
+  if (r.ok) { gateOpen(r.admin); return; }
+  b.disabled = false; b.textContent = gateTab === 'admin' ? 'Vào quản trị' : 'Vào học'; m.textContent = GATE_MSG[r.err] || GATE_MSG.server;
 }
 async function gateRetry() {
   if (!GATE) { gateScreen(); return; }
@@ -2769,10 +2791,13 @@ async function gateRetry() {
   if (r.s === 403 || r.s === 409) { gateDrop(); gateScreen(r.s === 403 ? 'revoked' : 'device'); return; }
   if (m) m.textContent = GATE_MSG.network;
 }
-function gateOpen() {
+function gateOpen(openAdmin) {
   const el = document.getElementById('gate'); if (el) el.remove();
   gateWatch();
   if (gateResolve) { const r = gateResolve; gateResolve = null; r(); } else { try { render(); } catch (e) { } }
+  if (openAdmin) {   // lần đầu vào bằng mã quản trị: mở bảng quản trị sau khi app nạp xong (và sau bảng nhiệm vụ)
+    let n = 0; const iv = setInterval(() => { if ((typeof DATA !== 'undefined' && DATA) || ++n > 40) { clearInterval(iv); setTimeout(() => { try { admOpen(); } catch (e) { } }, 2200); } }, 250);
+  }
 }
 
 /* ---------- thẻ trong tab Tôi + trang quản trị ---------- */
@@ -2781,12 +2806,14 @@ function gateCard() {
   if (!isAdmin()) return '';
   return `<section class="card"><div class="section-title">🔑 Quản trị mã truy cập</div>
    <p class="small muted" style="margin-top:0">Bạn đang ở chế độ quản trị. Tạo mã cho người học, thu hồi, gỡ máy khi họ đổi điện thoại.</p>
-   <div class="grid2"><button class="btn amber" onclick="admOpen()">Quản lý mã</button><button class="btn ghost" onclick="if(confirm('Thoát chế độ quản trị trên máy này? Bạn cần nhập lại mã quản trị để vào.')){gateDrop();gateScreen();gateResolve=()=>render();}">Thoát quản trị</button></div></section>`;
+   <div class="grid2"><button class="btn amber" onclick="admOpen()">Quản lý mã</button><button class="btn ghost" onclick="if(confirm('Thoát chế độ quản trị trên máy này? Bạn cần nhập lại mã quản trị để vào.')){gateDrop();gateTab='user';gateScreen();gateResolve=()=>render();}">Thoát quản trị</button></div></section>`;
 }
 function gateFoot() { return GATE && GATE.role === 'user' ? ` · mã của <b>${esc(GATE.name || 'bạn')}</b>` : GATE && GATE.role === 'admin' ? ' · quản trị' : ''; }
 
-let ADM = { list: null, err: '', busy: false, fresh: '' };
-function admOpen() { ADM = { list: null, err: '', busy: true, fresh: '' }; admDraw(); admLoad(); }
+let ADM = { list: null, err: '', busy: false, fresh: '', f: 'all' };
+const admState = c => c.off ? 'off' : c.device ? 'use' : 'free';
+function admFilter(f) { ADM.f = f; admDraw(); }
+function admOpen() { ADM = { list: null, err: '', busy: true, fresh: '', f: 'all' }; admDraw(); admLoad(); }
 async function admLoad() {
   ADM.busy = true; admDraw();
   const r = await gateApi('/admin/list', undefined, GATE.admin);
@@ -2828,21 +2855,28 @@ async function admCopy(h, whole) {
 }
 function admDraw() {
   const d = n => { try { return new Date(n).toLocaleDateString('vi-VN'); } catch (e) { return ''; } };
-  const rows = (ADM.list || []).slice().reverse().map(c => {
-    const st = c.off ? '<span class="badge" style="background:var(--coral-soft);color:var(--coral)">Đã thu hồi</span>' : c.device ? `<span class="badge ok">Đã gắn máy${c.boundAt ? ' · ' + d(c.boundAt) : ''}</span>` : '<span class="badge" style="background:var(--amber-soft);color:#9A5B00">Chưa gắn máy</span>';
+  const all = ADM.list || [], cnt = { all: all.length, use: 0, free: 0, off: 0 };
+  all.forEach(c => cnt[admState(c)]++);
+  const FL = [['all', 'Tất cả'], ['use', 'Đang dùng'], ['free', 'Chưa dùng'], ['off', 'Đã thu hồi']];
+  const rows = all.filter(c => ADM.f === 'all' || admState(c) === ADM.f).slice().reverse().map(c => {
+    const stt = admState(c);
+    const st = stt === 'off' ? '<span class="badge" style="background:var(--coral-soft);color:var(--coral)">Đã thu hồi</span>' : stt === 'use' ? `<span class="badge ok">Đang dùng${c.boundAt ? ' · từ ' + d(c.boundAt) : ''}</span>` : '<span class="badge" style="background:var(--amber-soft);color:#9A5B00">Chưa dùng</span>';
     const h = ja(c.h);
     return `<div class="admrow ${ADM.fresh === c.h ? 'fresh' : ''}"><div class="row between wrap"><b>${esc(c.n)}</b>${st}</div>
      <div class="row between wrap" style="margin-top:4px"><code class="admcode">${esc(c.code)}</code><span class="muted tiny">tạo ${esc(c.c || '')}</span></div>
      <div class="admbtn"><button class="chip" onclick='admCopy(${h},true)'>📋 Chép tin nhắn</button><button class="chip" onclick='admCopy(${h})'>Chép mã</button>
-     <button class="chip" onclick='admAct(${h},"${c.off ? 'restore' : 'revoke'}")'>${c.off ? 'Mở lại' : 'Thu hồi'}</button>
-     ${c.device ? `<button class="chip" onclick='admAct(${h},"unbind")'>Gỡ máy</button>` : ''}<button class="chip" onclick='admRename(${h})'>Đổi tên</button><button class="chip" onclick='admAct(${h},"delete")'>Xóa</button></div></div>`;
+     <button class="chip" onclick='admAct(${h},"${c.off ? 'restore' : 'revoke'}")'>${c.off ? 'Mở lại' : 'Thu hồi quyền'}</button>
+     ${c.device ? `<button class="chip" onclick='admAct(${h},"unbind")'>Gỡ máy</button>` : ''}<button class="chip" onclick='admRename(${h})'>Đổi tên</button><button class="chip" onclick='admAct(${h},"delete")'>🗑 Xóa mã</button></div></div>`;
   }).join('');
-  modal(`<div class="row between"><div class="section-title" style="margin:0">🔑 Mã truy cập</div><button class="x" onclick="closeModal()">Đóng</button></div>
-   <form class="row mt" onsubmit="event.preventDefault();admCreate()" autocomplete="off"><input id="admName" class="gin2" placeholder="Tên người dùng, ví dụ Em Lan" maxlength="40"><button class="btn amber" type="submit" ${ADM.busy ? 'disabled' : ''}>Tạo mã</button></form>
+  modal(`<div class="row between"><div class="section-title" style="margin:0">🔑 Quản trị mã truy cập</div><div class="row" style="gap:6px"><button class="x" onclick="admLoad()" ${ADM.busy ? 'disabled' : ''}>↻</button><button class="x" onclick="closeModal()">Đóng</button></div></div>
+   <div class="admsum"><div><b>${cnt.all}</b><span>tổng mã</span></div><div><b>${cnt.use}</b><span>đang dùng</span></div><div><b>${cnt.free}</b><span>chưa dùng</span></div><div><b>${cnt.off}</b><span>thu hồi</span></div></div>
+   <p class="muted tiny" style="margin:0 0 6px">Bạn (admin) vào học bằng mã quản trị, không cần tạo mã cho mình. Tạo mã bên dưới chỉ để gửi cho người học.</p>
+   <form class="row" onsubmit="event.preventDefault();admCreate()" autocomplete="off"><input id="admName" class="gin2" placeholder="Tên người dùng, ví dụ Em Lan" maxlength="40"><button class="btn amber" type="submit" ${ADM.busy ? 'disabled' : ''}>Tạo mã</button></form>
    ${ADM.err ? `<div class="note err mt">${esc(ADM.err)}</div>` : ''}
+   <div class="admf">${FL.map(([k, t]) => `<button class="chip ${ADM.f === k ? 'on' : ''}" onclick="admFilter('${k}')">${t} ${cnt[k]}</button>`).join('')}</div>
    ${ADM.busy && !ADM.list ? '<div class="empty">Đang tải…</div>' : ''}
-   <div class="mt">${ADM.list && !ADM.list.length ? '<div class="empty">Chưa có mã nào. Gõ tên rồi bấm Tạo mã.</div>' : rows}</div>
-   <p class="muted tiny">Thu hồi / gỡ máy có hiệu lực ở lần người đó mở app (hoặc quay lại app) có mạng tiếp theo.</p>`);
+   <div>${ADM.list && !rows ? `<div class="empty">${all.length ? 'Không có mã nào ở mục này.' : 'Chưa có mã nào. Gõ tên rồi bấm Tạo mã.'}</div>` : rows}</div>
+   <p class="muted tiny">Thu hồi / gỡ máy / xóa có hiệu lực ở lần người đó mở app (hoặc quay lại app) có mạng tiếp theo.</p>`);
   const bg = $('#modal .modalbg'); if (bg) bg.classList.add('adm');
 }
 
