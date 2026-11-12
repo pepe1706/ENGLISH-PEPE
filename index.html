@@ -672,6 +672,22 @@ details.adv{margin:12px 0 10px}details.adv>summary{cursor:pointer;font-weight:90
 .sign.l b{clip-path:polygon(14% 0,100% 0,100% 100%,14% 100%,0 50%);padding:4px 10px 4px 16px}
 .sign s{display:block;width:5px;height:22px;background:#9A6B43;border-radius:2px}
 @media (prefers-reduced-motion:reduce){.map2 .cl,.map2 .mdeco.roam,.fog,.nd2.pop .disc,.spk i,.drawp,.gate2 .chestw,.house-svg .flagw,.house.ready .house-svg{animation:none!important}.drawp{stroke-dashoffset:0}}
+/* ===== v6.0 · khóa truy cập */
+#gate{position:fixed;inset:0;z-index:100000;background:var(--bg);overflow:auto;display:flex}
+#gate .gbox{margin:auto;width:min(100%,420px);padding:28px 20px calc(28px + env(safe-area-inset-bottom));text-align:center;box-sizing:border-box}
+#gate h1{font-family:var(--sans);font-weight:900;font-size:calc(26px*var(--fz));line-height:1.15;margin:8px 0 4px}
+#gate .gsub{color:var(--muted);font-size:calc(14px*var(--fz));margin-bottom:18px}
+#gate .gin{width:100%;box-sizing:border-box;border:2px solid var(--line);border-radius:12px;background:#fff;padding:14px;font-size:calc(22px*var(--fz));font-weight:800;letter-spacing:.12em;text-align:center;font-family:var(--mono)}
+#gate .gin:focus{outline:none;border-color:var(--green)}
+#gate .gmsg{margin-top:12px;color:var(--coral);font-weight:700;font-size:calc(13.5px*var(--fz));min-height:1.2em}
+#gate .gtip{margin-top:14px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--line);color:var(--ink2);font-size:calc(12.5px*var(--fz));text-align:left}
+.gin2{flex:1;min-width:0;box-sizing:border-box;border:2px solid var(--line);border-radius:9px;background:#fff;padding:10px 12px;font-weight:700}
+.admrow{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:9px}
+.admrow.fresh{border-color:var(--green);background:var(--green-soft)}
+.admcode{font-family:var(--mono);font-weight:800;font-size:calc(17px*var(--fz));letter-spacing:.08em}
+.admbtn{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.modalbg.adm{z-index:9996}
+
 </style>
 </head>
 <body>
@@ -795,7 +811,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '5.4';
+const APP_VER = '6.0';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -1994,7 +2010,7 @@ function mePage() {
   const vopt = cur => { const b = TTS.best(); return `<option value="">Tự chọn${b && !cur ? ' → ' + esc(b.name) : ''}</option>` + vs.map(v => `<option value="${esc(v.name)}" ${v.name === cur ? 'selected' : ''}>${esc(vlab(v))}</option>`).join(''); };
   const nN = vs.filter(v => TTS.isNatural(v)).length;
   const passed = DATA.lessons.filter(l => lessonDone(l['Mã bài'])).length;
-  return `<div class="band compact"><h1>Tôi</h1><div class="sub">Thống kê, cài đặt, dữ liệu</div></div><div class="page">${backupBanner()}${installCard()}
+  return `<div class="band compact"><h1>Tôi</h1><div class="sub">Thống kê, cài đặt, dữ liệu</div></div><div class="page">${backupBanner()}${installCard()}${gateCard()}
   <section class="card"><div class="section-title">Thống kê</div><div class="stats3"><div><b>${days}</b><span>ngày học</span></div><div><b>${streak()}</b><span>chuỗi ngày</span></div><div><b>${ans ? Math.round(ok / ans * 100) : 0}%</b><span>trả lời đúng</span></div></div>
    <div class="stats3 mt"><div><b>${Object.keys(S.learnedV).length}</b><span>từ đã học</span></div><div><b>${Object.keys(S.srs).length}</b><span>thẻ ôn</span></div><div><b>${passed}</b><span>bài đã qua</span></div></div>
    <div class="bars">${last7.map(d => `<div><i style="height:${Math.round(d.n / mx * 52)}px"></i><span>${d.k.slice(8)}</span></div>`).join('')}</div><div class="muted tiny" style="text-align:center">7 ngày gần nhất (câu trả lời + thẻ ôn)</div></section>
@@ -2032,7 +2048,7 @@ function mePage() {
    <label class="btn ghost block">Nhập file Excel mới<input type="file" accept=".xlsx" class="hidden" onchange="importFile(this.files[0],true)"></label><p class="muted tiny">Khi file Excel được sửa và gửi bản mới, nhập lại ở đây. Tiến độ học giữ nguyên.</p></section>
   <section class="card"><div class="section-title">Quản lý tiến độ</div><button class="btn danger block" onclick="if(confirm('Xóa TOÀN BỘ tiến độ, thẻ ôn và sổ lỗi? Không hoàn tác được.')){const st=S.settings;S=structuredClone(DEFAULTS);S.settings=st;save();render();toast('Đã xóa tiến độ')}">Xóa toàn bộ tiến độ</button></section>
   </details>
-  <p class="muted tiny" style="text-align:center">English Lab ${APP_VER} · chạy offline · dữ liệu từ file Excel của bạn</p></div>`;
+  <p class="muted tiny" style="text-align:center">English Lab ${APP_VER}${gateFoot()} · chạy offline · dữ liệu từ file Excel của bạn</p></div>`;
 }
 function exportBackup() {
   S.lastBackup = Date.now(); save(); setTimeout(render, 600);
@@ -2630,9 +2646,210 @@ function srsPage() {
    <p class="muted tiny" style="text-align:center">Số dưới mỗi nút = lần ôn tiếp theo</p>` : `<div style="padding:0 16px"><button class="btn amber block" onclick="srsReveal()">Hiện đáp án</button><p class="muted tiny" style="text-align:center">Tự nhớ (hoặc nói to) đáp án trước rồi mới mở.</p></div>`}
    <div style="padding:6px 16px"><button class="chip" onclick="openItem('${c.id}')">Xem chi tiết</button></div>`;
 }
+/* ===== English Lab · khóa truy cập (v6.0) =====
+   Mã truy cập + gắn máy, kiểm tra với Cloudflare Worker (xem 4_CLOUDFLARE_worker/).
+   Địa chỉ máy chủ nằm trong file gate-config.js (window.ENGLAB_GATE = 'https://englab-access.xxx.workers.dev').
+   Chỉ khóa khi chạy trên web (GitHub Pages). Mở file HTML trực tiếp trên máy (file://) thì không khóa. */
+const GATE_KEY = 'englab-gate', DEV_KEY = 'englab-device';
+const GATE_GRACE = 30 * 864e5;      // mất mạng: vẫn học được tối đa 30 ngày kể từ lần xác minh gần nhất
+const GATE_RECHECK = 20 * 60e3;     // quay lại app sau 20 phút thì xác minh lại
+let GATE = null, gateResolve = null, gateLast = 0, gateBusy = false, gateSending = false;
+const gateCfg = () => String(window.ENGLAB_GATE || '').trim().replace(/\/+$/, '');
+
+/* ---------- lưu trữ cục bộ ---------- */
+function gateLoad() { try { const j = JSON.parse(localStorage.getItem(GATE_KEY) || 'null'); return j && j.role ? j : null; } catch (e) { return null; } }
+function gateSave() { try { localStorage.setItem(GATE_KEY, JSON.stringify(GATE)); } catch (e) { } }
+function gateDrop() { GATE = null; try { localStorage.removeItem(GATE_KEY); } catch (e) { } }
+const DEV_RE = /^[A-Za-z0-9-]{16,64}$/;
+async function devInit() {   // mã máy: giữ trong localStorage và bản sao trong IndexedDB (phòng một bên bị xóa)
+  let d = ''; try { d = localStorage.getItem(DEV_KEY) || ''; } catch (e) { }
+  if (!DEV_RE.test(d)) { try { d = (await IDB.get('device')) || ''; } catch (e) { d = ''; } }
+  if (!DEV_RE.test(d)) d = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
+  try { localStorage.setItem(DEV_KEY, d); } catch (e) { }
+  try { await IDB.set('device', d); } catch (e) { }
+  window._dev = d;
+}
+const devId = () => window._dev || '';
+
+async function gateApi(path, body, admin) {
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
+  try {
+    const r = await fetch(gateCfg() + path, { method: body === undefined ? 'GET' : 'POST', cache: 'no-store', signal: ctl.signal,
+      headers: { 'Content-Type': 'application/json', ...(admin ? { Authorization: 'Bearer ' + admin } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
+    let j = {}; try { j = await r.json(); } catch (e) { }
+    return { s: r.status, j };
+  } catch (e) { return { s: 0, j: { error: 'network' } }; } finally { clearTimeout(t); }
+}
+
+/* ---------- khởi động ---------- */
+function gateLoadCfg() {
+  return new Promise(res => { const s = document.createElement('script'); s.src = 'gate-config.js'; s.onload = () => res(true); s.onerror = () => res(false); document.head.appendChild(s); });
+}
+async function gateStart() {
+  if (!isWeb()) return;                                 // mở file trực tiếp: không khóa
+  await gateLoadCfg(); await devInit();
+  if (!gateCfg()) { gateScreen('nocfg'); return new Promise(() => { }); }
+  GATE = gateLoad();
+  if (!GATE) { gateScreen(); return new Promise(res => { gateResolve = res; }); }
+  gateWatch(); gateVerify();                            // đã có mã: vào học luôn, kiểm tra ngầm
+}
+let gateWatching = false;
+function gateWatch() {
+  if (gateWatching) return; gateWatching = true;
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && GATE && Date.now() - gateLast > GATE_RECHECK) gateVerify(); });
+  window.addEventListener('online', () => { if (GATE) gateVerify(); });
+}
+async function gateVerify() {
+  if (!GATE || gateBusy) return; gateBusy = true;
+  const r = await gateApi('/check', { h: GATE.h || '', device: devId() }, GATE.admin);
+  gateBusy = false;
+  if (r.s === 200) { GATE.t = Date.now(); if (r.j.name) GATE.name = r.j.name; gateSave(); gateLast = Date.now(); return; }
+  if (r.s === 403 || r.s === 409) { const why = r.s === 403 ? 'revoked' : 'device'; gateDrop(); gateScreen(why); return; }
+  if (Date.now() - (GATE.t || 0) > GATE_GRACE) gateScreen('offline');   // lỗi mạng/máy chủ: cho dùng tiếp trong hạn
+}
+async function gateClaim(raw) {
+  const r = await gateApi('/claim', { code: raw, device: devId() });
+  if (r.s === 200 && r.j.ok) { GATE = { role: r.j.role, h: r.j.h || '', name: r.j.name || '', admin: r.j.role === 'admin' ? raw : '', t: Date.now() }; gateSave(); gateLast = Date.now(); return { ok: true }; }
+  return { err: (r.j && r.j.error) || 'server' };
+}
+
+/* ---------- màn nhập mã ---------- */
+const GATE_MSG = {
+  invalid: 'Mã không đúng. Kiểm tra lại từng ký tự (mã gồm 10 ký tự, dạng ABCDE-FGHJK).',
+  revoked: 'Mã này đã bị thu hồi. Hãy liên hệ người đã gửi mã cho bạn.',
+  code_used: 'Mã này đã được dùng trên một máy khác. Nếu bạn vừa đổi máy, nhờ người quản trị bấm “Gỡ máy” rồi nhập lại.',
+  device_has_other: 'Máy này đã gắn với một mã khác. Hãy dùng mã đó, hoặc nhờ người quản trị gỡ máy.',
+  network: 'Không kết nối được máy chủ. Hãy kiểm tra mạng rồi thử lại (lần nhập mã đầu tiên cần có mạng).',
+  bad_device: 'Trình duyệt không lưu được mã máy (có thể đang ở chế độ riêng tư). Hãy mở bằng Chrome/Safari thường.',
+  server: 'Máy chủ đang gặp lỗi. Thử lại sau ít phút.',
+};
+const GATE_TITLE = {
+  revoked: ['Mã đã bị thu hồi', 'Bạn không dùng được app bằng mã này nữa. Nếu có mã khác, hãy nhập bên dưới.'],
+  device: ['Cần nhập lại mã', 'Máy này chưa được gắn với mã (có thể người quản trị vừa gỡ máy). Nhập lại mã của bạn để tiếp tục.'],
+  offline: ['Cần kết nối mạng', 'Đã lâu app chưa xác minh được với máy chủ. Hãy bật mạng rồi bấm “Thử lại”.'],
+};
+function gateScreen(mode, msg) {
+  try { TTS.stop(); } catch (e) { }
+  try { $('#modal').innerHTML = ''; } catch (e) { }
+  let el = document.getElementById('gate');
+  if (!el) { el = document.createElement('div'); el.id = 'gate'; document.body.appendChild(el); }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !isStandalone();
+  let panda = ''; try { panda = DECO.panda(84, 'bob'); } catch (e) { }
+  if (mode === 'nocfg') {
+    el.innerHTML = `<div class="gbox">${panda}<h1>English Lab</h1><div class="gsub">Chưa cài địa chỉ máy chủ mã truy cập</div>
+      <div class="gmsg">Mở file <b>gate-config.js</b> trong kho GitHub của app, dán địa chỉ Worker Cloudflare vào giữa hai dấu nháy rồi lưu (Commit).</div></div>`; return;
+  }
+  const t = GATE_TITLE[mode] || ['English Lab', 'Nhập mã truy cập để bắt đầu học'];
+  el.innerHTML = `<div class="gbox">${panda}<h1>${t[0]}</h1><div class="gsub">${t[1]}</div>
+    ${mode === 'offline' ? `<button class="btn block" onclick="gateRetry()">Thử lại</button><div class="gmsg" id="gmsg">${esc(msg || '')}</div>` :
+    `<form onsubmit="gateSubmit(event)" autocomplete="off"><input id="gcode" class="gin" placeholder="ABCDE-FGHJK" maxlength="40" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" aria-label="Mã truy cập" oninput="gateFmt(this)">
+    <button class="btn block mt" id="gbtn" type="submit">Vào học</button></form><div class="gmsg" id="gmsg">${esc(msg || '')}</div>`}
+    ${ios ? `<div class="gtip">📱 iPhone/iPad: hãy bấm <b>Chia sẻ → Thêm vào MH chính</b> trước, rồi mở app từ biểu tượng và nhập mã ở đó. App đã cài và trang Safari là hai nơi lưu riêng, nhập ở Safari rồi chuyển sang app sẽ bị báo “mã đã dùng trên máy khác”.</div>` : ''}
+    <div class="gtip">Mỗi mã chỉ dùng được trên một máy. Chưa có mã? Hãy xin người đã gửi link app cho bạn.</div></div>`;
+  setTimeout(() => { const i = $('#gcode'); if (i) i.focus(); }, 80);
+}
+function gateFmt(i) {   // chỉ giữ chữ + số; mã người dùng (10 ký tự) tự thêm gạch giữa, mã quản trị dài hơn thì để nguyên
+  const v = i.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 32);
+  i.value = v.length > 5 && v.length <= 10 ? v.slice(0, 5) + '-' + v.slice(5) : v;
+}
+async function gateSubmit(e) {
+  e.preventDefault(); if (gateSending) return;
+  const raw = ($('#gcode').value || '').trim(); const m = $('#gmsg'), b = $('#gbtn');
+  if (raw.replace(/[^A-Za-z0-9]/g, '').length < 4) { m.textContent = 'Hãy nhập mã truy cập.'; return; }
+  gateSending = true; b.disabled = true; b.textContent = 'Đang kiểm tra…'; m.textContent = '';
+  const r = await gateClaim(raw); gateSending = false;
+  if (r.ok) { gateOpen(); return; }
+  b.disabled = false; b.textContent = 'Vào học'; m.textContent = GATE_MSG[r.err] || GATE_MSG.server;
+}
+async function gateRetry() {
+  if (!GATE) { gateScreen(); return; }
+  const m = $('#gmsg'); if (m) m.textContent = 'Đang kiểm tra…';
+  const r = await gateApi('/check', { h: GATE.h || '', device: devId() }, GATE.admin);
+  if (r.s === 200) { GATE.t = Date.now(); gateSave(); gateLast = Date.now(); gateOpen(); return; }
+  if (r.s === 403 || r.s === 409) { gateDrop(); gateScreen(r.s === 403 ? 'revoked' : 'device'); return; }
+  if (m) m.textContent = GATE_MSG.network;
+}
+function gateOpen() {
+  const el = document.getElementById('gate'); if (el) el.remove();
+  gateWatch();
+  if (gateResolve) { const r = gateResolve; gateResolve = null; r(); } else { try { render(); } catch (e) { } }
+}
+
+/* ---------- thẻ trong tab Tôi + trang quản trị ---------- */
+const isAdmin = () => !!(GATE && GATE.role === 'admin');
+function gateCard() {
+  if (!isAdmin()) return '';
+  return `<section class="card"><div class="section-title">🔑 Quản trị mã truy cập</div>
+   <p class="small muted" style="margin-top:0">Bạn đang ở chế độ quản trị. Tạo mã cho người học, thu hồi, gỡ máy khi họ đổi điện thoại.</p>
+   <div class="grid2"><button class="btn amber" onclick="admOpen()">Quản lý mã</button><button class="btn ghost" onclick="if(confirm('Thoát chế độ quản trị trên máy này? Bạn cần nhập lại mã quản trị để vào.')){gateDrop();gateScreen();gateResolve=()=>render();}">Thoát quản trị</button></div></section>`;
+}
+function gateFoot() { return GATE && GATE.role === 'user' ? ` · mã của <b>${esc(GATE.name || 'bạn')}</b>` : GATE && GATE.role === 'admin' ? ' · quản trị' : ''; }
+
+let ADM = { list: null, err: '', busy: false, fresh: '' };
+function admOpen() { ADM = { list: null, err: '', busy: true, fresh: '' }; admDraw(); admLoad(); }
+async function admLoad() {
+  ADM.busy = true; admDraw();
+  const r = await gateApi('/admin/list', undefined, GATE.admin);
+  ADM.busy = false;
+  if (r.s === 200) { ADM.list = r.j.codes || []; ADM.err = ''; }
+  else if (r.s === 401) { ADM.err = 'Mã quản trị không còn đúng (có thể đã đổi trên Cloudflare). Hãy thoát quản trị và nhập mã mới.'; }
+  else ADM.err = r.s === 0 ? GATE_MSG.network : GATE_MSG.server;
+  admDraw();
+}
+async function admPost(path, body) {
+  if (ADM.busy) return null; ADM.busy = true; admDraw();
+  const r = await gateApi(path, body, GATE.admin); ADM.busy = false;
+  if (r.s === 200) { ADM.err = ''; if (r.j.codes) ADM.list = r.j.codes; return r.j; }
+  ADM.err = r.s === 401 ? 'Mã quản trị không còn đúng.' : r.s === 0 ? GATE_MSG.network : 'Không thực hiện được (' + ((r.j && r.j.error) || r.s) + ').';
+  admDraw(); return null;
+}
+async function admCreate() {
+  const i = $('#admName'), n = (i && i.value || '').trim(); if (!n) { toast('Gõ tên người dùng trước'); return; }
+  const j = await admPost('/admin/create', { n });
+  if (j && j.rec) { ADM.fresh = j.rec.h; await admLoad(); }
+}
+async function admAct(h, action) {
+  const rec = (ADM.list || []).find(c => c.h === h); if (!rec) return;
+  const ask = { revoke: `Thu hồi mã của “${rec.n}”? Họ bị khóa ở lần mở app có mạng tiếp theo.`, unbind: `Gỡ máy của “${rec.n}”? Họ sẽ nhập lại mã trên máy mới.`, delete: `Xóa hẳn mã của “${rec.n}”? Không hoàn tác được.` }[action];
+  if (ask && !confirm(ask)) return;
+  if (await admPost('/admin/update', { h, action })) { admDraw(); toast({ revoke: 'Đã thu hồi', restore: 'Đã mở lại', unbind: 'Đã gỡ máy', delete: 'Đã xóa' }[action] || 'Xong'); }
+}
+async function admRename(h) {
+  const rec = (ADM.list || []).find(c => c.h === h); if (!rec) return;
+  const n = prompt('Tên mới:', rec.n); if (n == null || !n.trim()) return;
+  if (await admPost('/admin/update', { h, action: 'rename', n: n.trim() })) admDraw();
+}
+function admMsg(code, name) { return `Chào ${name}, mã truy cập English Lab của bạn là: ${code}\nMở ${location.origin}${location.pathname} rồi nhập mã. Mỗi mã chỉ dùng được trên một điện thoại.`; }
+async function admCopy(h, whole) {
+  const rec = (ADM.list || []).find(c => c.h === h); if (!rec) return;
+  const txt = whole ? admMsg(rec.code, rec.n) : rec.code;
+  try { await navigator.clipboard.writeText(txt); toast(whole ? 'Đã chép tin nhắn kèm mã' : 'Đã chép mã'); }
+  catch (e) { prompt('Chép mã này:', txt); }
+}
+function admDraw() {
+  const d = n => { try { return new Date(n).toLocaleDateString('vi-VN'); } catch (e) { return ''; } };
+  const rows = (ADM.list || []).slice().reverse().map(c => {
+    const st = c.off ? '<span class="badge" style="background:var(--coral-soft);color:var(--coral)">Đã thu hồi</span>' : c.device ? `<span class="badge ok">Đã gắn máy${c.boundAt ? ' · ' + d(c.boundAt) : ''}</span>` : '<span class="badge" style="background:var(--amber-soft);color:#9A5B00">Chưa gắn máy</span>';
+    const h = ja(c.h);
+    return `<div class="admrow ${ADM.fresh === c.h ? 'fresh' : ''}"><div class="row between wrap"><b>${esc(c.n)}</b>${st}</div>
+     <div class="row between wrap" style="margin-top:4px"><code class="admcode">${esc(c.code)}</code><span class="muted tiny">tạo ${esc(c.c || '')}</span></div>
+     <div class="admbtn"><button class="chip" onclick='admCopy(${h},true)'>📋 Chép tin nhắn</button><button class="chip" onclick='admCopy(${h})'>Chép mã</button>
+     <button class="chip" onclick='admAct(${h},"${c.off ? 'restore' : 'revoke'}")'>${c.off ? 'Mở lại' : 'Thu hồi'}</button>
+     ${c.device ? `<button class="chip" onclick='admAct(${h},"unbind")'>Gỡ máy</button>` : ''}<button class="chip" onclick='admRename(${h})'>Đổi tên</button><button class="chip" onclick='admAct(${h},"delete")'>Xóa</button></div></div>`;
+  }).join('');
+  modal(`<div class="row between"><div class="section-title" style="margin:0">🔑 Mã truy cập</div><button class="x" onclick="closeModal()">Đóng</button></div>
+   <form class="row mt" onsubmit="event.preventDefault();admCreate()" autocomplete="off"><input id="admName" class="gin2" placeholder="Tên người dùng, ví dụ Em Lan" maxlength="40"><button class="btn amber" type="submit" ${ADM.busy ? 'disabled' : ''}>Tạo mã</button></form>
+   ${ADM.err ? `<div class="note err mt">${esc(ADM.err)}</div>` : ''}
+   ${ADM.busy && !ADM.list ? '<div class="empty">Đang tải…</div>' : ''}
+   <div class="mt">${ADM.list && !ADM.list.length ? '<div class="empty">Chưa có mã nào. Gõ tên rồi bấm Tạo mã.</div>' : rows}</div>
+   <p class="muted tiny">Thu hồi / gỡ máy có hiệu lực ở lần người đó mở app (hoặc quay lại app) có mạng tiếp theo.</p>`);
+  const bg = $('#modal .modalbg'); if (bg) bg.classList.add('adm');
+}
+
 (async function boot() {
   applyTheme(); try { applyFontSize(); } catch (e) { }
   await IDB.open();
+  await gateStart();   // chưa nhập mã hợp lệ thì dừng ở đây (chỉ khi chạy trên web)
   try { const ds = await IDB.get('dataset'); if (ds && ds.sheets) buildData(ds); } catch (e) { DATA = null; }
   if (DATA) lessonId = currentLessonId();
   pwaInit();
