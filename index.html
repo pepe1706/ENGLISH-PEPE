@@ -220,7 +220,7 @@ select.sel{border:1.5px solid var(--line);background:var(--card);border-radius:7
 html,body{background:var(--bg);font-weight:600;line-height:1.5}
 #app{padding-bottom:96px}
 b,strong{font-weight:800}
-.band{background:linear-gradient(#C6E8F8,#E4F5EC 72%);color:var(--ink);border-radius:0;padding:18px 18px 22px;min-height:136px;position:relative;overflow:hidden}
+.band{background:linear-gradient(var(--band1,#C6E8F8),var(--band2,#E4F5EC) 72%);color:var(--ink);border-radius:0;padding:18px 18px 22px;min-height:136px;position:relative;overflow:hidden}
 .band>*:not(.scene):not(.sunh):not(.pc){position:relative;z-index:1}
 .scene{position:absolute;left:0;right:0;bottom:0;width:100%;height:150px;z-index:0;pointer-events:none}
 .sunh{position:absolute;right:4px;top:2px;z-index:0;pointer-events:none}
@@ -267,7 +267,7 @@ b,strong{font-weight:800}
 .quick{display:flex;gap:6px;margin-top:10px}.quick button{flex:1;border:0;background:#fff;border-radius:9px;padding:8px 4px;font-size:calc(12.5px*var(--fz));font-weight:800;color:var(--ink2);box-shadow:0 2px 0 rgba(46,120,70,.15)}.quick b{color:var(--pd)}
 .lvtabs{display:flex;gap:6px;padding:10px 16px 0;position:relative;z-index:2;margin-top:-30px}.lvtabs button{flex:1;border:0;background:#fff;border-radius:10px;padding:7px 0;font-weight:900;color:var(--muted);box-shadow:0 2px 0 var(--line)}
 .lvtabs button.on{background:var(--acc);color:#fff;box-shadow:0 2px 0 var(--accd)}
-#view[data-page="home"]{background:linear-gradient(#FFF9EF 0,#D8F0DA 160px,#C6E9CC 100%)}
+#view[data-page="home"]{background:linear-gradient(var(--h1,#FFF9EF) 0,var(--h2,#D8F0DA) 160px,var(--h3,#C6E9CC) 100%)}
 .map{position:relative;margin:4px 0 0;overflow:hidden}
 .mpath{position:absolute;left:0;top:0;width:100%;height:100%}
 .nd{position:absolute;width:62px;height:56px;margin:-28px 0 0 -31px;border:0;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:calc(19px*var(--fz));background:#EEF2F6;color:#8A96A8;box-shadow:0 4px 0 #C9D2DE;z-index:2;cursor:pointer;padding:0}
@@ -326,7 +326,7 @@ b,strong{font-weight:800}
 .call{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:calc(14px*var(--fz));line-height:1.45;font-weight:600}.call>b:first-child{display:block;font-size:calc(12.5px*var(--fz));font-weight:900;margin-bottom:2px}
 .call.err{background:var(--coral-soft);color:#7A1C20}.call.err>b:first-child{color:var(--coral)}
 .call.us{background:#E3EFFF;color:#1C2F6E}.call.us>b:first-child{color:#3A62C9}
-.call.tip,.call.work{background:#FFF4DA;color:#5A3A00}.call.tip>b:first-child,.call.work>b:first-child{color:#B45309}
+.call.usage,.call.work{background:#FFF4DA;color:#5A3A00}.call.usage>b:first-child,.call.work>b:first-child{color:#B45309}
 .gc>summary{list-style:none;cursor:pointer}.gc>summary::-webkit-details-marker{display:none}
 .gh{display:flex;gap:8px;align-items:center}.gcode{font-size:calc(12px*var(--fz));font-weight:900;background:#FFF0C7;color:#8A5A00;padding:3px 9px;border-radius:8px}.gcar{margin-left:auto;color:var(--muted);transition:transform .2s}.gc[open] .gcar{transform:rotate(180deg)}
 .gc h3{margin:8px 0 2px;font-size:calc(19px*var(--fz));font-weight:900;line-height:1.25}.gsub{font-size:calc(13.5px*var(--fz));color:var(--muted);font-weight:700}
@@ -629,7 +629,7 @@ details.adv{margin:12px 0 10px}details.adv>summary{cursor:pointer;font-weight:90
 .nd2.lock .disc{background:#EEF2F6;border-color:#C9D2DE;color:#9AA6B8;box-shadow:0 4px 0 #C9D2DE}.nd2.lock .disc::after{border-color:#C9D2DE}
 .nd2.part .disc{border-color:var(--acc)}
 .nd2.cur,.nd2.cur .disc{width:78px;height:78px}
-.nd2.cur .disc{font-size:calc(27px*var(--fz));background:radial-gradient(circle at 35% 30%,#5CD08E,#22804F);border:3px solid #fff;color:#fff;box-shadow:0 6px 0 #1A6340,0 0 0 7px rgba(255,255,255,.7)}
+.nd2.cur .disc{font-size:calc(27px*var(--fz));background:radial-gradient(circle at 35% 30%,var(--cur1,#5CD08E),var(--cur2,#22804F));border:3px solid #fff;color:#fff;box-shadow:0 6px 0 var(--curd,#1A6340),0 0 0 7px rgba(255,255,255,.7)}
 .nd2:active .disc{transform:translateY(3px)}
 .nd2 .st{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:max-content;max-width:136px;text-align:center;margin-top:7px}
 .nd2 .st .stars{display:flex;justify-content:center}
@@ -694,6 +694,105 @@ details.adv{margin:12px 0 10px}details.adv>summary{cursor:pointer;font-weight:90
 .admsum div{background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center}
 .admsum b{display:block;font-size:calc(20px*var(--fz));font-weight:900}.admsum span{font-size:calc(11px*var(--fz));color:var(--muted)}
 .admf{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.admf .chip.on{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+
+/* ===== v6.2 · sửa bố cục + lá rơi ===== */
+/* bản đồ: khung bài hiện tại không chạm nút kế tiếp */
+.tip2{width:min(236px,calc(100% - 20px))}
+/* tab Bài tập: bỏ khoảng trống thừa */
+.page>.card:first-child{margin-top:0}
+h2.st{margin-top:14px}
+/* câu hỏi: thẻ đề bài – nhãn loại (phụ) + nút nghe ở hàng đầu, đề (chính) ở giữa */
+.qz{display:block;position:relative;background:#fff;border:1.5px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:8px 16px 12px;padding:12px 16px 16px;text-align:center}
+.qz .qhd{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:38px;margin-bottom:6px}
+.qz .qkind{display:inline-block;max-width:60%;text-align:left;font-size:calc(11px*var(--fz));font-weight:900;letter-spacing:.08em;line-height:1.25;color:var(--pd);background:var(--ps);padding:5px 10px;border-radius:9px}
+.qz .qaud{display:flex;align-items:center;gap:8px;flex:none}
+.qz .qaud .play{width:42px;height:42px;margin:0}.qz .qaud .play svg{width:20px;height:20px}
+.qz .qaud .play.slow{width:auto;height:32px;padding:0 11px;border-radius:16px;font-size:calc(12px*var(--fz))}
+.qz .qaud.big{justify-content:center;margin-top:10px}
+.qz .qaud.big .play{width:68px;height:68px}.qz .qaud.big .play svg{width:30px;height:30px}
+.qz .qaud.big .play.slow{width:auto;height:40px;padding:0 14px;font-size:calc(13px*var(--fz))}
+.qz .qprompt{margin:8px 0 4px;font-size:calc(21px*var(--fz));line-height:1.35;text-align:left;overflow-wrap:anywhere}
+.qz.short .qprompt{font-size:calc(34px*var(--fz));line-height:1.15;text-align:center}
+.qz .qprompt.long{font-size:calc(18px*var(--fz));font-weight:800;text-align:left}
+.qz .qsub{margin-top:2px;font-size:calc(15px*var(--fz));line-height:1.4;overflow-wrap:anywhere}
+.qz .qsub.ipa{display:inline-block;margin-top:4px;padding:3px 12px;border-radius:12px;background:#F4F8F1}
+/* đáp án: chữ là chính, ký hiệu A/B/C là phụ; câu dài thì xếp 1 cột */
+.opt{line-height:1.3;overflow-wrap:anywhere}.opt span{flex:1;min-width:0}
+.opt i{opacity:.9}
+/* khung kết quả: một cột, thứ tự rõ: kết quả → đáp án → giải thích → nút */
+.fbsp{height:220px}
+.feedback{max-height:62vh;display:flex;flex-direction:column;gap:10px;padding:14px 16px calc(12px + env(safe-area-inset-bottom));box-sizing:border-box}
+.feedback .fhead{display:flex;align-items:center;gap:10px}
+.feedback .fm{flex:none;line-height:0}
+.feedback .ft{flex:1;min-width:0}
+.feedback .fh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:calc(21px*var(--fz));font-weight:900;line-height:1.15}
+.feedback .fpr{display:inline-flex;align-items:center;gap:6px;margin-top:3px;padding:0;border:0;background:none;font:inherit;font-size:calc(13.5px*var(--fz));font-weight:800;color:var(--ink2);text-align:left}
+.feedback .fpr .sn{font-size:11px;opacity:.7}
+.feedback .snd{flex:none;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:var(--pd);display:grid;place-items:center;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.feedback .snd svg{width:22px;height:22px}
+.feedback .fans{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;background:#fff;border-radius:12px;padding:8px 12px}
+.feedback .fans small{font-size:calc(11px*var(--fz));font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.feedback .fans b{font-size:calc(17px*var(--fz));font-weight:900;color:var(--ink);overflow-wrap:anywhere}
+.feedback .fans .you{font-size:calc(13px*var(--fz));color:var(--muted)}
+.feedback .fdet{margin:0;font-size:calc(14px*var(--fz));line-height:1.45;color:var(--ink2);overflow-y:auto;min-height:0;max-height:26vh;overflow-wrap:anywhere}
+.feedback .fnext{margin:0;min-height:50px;font-size:calc(16px*var(--fz))}
+.feedback .flink{border:0;background:none;padding:4px 0 0;font:inherit;font-size:calc(13px*var(--fz));font-weight:800;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+/* lá rơi mờ */
+#leaves{position:fixed;inset:0;z-index:100001;overflow:hidden;pointer-events:none;contain:strict}
+#leaves .lf{position:absolute;top:-40px;display:block;opacity:.34;will-change:transform;animation:lfFall linear infinite}
+#leaves .lf b{display:block;width:100%;height:100%;background:var(--c,#8CCB93);border-radius:0 100% 0 100%;will-change:transform;animation:lfSway ease-in-out infinite alternate;position:relative}
+#leaves .lf b::after{content:'';position:absolute;left:12%;top:48%;width:76%;height:1.5px;background:rgba(255,255,255,.55);transform:rotate(-45deg);transform-origin:left center}
+@keyframes lfFall{from{transform:translate3d(0,-6vh,0)}to{transform:translate3d(0,112vh,0)}}
+@keyframes lfSway{from{transform:translateX(0) rotate(-35deg)}to{transform:translateX(var(--sw,24px)) rotate(95deg)}}
+@media (prefers-reduced-motion:reduce){#leaves{display:none}}
+.feedback .fm .fbm{position:static}
+.feedback .fnext:focus,.feedback .fnext:focus-visible{outline:none}
+.feedback .fm{width:48px;display:flex;justify-content:center;align-items:center}
+
+/* ===== v6.3 · nút Check */
+.checkbar{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:0;width:min(100%,560px);box-sizing:border-box;padding:12px 16px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1.5px solid var(--line);display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.checkbar .btn{margin:0;min-height:50px;font-size:calc(16px*var(--fz))}
+.checkbar .btn:disabled{opacity:1;background:#E5DFD3;color:#A79F8E;box-shadow:none;cursor:default}
+.checkbar .flink{border:0;background:none;padding:2px 0;font:inherit;font-size:calc(13px*var(--fz));font-weight:800;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.cksp{height:110px}
+.opt.sel{border-color:var(--p);background:#E8F6EC;box-shadow:0 2px 0 var(--pd)}.opt.sel i{background:var(--p);color:#fff}
+
+/* ===== v6.4 · hai tab nhỏ Từ vựng / Cụm từ */
+.vsub{display:inline-flex;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:2px;gap:2px}
+.vsub button{border:0;background:none;border-radius:8px;padding:3px 9px;font-size:calc(12.5px*var(--fz));font-weight:800;color:var(--ink2);line-height:1.3;white-space:nowrap}
+.vsub button i{font-style:normal;font-weight:900;font-size:calc(11px*var(--fz));margin-left:3px;opacity:.75}
+.vsub button.on{background:var(--p);color:#fff}
+/* ===== v6.4 · chọn giao diện chủ đề */
+.skins{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.skin{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px 12px;box-shadow:0 2px 0 var(--line);position:relative}
+.skin .sk-ico{font-size:calc(26px*var(--fz));line-height:1.1}
+.skin b{font-size:calc(14.5px*var(--fz));font-weight:900;color:var(--ink)}
+.skin small{font-size:calc(11.5px*var(--fz));color:var(--muted);font-weight:700;line-height:1.3}
+.skin .sk-sw{display:flex;gap:4px;margin-top:5px}.skin .sk-sw i{width:16px;height:16px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.skin.on{border-color:var(--p);background:var(--ps)}
+.skin.on::after{content:'✓';position:absolute;right:10px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--p);color:#fff;font-weight:900;font-size:13px;display:grid;place-items:center}
+/* ===== v6.4 · màu theo chủ đề (phông nền, nút, nút bài hiện tại…) */
+html[data-skin="xmas"]{--bg:#F6FAF7;--navy:#1F7343;--navy2:#2F9A5C;--p:#2F9A5C;--pd:#1F7343;--ps:#DFF3E6;--btn:#2F9A5C;--chipon:#2F9A5C;--acc:#D93B3B;--accd:#A82525;--line:#DCE8E0;--shadow:0 2px 0 #D5E4DA;--band1:#BFDDF2;--band2:#F1F7FB;--h1:#F6FAF7;--h2:#E3EFF8;--h3:#D2E4F2;--cur1:#E55B5B;--cur2:#B52B2B;--curd:#8F1F1F}
+html[data-skin="tet"]{--bg:#FFF6E5;--navy:#B8231E;--navy2:#D8322B;--p:#D8322B;--pd:#A8201B;--ps:#FFE3D6;--btn:#D8322B;--chipon:#D8322B;--acc:#E89B00;--accd:#B97A00;--amber:#F6C945;--line:#F0DEC0;--shadow:0 2px 0 #EFDCB8;--band1:#FFD9A8;--band2:#FFF2D9;--h1:#FFF6E5;--h2:#FFE8BE;--h3:#FFD59B;--cur1:#F26A4F;--cur2:#C4281F;--curd:#8E1A14}
+html[data-skin="valentine"]{--bg:#FFF5F7;--navy:#C23366;--navy2:#E0457B;--p:#E0457B;--pd:#B02A5B;--ps:#FFE1EA;--btn:#E0457B;--chipon:#E0457B;--acc:#F0587C;--accd:#C73A5D;--line:#F5DCE3;--shadow:0 2px 0 #F2D4DD;--band1:#FFD3E0;--band2:#FFF0F4;--h1:#FFF5F7;--h2:#FFE4EC;--h3:#FFD2E0;--cur1:#FF7FA3;--cur2:#D43A6C;--curd:#A32550}
+html[data-skin="xmas"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg fill='%23BBD8EE' opacity='.55'%3E%3Ccircle cx='12' cy='14' r='2'/%3E%3Ccircle cx='64' cy='46' r='1.6'/%3E%3Ccircle cx='34' cy='80' r='2.2'/%3E%3Ccircle cx='84' cy='88' r='1.4'/%3E%3C/g%3E%3Cg stroke='%23BBD8EE' stroke-width='1.3' stroke-linecap='round' opacity='.7'%3E%3Cpath d='M72 12v10M67 17h10M68.500 13.500l7 7M75.500 13.500l-7 7'/%3E%3Cpath d='M20 52v8M16 56h8M17.200 53.200l5.600 5.600M22.800 53.200l-5.600 5.600'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin="tet"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='104'%3E%3Cg opacity='.6'%3E%3Cg transform='translate(18 20)' fill='%23FFD43B'%3E%3Ccircle cy='-4' r='3'/%3E%3Ccircle cx='3.800' cy='-1.200' r='3'/%3E%3Ccircle cx='2.300' cy='3.200' r='3'/%3E%3Ccircle cx='-2.300' cy='3.200' r='3'/%3E%3Ccircle cx='-3.800' cy='-1.200' r='3'/%3E%3Ccircle r='1.600' fill='%23E8870E'/%3E%3C/g%3E%3Cg transform='translate(74 66)' fill='%23FF9DB8'%3E%3Ccircle cy='-4' r='3'/%3E%3Ccircle cx='3.800' cy='-1.200' r='3'/%3E%3Ccircle cx='2.300' cy='3.200' r='3'/%3E%3Ccircle cx='-2.300' cy='3.200' r='3'/%3E%3Ccircle cx='-3.800' cy='-1.200' r='3'/%3E%3Ccircle r='1.600' fill='%23E5484D'/%3E%3C/g%3E%3Ccircle cx='50' cy='90' r='2.200' fill='%23F2B632'/%3E%3Ccircle cx='88' cy='18' r='1.800' fill='%23E5322D'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin="valentine"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cg opacity='.5' fill='%23FF8FAE'%3E%3Cpath d='M20 24C14 20 11 17 11 14A4 4 0 0 1 20 13A4 4 0 0 1 29 14C29 17 26 20 20 24Z'/%3E%3Cpath transform='translate(52 46) scale(.7)' d='M20 24C14 20 11 17 11 14A4 4 0 0 1 20 13A4 4 0 0 1 29 14C29 17 26 20 20 24Z'/%3E%3Cpath transform='translate(6 62) scale(.5)' d='M20 24C14 20 11 17 11 14A4 4 0 0 1 20 13A4 4 0 0 1 29 14C29 17 26 20 20 24Z'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin] .nd2 .disc{border-color:var(--p);color:var(--pd)}
+html[data-skin] .nd2.done .disc{color:#7A4B00;border-color:#D99412}
+html[data-skin] .nd2.cur .disc{color:#fff;border-color:#fff}
+html[data-skin] .nd2.lock .disc{color:#9AA6B8;border-color:#C9D2DE}
+html[data-skin] .nd2 .disc::after{border-color:var(--pd);opacity:.4}
+/* hạt rơi theo chủ đề */
+#leaves.k-snow .lf,#leaves.k-heart .lf{opacity:.5}
+#leaves.k-petal .lf{opacity:.55}
+#leaves:not(.k-leaf) .lf b::after{display:none}
+#leaves.k-snow .lf b,#leaves.k-heart .lf b{background:none;border-radius:0;color:var(--c);font-size:inherit;line-height:1;display:grid;place-items:center}
+#leaves.k-snow .lf b::before{content:'\2744\FE0E'}
+#leaves.k-heart .lf b::before{content:'\2665\FE0E'}
+#leaves.k-heart .lf b{animation-name:lfSwayH}
+#leaves.k-petal .lf b{border-radius:50% 0 50% 50%}
+@keyframes lfSwayH{from{transform:translateX(0) rotate(-18deg)}to{transform:translateX(var(--sw,24px)) rotate(18deg)}}
 
 </style>
 </head>
@@ -1080,7 +1179,7 @@ function closeModal(instant) {
   if (bg && bg.classList.contains('qsheet') && !instant) { bg.classList.add('out'); setTimeout(() => { if ($('#modal .modalbg') === bg) $('#modal').innerHTML = ''; }, 330); return; }
   $('#modal').innerHTML = '';
 }
-function applyTheme() { document.documentElement.setAttribute('data-theme', 'light'); }
+function applyTheme() { document.documentElement.setAttribute('data-theme', 'light'); try { applySkin(); } catch (e) { } }
 /* ---------- sao, XP (v3) ---------- */
 function starsOf(pct) { return pct >= 85 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0; }
 function totalStars() { let n = 0; for (const q of Object.values(S.qstat || {})) n += starsOf(q.best || 0); return n; }
@@ -1197,7 +1296,8 @@ const cloudG = (x, y, k, d = 0) => `<g transform="translate(${x} ${y}) scale(${k
 const treeG = (x, y, r, d = 0) => `<rect x="${x - 1.5}" y="${y}" width="3" height="${(r * .9).toFixed(0)}" rx="1.500" fill="#8B6A4A"/>${G('o-b a-sway', `<circle cx="${x}" cy="${y}" r="${r}" fill="#5DB37E"/><circle cx="${(x - r * .35).toFixed(1)}" cy="${(y - r * .35).toFixed(1)}" r="${(r * .45).toFixed(1)}" fill="#7CCB97"/>`, `--r:2.500deg;animation-duration:${4.500 + d}s;animation-delay:${-d}s`)}`;
 const birdV = (x, y, d) => `<g transform="translate(${x} ${y})">${G('o-c a-flapv', `<path d="M0 0q4-4 8 0q4-4 8 0" stroke="#4F6B7A" stroke-width="1.500" fill="none" stroke-linecap="round"/>`, `animation-delay:${-d}s`)}</g>`;
 function sceneSVG(sun = true) {
-  return `<svg class="scene" viewBox="0 0 390 150" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">${sun ? `<g transform="translate(330 34)" class="sunrot">${SUNFACE}</g>` : ''}
+  if (skinOn()) return skinScene(sun);
+  return `<svg class="scene" viewBox="0 0 390 150" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">${sun ? `<g transform="translate(330 34)" class="sunrot">${sunFace()}</g>` : ''}
   ${cloudG(228, 20, 1.1, 0)}${cloudG(290, 68, .7, 5)}<g class="k a-drift" style="animation-duration:9s">${birdV(196, 40, 0)}${birdV(216, 54, .3)}</g>
   <path d="M0 112C90 66 140 110 190 100C260 86 320 112 390 86V150H0Z" fill="#BFE6C6"/>${treeG(300, 86, 11)}${treeG(326, 92, 8, 1)}${treeG(352, 84, 12, 2)}
   <g transform="translate(244 92)"><rect x="0" y="8" width="22" height="16" rx="2" fill="#FFF4DC"/><path d="M-3 9L11 -2L25 9Z" fill="#FF7A59" stroke="#FF7A59" stroke-width="1.500" stroke-linejoin="round"/><rect x="17" y="-2" width="4" height="8" fill="#C95A3E"/><rect x="8" y="14" width="6" height="10" rx="3" fill="#8B6A4A"/>${G('a-twinkle', '<rect x="16" y="12" width="4" height="4" rx="1" fill="#FFE48A"/>')}${G('a-smoke', '<circle cx="19" cy="-4" r="2.200" fill="#fff" opacity=".9"/>')}${G('a-smoke', '<circle cx="19" cy="-4" r="2.200" fill="#fff" opacity=".9"/>', 'animation-delay:-2s')}</g>
@@ -1225,7 +1325,7 @@ Object.assign(DECO, {
   moss: (s = 32, cls = '') => svg('0 0 34 40', s, s * 1.18, `${[[6, 26, 15, '#4FB286'], [13, 30, 24, '#5DBB7A'], [20, 24, 12, '#6FCB8A'], [27, 28, 20, '#4FB286']].map(([x, h, o, c], i) => G('o-b a-sway', P(`M${x} 40C${x - 5} ${40 - h * .35} ${x + 5} ${40 - h * .65} ${x} ${40 - h}`, `stroke="${c}" stroke-width="3.600" fill="none" stroke-linecap="round"`), `--r:${6 + i}deg;animation-duration:${3 + i * .5}s;animation-delay:${-i * .6}s`)).join('')}`, cls),
   rock: (s = 34, cls = '') => svg('0 0 36 22', s, s * .6, `<path d="M2 20C2 10 8 3 18 3C28 3 34 10 34 20Z" fill="#B9C4CF"/><path d="M6 11C10 4 20 3 26 6C20 8 12 8 6 11Z" fill="#7FCB8F"/><circle cx="12" cy="7" r="2.400" fill="#6FBF5E"/><circle cx="21" cy="5.500" r="2" fill="#8ED89C"/><circle cx="27" cy="9" r="1.800" fill="#6FBF5E"/>`, cls),
   mountain: (s = 56, cls = '') => svg('0 0 60 40', s, s * .67, `<path d="M26 38Q38 10 46 14Q56 20 58 38Z" fill="#A5C4DE"/><path d="M2 38Q14 6 26 10Q32 12 36 20Q42 22 46 38Z" fill="#B7D3EA"/><path d="M16 21Q22 8 26 10Q30 12 33 18Q29 17 27 21Q24 16 20 22Q18 19 16 21Z" fill="#fff"/>${G('o-c a-twinkle', '<path d="M26 4C26.600 7 27 7.400 30 8C27 8.600 26.600 9 26 12C25.400 9 25 8.600 22 8C25 7.400 25.400 7 26 4Z" fill="#FFE48A"/>', 'animation-duration:3.400s')}`, cls),
-  sun: (s = 44, cls = '') => `<svg class="dc ${cls}" width="${s}" height="${s}" viewBox="-32 -32 64 64" aria-hidden="true" focusable="false" overflow="visible"><g class="sunrot">${SUNFACE}</g></svg>`,
+  sun: (s = 44, cls = '') => `<svg class="dc ${cls}" width="${s}" height="${s}" viewBox="-32 -32 64 64" aria-hidden="true" focusable="false" overflow="visible"><g class="sunrot">${sunFace()}</g></svg>`,
 });
 
 /* ---------- nền bản đồ: hồ, ao, đầm sen chuyển động rải rác; tự né nút bài, thẻ, đường đi và hình trang trí ---------- */
@@ -1285,7 +1385,7 @@ function decorate() {
   const band = v.querySelector('.band');
   if (band && !band.querySelector('.scene')) {
     const home = band.classList.contains('home');
-    band.insertAdjacentHTML('afterbegin', sceneSVG(!home) + (home ? `<svg class="sunh" width="62" height="62" viewBox="-32 -32 64 64" aria-hidden="true"><g class="sunrot">${SUNFACE}</g></svg>` : ''));
+    band.insertAdjacentHTML('afterbegin', sceneSVG(!home) + (home ? `<svg class="sunh" width="62" height="62" viewBox="-32 -32 64 64" aria-hidden="true"><g class="sunrot">${sunFace()}</g></svg>` : ''));
     band.insertAdjacentHTML('beforeend', (PAGE_CRITTER[pg] || (() => ''))());
   }
   const mp = v.querySelector('.map');
@@ -1293,7 +1393,6 @@ function decorate() {
   /* hình "ngồi" trên mép trên của thẻ (chừa chỗ riêng, không đè chữ trong thẻ) */
   const put = (el, html, where = 'afterbegin') => { if (el && !el.querySelector(':scope > .dc')) { el.insertAdjacentHTML(where, html); if (/corner|peek/.test(html)) el.classList.add('hasdc'); } };
   if (pg === 'import') put(v.querySelector('.drop'), DECO.cat('', 66, 'peek'));
-  if (pg === 'lesson' && lessonTab === 'ex') put(v.querySelector('.page > .card'), DECO.chick(30, 'peekS bob'));
   if (pg === 'lesson' && lessonTab === 'vocab') { const c = v.querySelector('.page > .row.between > .muted'); if (c && !c.querySelector('.dc')) c.insertAdjacentHTML('beforeend', ' ' + DECO.bee(22, 'tag fly')); }
   if (pg === 'lesson' && lessonTab === 'grammar') { const c = v.querySelector('.page > .muted.small'); if (c && !c.querySelector('.dc')) c.insertAdjacentHTML('beforeend', ' ' + DECO.sprig(18, 'tag')); }
   if (pg === 'lesson' && lessonTab === 'text') { const c = v.querySelector('.page > .lead'); if (c && !c.querySelector('.dc')) c.insertAdjacentHTML('beforeend', ' ' + DECO.ladybug(18, 'tag')); }
@@ -1309,6 +1408,96 @@ function meadow() {
 }
 
 let _rsz; window.addEventListener('resize', () => { clearTimeout(_rsz); _rsz = setTimeout(() => { const m = document.querySelector('.map'); if (!m) return; const o = m.querySelector('.mscape'); if (o && Math.abs(o.getAttribute('width') - m.clientWidth) > 4) { o.remove(); m.insertAdjacentHTML('afterbegin', mapScape(m.clientWidth, m.clientHeight)); } }, 200); });
+
+/* ===== v6.4 · giao diện theo chủ đề: Giáng sinh · Tết Việt Nam · Valentine =====
+   Mỗi giao diện đổi: màu chủ đạo, phông nền, cảnh đầu trang, mặt trời → biểu tượng, hình trang trí trên bản đồ, hạt rơi (tuyết / cánh hoa / trái tim). */
+const SKIN_FACE = '<circle cx="-6" cy="-2" r="1.8" fill="#5A3A00"/><circle cx="6" cy="-2" r="1.8" fill="#5A3A00"/><path d="M-5 5q5 5 10 0" stroke="#5A3A00" stroke-width="1.6" fill="none" stroke-linecap="round"/><ellipse cx="-11" cy="3" rx="3.2" ry="2" fill="#FF9BAE" opacity=".75"/><ellipse cx="11" cy="3" rx="3.2" ry="2" fill="#FF9BAE" opacity=".75"/>';
+const bloom = (x, y, r, fill, mid = '#E8870E') => `<g transform="translate(${x} ${y})">${petals(5, r * .62, r * .46, fill)}<circle r="${(r * .28).toFixed(1)}" fill="${mid}"/></g>`;
+const bloomTree = (s, cls, fill, mid, bud) => svg('0 0 44 50', s, s * 1.14, `<path d="M22 50C21 40 22 34 20 28M21 36C16 31 12 28 8 20M22 32C27 28 31 25 36 16M20 28C19 22 21 16 22 8" stroke="#7A4B2A" stroke-width="3" fill="none" ${RND}/>
+  ${G('o-b a-sway', `${bloom(8, 18, 8, fill, mid)}${bloom(36, 14, 8.5, fill, mid)}${bloom(22, 8, 9, fill, mid)}${bloom(14, 28, 6.5, fill, mid)}${bloom(30, 26, 7, fill, mid)}${bloom(20, 18, 6, fill, mid)}<circle cx="4" cy="26" r="2.2" fill="${bud}"/><circle cx="40" cy="24" r="2.2" fill="${bud}"/><circle cx="28" cy="4" r="2" fill="${bud}"/>`, '--r:1.5deg;animation-duration:5s')}${G('a-petal', `<circle cx="22" cy="40" r="1.6" fill="${fill}"/>`)}`, cls);
+Object.assign(DECO, {
+  /* --- Giáng sinh --- */
+  xtree: (s = 46, cls = '') => svg('0 0 40 52', s, s * 1.3, `<rect x="17" y="43" width="6" height="8" rx="1.5" fill="#8B5E3C"/><path d="M20 22L36 45H4Z" fill="#2E9E5B"/><path d="M20 12L33 33H7Z" fill="#3DB36B"/><path d="M20 5L29 21H11Z" fill="#4CC47A"/><path d="M12 38q4 3 8 0t8 0l3 4H9Z" fill="#fff" opacity=".9"/><path d="M13 24q3 2.500 7 0t7 0l2 3H11Z" fill="#fff" opacity=".9"/>${[[14, 36, '#E5484D'], [26, 40, '#FFD15C'], [20, 28, '#5AA9E6'], [16, 20, '#FFD15C'], [24, 17, '#E5484D']].map(([x, y, c], i) => G('o-c a-twinkle', `<circle cx="${x}" cy="${y}" r="2" fill="${c}"/>`, `animation-delay:${-i * .5}s`)).join('')}${G('o-c a-twinkle', '<path d="M20 -1l1.900 4.400L26.500 4l-3.600 3.100L24 11.700 20 9.200 16 11.700l1.100-4.600L13.500 4l4.600-.6Z" fill="#FFD15C"/>', 'animation-duration:2.600s')}`, cls),
+  snowman: (s = 40, cls = '') => svg('0 0 36 46', s, s * 1.28, `<circle cx="18" cy="33" r="12" fill="#fff" stroke="#CFE0EE" stroke-width="1.200"/>${G('o-b a-sway', `<circle cx="18" cy="15" r="9" fill="#fff" stroke="#CFE0EE" stroke-width="1.200"/><circle cx="14.500" cy="13" r="1.300" fill="${NV}"/><circle cx="21.500" cy="13" r="1.300" fill="${NV}"/><path d="M18 15.500l7 1.800-7 1.200Z" fill="#FF8A3D"/><ellipse cx="12.500" cy="17" rx="2" ry="1.200" fill="${PK}" opacity=".7"/><ellipse cx="23.500" cy="17" rx="2" ry="1.200" fill="${PK}" opacity=".7"/><path d="M9 22q9 5 18 0" stroke="#E5484D" stroke-width="3.600" fill="none" stroke-linecap="round"/><rect x="11" y="3" width="14" height="4" rx="1.500" fill="#2F3B4B"/><rect x="13.500" y="-3" width="9" height="7" rx="1.500" fill="#2F3B4B"/>`, '--r:2deg;animation-duration:4s')}<circle cx="18" cy="30" r="1.300" fill="${NV}"/><circle cx="18" cy="35" r="1.300" fill="${NV}"/><circle cx="18" cy="40" r="1.300" fill="${NV}"/>`, cls),
+  gift: (s = 30, cls = '') => svg('0 0 30 28', s, s * .93, `<rect x="3" y="12" width="24" height="15" rx="2.500" fill="#E5484D"/><rect x="2" y="8" width="26" height="6" rx="2" fill="#F26468"/><rect x="13" y="8" width="4" height="19" fill="#FFD15C"/>${G('o-b a-sway', '<path d="M15 8C9 1 3 4 6 7.500C8 9.500 12 8 15 8ZM15 8C21 1 27 4 24 7.500C22 9.500 18 8 15 8Z" fill="#FFD15C"/>', '--r:3deg')}`, cls),
+  cane: (s = 22, cls = '') => svg('0 0 20 32', s, s * 1.6, `<path d="M6 31V11a5.500 5.500 0 0 1 11 0" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M6 31V11a5.500 5.500 0 0 1 11 0" stroke="#E5484D" stroke-width="5" fill="none" stroke-dasharray="3.500 3.500"/>${G('o-c a-twinkle', '<circle cx="17" cy="3" r="2" fill="#FFD15C"/>')}`, cls),
+  holly: (s = 30, cls = '') => svg('0 0 32 24', s, s * .75, `${G('o-b a-sway', '<path d="M16 16C10 6 3 8 2 12C5 14 4 18 8 18C10 20 13 19 16 16ZM16 16C22 6 29 8 30 12C27 14 28 18 24 18C22 20 19 19 16 16Z" fill="#2E9E5B"/><path d="M16 16L6 12M16 16L26 12" stroke="#1F7343" stroke-width="1" fill="none"/>', '--r:3deg')}<circle cx="13.500" cy="17.500" r="3" fill="#E5484D"/><circle cx="18.500" cy="17.500" r="3" fill="#E5484D"/><circle cx="16" cy="20.500" r="3" fill="#E5484D"/><circle cx="12.600" cy="16.600" r=".8" fill="#fff" opacity=".8"/>`, cls),
+  flake: (s = 18, cls = '') => svg('0 0 20 20', s, s, G('o-c a-twinkle', `<path d="M10 1V19M2.200 5.500L17.800 14.500M2.200 14.500L17.800 5.500" stroke="#8EC5EE" stroke-width="1.700" stroke-linecap="round"/><circle cx="10" cy="10" r="2" fill="#fff" stroke="#8EC5EE"/>`, 'animation-duration:3.200s'), cls),
+  /* --- Tết Việt Nam --- */
+  mai: (s = 46, cls = '') => bloomTree(s, cls, '#FFD43B', '#E8870E', '#8BC34A'),
+  dao: (s = 46, cls = '') => bloomTree(s, cls, '#FF9DB8', '#E5484D', '#FFB3C6'),
+  lantern: (s = 26, cls = '') => svg('0 0 24 44', s, s * 1.83, `<path d="M12 0V6" stroke="#8B5E3C" stroke-width="1.500"/>${G('o-t a-sway', `<rect x="8" y="5" width="8" height="3.500" rx="1.200" fill="#F2B632"/><ellipse cx="12" cy="18" rx="10" ry="10.500" fill="#E5322D"/><path d="M12 7.500C7 12 7 24 12 28.500M12 7.500C17 12 17 24 12 28.500" stroke="#F2B632" stroke-width="1.300" fill="none"/><ellipse cx="9" cy="14" rx="2.400" ry="3.800" fill="#fff" opacity=".28"/><rect x="8" y="27.500" width="8" height="3.500" rx="1.200" fill="#F2B632"/><path d="M9 31v9M12 31v11M15 31v9" stroke="#F2B632" stroke-width="1.400" stroke-linecap="round"/>`, '--r:4deg;animation-duration:3.400s')}`, cls),
+  banhchung: (s = 32, cls = '') => svg('0 0 34 32', s, s * .94, `<path d="M17 2L32 14 24 30H10L2 14Z" fill="#3E9B4F"/><path d="M17 2L32 14 24 30H10L2 14Z" fill="none" stroke="#2A7A3A" stroke-width="1.200" stroke-linejoin="round"/><path d="M17 3V29M5 16H30" stroke="#B9E08A" stroke-width="1.600" stroke-linecap="round"/><path d="M11 8l12 14M23 8L11 22" stroke="#2A7A3A" stroke-width=".9" opacity=".55"/>${G('o-c a-twinkle', '<circle cx="17" cy="16" r="2.200" fill="#F2B632"/>')}`, cls),
+  lixi: (s = 22, cls = '') => svg('0 0 22 30', s, s * 1.36, G('o-b a-sway', '<rect x="2" y="1" width="18" height="28" rx="3" fill="#E5322D"/><path d="M2 4q9 12 18 0" fill="#C4281F"/><circle cx="11" cy="17" r="5" fill="#F2B632"/><path d="M11 13.500v7M8 17h6" stroke="#E5322D" stroke-width="1.300" stroke-linecap="round"/>', '--r:3deg'), cls),
+  kumquat: (s = 40, cls = '') => svg('0 0 40 46', s, s * 1.15, `<path d="M9 34h22l-3 11H12Z" fill="#E5322D"/><rect x="8" y="32" width="24" height="4" rx="1.500" fill="#F2B632"/>${G('o-b a-sway', `<circle cx="20" cy="18" r="14" fill="#3E9B4F"/><circle cx="11" cy="23" r="8" fill="#4CAF5E"/><circle cx="29" cy="23" r="8" fill="#4CAF5E"/>${[[14, 14], [24, 11], [20, 21], [10, 24], [30, 22], [26, 28], [16, 29]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3" fill="#FF9F1C"/><circle cx="${x - 1}" cy="${y - 1}" r=".8" fill="#fff" opacity=".7"/>`).join('')}`, '--r:2deg;animation-duration:5s')}`, cls),
+  /* --- Valentine --- */
+  bigheart: (s = 40, cls = '') => svg('0 0 40 36', s, s * .9, G('o-c a-pulse', '<path d="M20 34C6 24 1 18 1 11A9.500 9.500 0 0 1 20 8A9.500 9.500 0 0 1 39 11C39 18 34 24 20 34Z" fill="#FF5C7C"/><path d="M9 8q4-3 7 0" stroke="#fff" stroke-width="2.400" fill="none" stroke-linecap="round" opacity=".7"/>', 'animation-duration:1.800s'), cls),
+  rose: (s = 26, cls = '') => svg('0 0 24 42', s, s * 1.75, `<path d="M12 18C11 26 13 33 12 42" stroke="#3E9B4F" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M12 32C6 31 4 26 5 24C9 24 12 27 12 32ZM12 36C18 35 20 30 19 28C15 28 12 31 12 36Z" fill="#4CAF5E"/>${G('o-b a-sway', '<circle cx="12" cy="11" r="9.500" fill="#E63E5C"/><circle cx="12" cy="11" r="6.500" fill="#C92A47"/><path d="M8 9q4-4 8 0M8.500 13q3.500 3 7 0" stroke="#FF8FA8" stroke-width="1.300" fill="none" stroke-linecap="round"/><circle cx="12" cy="11" r="2" fill="#E63E5C"/>', '--r:3deg;transform-origin:12px 20px')}`, cls),
+  letter: (s = 34, cls = '') => svg('0 0 34 26', s, s * .76, `<rect x="1" y="2" width="32" height="22" rx="3" fill="#fff" stroke="#F5B8C8" stroke-width="1.500"/><path d="M2 4l15 11L32 4" stroke="#F5B8C8" stroke-width="1.500" fill="none" stroke-linejoin="round"/>${G('o-c a-pulse', '<path d="M17 21C13 18 11.500 16.500 11.500 14.800A2.800 2.800 0 0 1 17 14A2.800 2.800 0 0 1 22.500 14.800C22.500 16.500 21 18 17 21Z" fill="#FF5C7C"/>')}`, cls),
+  choco: (s = 34, cls = '') => svg('0 0 34 32', s, s * .94, `<path d="M17 30C5 21 1 16 1 10A8 8 0 0 1 17 8A8 8 0 0 1 33 10C33 16 29 21 17 30Z" fill="#C93A5A"/><path d="M17 26C8 19 5 15 5 11A5.500 5.500 0 0 1 17 9.500A5.500 5.500 0 0 1 29 11C29 15 26 19 17 26Z" fill="#7A3E2B"/><circle cx="12" cy="13" r="2" fill="#A8603F"/><circle cx="20" cy="12" r="2" fill="#A8603F"/><circle cx="16" cy="18" r="2" fill="#A8603F"/>${G('o-b a-sway', '<path d="M17 8C13 2 8 4 10 7C12 9 15 8 17 8ZM17 8C21 2 26 4 24 7C22 9 19 8 17 8Z" fill="#FFD15C"/>', '--r:3deg')}`, cls),
+  balloon: (s = 24, cls = '') => svg('0 0 22 46', s, s * 2.1, G('o-t a-sway', '<path d="M11 36C5 28 1 24 1 17A5.500 5.500 0 0 1 11 14A5.500 5.500 0 0 1 21 17C21 24 17 28 11 36Z" fill="#FF6F91"/><path d="M5 14q2-2.500 4-1" stroke="#fff" stroke-width="1.800" fill="none" stroke-linecap="round" opacity=".7"/><path d="M11 36q-3 4 0 5t0 5" stroke="#B07A86" stroke-width="1.100" fill="none"/>', '--r:4deg;transform-origin:11px 46px;animation-duration:4s'), cls),
+  teddy: (s = 40, cls = '') => DECO.bear(s) + DECO.heart(14, 'pulse'),
+});
+const SKINS = {
+  default: { name: 'Mặc định', ico: '🌿', sw: ['#36A86B', '#FFF9EF', '#FFB938'], desc: 'Khu vườn xanh' },
+  xmas: { name: 'Giáng sinh', ico: '🎄', sw: ['#2F9A5C', '#E5484D', '#BFDDF2'], desc: 'Cây thông, người tuyết, tuyết rơi', particle: 'snow',
+    hills: ['#E9F3FA', '#D6E8F5', '#C3DBEE'], tint: 'rgba(206,226,244,.55)',
+    big: ['xtree', 'snowman', 'xtree', 'mountain'], mid: ['xtree', 'snowman', 'gift', 'holly', 'cane'], sm: ['gift', 'cane', 'holly', 'flake', 'gift'],
+    wid: { xtree: 46, snowman: 42, gift: 30, cane: 22, holly: 32, flake: 24 },
+    flyer: () => DECO.flake(16, 'fly'),
+    sun: '<g stroke="#9CCBEF" stroke-width="3" stroke-linecap="round">' + [0, 45, 90, 135].map(a => `<path d="M0 -30V30" transform="rotate(${a})"/>`).join('') + '</g><circle r="19" fill="#FFE17A"/>' + SKIN_FACE,
+    scene: () => `<g transform="translate(236 82)">${DECO.snowman(26)}</g><g transform="translate(274 66)">${DECO.xtree(34)}</g><g transform="translate(312 76)">${DECO.xtree(28)}</g><g transform="translate(346 70)">${DECO.xtree(36)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.gift(18)}</g><g transform="translate(150 118)">${DECO.cane(10)}</g>` },
+  tet: { name: 'Tết Việt Nam', ico: '🌸', sw: ['#D8322B', '#FFD43B', '#FF9DB8'], desc: 'Hoa mai, hoa đào, lồng đèn, bánh chưng', particle: 'petal',
+    hills: ['#FFEBB8', '#FFD9A3', '#F9BFA0'], tint: 'rgba(255,214,170,.55)',
+    big: ['mai', 'dao', 'kumquat', 'mai'], mid: ['lantern', 'kumquat', 'banhchung', 'dao', 'mai'], sm: ['lixi', 'banhchung', 'lantern', 'lixi', 'kumquat'],
+    wid: { mai: 46, dao: 46, kumquat: 40, lantern: 26, banhchung: 32, lixi: 22 },
+    flyer: () => DECO.spark('#FFD43B', 14),
+    sun: '<g stroke="#FFC933" stroke-width="3" stroke-linecap="round">' + [0, 45, 90, 135, 180, 225, 270, 315].map(a => `<path d="M0 -30v5" transform="rotate(${a})"/>`).join('') + '</g>' + petals(5, 12, 9, '#FFD43B') + '<circle r="11" fill="#FFB400"/>' + SKIN_FACE,
+    scene: () => `<g transform="translate(236 70)">${DECO.lantern(18)}</g><g transform="translate(272 54)">${DECO.mai(40)}</g><g transform="translate(316 60)">${DECO.dao(36)}</g><g transform="translate(352 74)">${DECO.kumquat(26)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.lixi(14)}</g><g transform="translate(150 114)">${DECO.banhchung(18)}</g>` },
+  valentine: { name: 'Valentine', ico: '💝', sw: ['#E0457B', '#FFD3E0', '#FF6F91'], desc: 'Trái tim, hoa hồng, thư tình', particle: 'heart',
+    hills: ['#FFDDE6', '#FFC8D8', '#FFB0C6'], tint: 'rgba(255,205,222,.55)',
+    big: ['bigheart', 'teddy', 'balloon', 'bigheart'], mid: ['rose', 'choco', 'letter', 'balloon', 'tulips'], sm: ['rose', 'letter', 'flowers', 'choco', 'rose'],
+    wid: { bigheart: 40, teddy: 52, balloon: 26, rose: 26, choco: 34, letter: 34 },
+    flyer: () => DECO.heart(14, 'fly'),
+    sun: '<path d="M0 26C-18 12 -26 4 -26 -6A13 13 0 0 1 0 -12A13 13 0 0 1 26 -6C26 4 18 12 0 26Z" fill="#FF6F91"/><g transform="translate(0 -1)">' + SKIN_FACE.replace(/#5A3A00/g, '#7A1F3D') + '</g>',
+    scene: () => `<g transform="translate(240 72)">${DECO.balloon(18)}</g><g transform="translate(274 62)">${DECO.bigheart(34)}</g><g transform="translate(318 74)">${DECO.teddy(30)}</g><g transform="translate(352 64)">${DECO.balloon(18)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.rose(12)}</g><g transform="translate(150 114)">${DECO.letter(20)}</g>` },
+};
+function skinId() { try { const k = S.settings.skin; return SKINS[k] ? k : 'default'; } catch (e) { return 'default'; } }
+function skinOn() { return skinId() !== 'default' ? SKINS[skinId()] : null; }
+function sunFace() { const k = skinOn(); return k ? k.sun : SUNFACE; }
+function skinScene(sun) {
+  const k = skinOn();
+  return `<svg class="scene" viewBox="0 0 390 150" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">${sun ? `<g transform="translate(330 34)" class="sunrot">${k.sun}</g>` : ''}
+  ${cloudG(228, 20, 1.1, 0)}${cloudG(290, 68, .7, 5)}<path d="M0 112C90 66 140 110 190 100C260 86 320 112 390 86V150H0Z" fill="${k.hills[0]}"/>${k.scene()}
+  <path d="M0 132C80 104 140 130 190 126C260 120 330 128 390 116V150H0Z" fill="${k.hills[1]}"/>${k.front()}</svg>`;
+}
+function skinMapTheme(th) {
+  const k = skinOn(); if (!k) return th;
+  return Object.assign({}, th, { hills: k.hills, tint: k.tint, big: k.big, mid: k.mid, sm: k.sm, flyerFn: k.flyer });
+}
+function skinMapDeco(name) {
+  const k = skinOn(); if (!k || !k.wid || !(name in k.wid)) return null;
+  const D = DECO, w = k.wid[name];
+  return ({ xtree: () => D.xtree(w), snowman: () => D.snowman(w - 8), gift: () => D.gift(w), cane: () => D.cane(w), holly: () => D.holly(w), flake: () => D.flake(w - 6),
+    mai: () => D.mai(w), dao: () => D.dao(w), kumquat: () => D.kumquat(w), lantern: () => D.lantern(w), banhchung: () => D.banhchung(w), lixi: () => D.lixi(w),
+    bigheart: () => D.bigheart(w), teddy: () => D.teddy(40), balloon: () => D.balloon(w), rose: () => D.rose(w), choco: () => D.choco(w), letter: () => D.letter(w) })[name]();
+}
+function applySkin() {
+  const id = skinId(), el = document.documentElement;
+  if (id === 'default') el.removeAttribute('data-skin'); else el.setAttribute('data-skin', id);
+  try { const m = document.querySelector('meta[name=theme-color]'); if (m) m.setAttribute('content', { default: '#36A86B', xmas: '#2F9A5C', tet: '#D8322B', valentine: '#E0457B' }[id]); } catch (e) { }
+  try { leavesBuild(id === 'default' ? 'leaf' : SKINS[id].particle); } catch (e) { }
+}
+function setSkin(id) { if (!SKINS[id]) return; S.settings.skin = id; save(); applySkin(); render(); toast(id === 'default' ? 'Đã về giao diện mặc định' : `${SKINS[id].ico} Đã đổi sang giao diện ${SKINS[id].name}`); }
+function skinCard() {
+  const cur = skinId();
+  return `<section class="card"><div class="section-title">🎨 Giao diện</div>
+   <p class="muted tiny" style="margin:-2px 0 8px">Đổi màu sắc, phông nền, hình trang trí và hạt rơi trên toàn app. Tiến độ học không bị ảnh hưởng.</p>
+   <div class="skins">${Object.entries(SKINS).map(([k, v]) => `<button class="skin ${k === cur ? 'on' : ''}" onclick="setSkin('${k}')" aria-pressed="${k === cur}"><span class="sk-ico">${v.ico}</span><b>${v.name}</b><small>${v.desc}</small><span class="sk-sw">${v.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span></button>`).join('')}</div></section>`;
+}
 
 /* ===== Câu động viên (bạn nhỏ nói trong bong bóng) – theo HSK Study Lab, bản tiếng Anh =====
    Sự kiện: open/first/away/streakKeep (mở app) · right/combo/wrong (trả lời) · streak · goal · lessonPass/lessonPerfect/lessonTry
@@ -1369,6 +1558,7 @@ function cheerShow(kinds, ctx = {}, opt = {}) {
   if (now < cheerShownUntil && pri < cheerShownPri) return null;
   const p = cheerPick(kinds); if (!p) return null;
   const vi = cheerFill(p.m[0], ctx), en = p.m[1], mood = CHEER_MOOD[main] || 'hello', who = opt.who || cheerWho(mood);
+  if (opt.inline) return { kind: p.kind, vi, en, who };   /* hiện ngay trong khung kết quả, không bật bong bóng nổi */
   let el = document.getElementById('cheer');
   if (!el) { el = document.createElement('div'); el.id = 'cheer'; el.setAttribute('role', 'status'); el.setAttribute('aria-live', 'polite'); el.addEventListener('click', cheerHide); document.body.appendChild(el); }
   const art = (CHEER_ART[who] || CHEER_ART.panda)(46, 'ch-bob');
@@ -1394,12 +1584,13 @@ function cheerOnOpen() {
   } catch (e) { return null; }
 }
 function cheerNewDay() { try { const n = streak(); if (n >= 2) cheerShow([7, 14, 21, 30, 50, 60, 90, 100, 150, 200, 365].includes(n) ? 'streakBig' : 'streak', { n }); } catch (e) { } }
-function cheerAnswer(ok, kind) {
+function cheerAnswer(ok, kind, inline) {
   try {
-    if (ok) { cheerCombo++; if (cheerCombo >= 3 && (cheerCombo === 3 || cheerCombo % 5 === 0)) return cheerShow('combo', { c: cheerCombo }); return cheerShow('right'); }
+    const o = inline ? { inline: true } : {};
+    if (ok) { cheerCombo++; if (cheerCombo >= 3 && (cheerCombo === 3 || cheerCombo % 5 === 0)) return cheerShow('combo', { c: cheerCombo }, o); return cheerShow('right', {}, o); }
     cheerCombo = 0;
-    if (['spell', 'type', 'cloze', 'trans', 'dict'].includes(kind)) return cheerShow(['wrong', 'wrongSpell']);
-    return cheerShow('wrong');
+    if (['spell', 'type', 'cloze', 'trans', 'dict'].includes(kind)) return cheerShow(['wrong', 'wrongSpell'], {}, o);
+    return cheerShow('wrong', {}, o);
   } catch (e) { return null; }
 }
 function cheerResetCombo() { cheerCombo = 0; }
@@ -1507,10 +1698,12 @@ function questOnOpen() {
 let page = 'home', lessonId = '', lessonTab = 'text', lookTab = 'v', lookQ = '', lookLv = '', lookN = 40, lessonsQ = '';
 let textMode = { vi: null, mask: false, playing: -1, all: false };
 const NAV = [['today', 'Hôm nay'], ['home', 'Học'], ['practice', 'Ôn & Luyện'], ['lookup', 'Tra cứu'], ['me', 'Tôi']];
-let mapLv = null, needScroll = true;
+let mapLv = null, needScroll = true, mapSel = null, vocSub = 'v';
+function setVocSub(k) { vocSub = k; render(); }
+function selectNode(id) { if (DATA && !lessonUnlocked(id)) return toast(lockMsg(id)); mapSel = id; const y = window.scrollY; render(); window.scrollTo(0, y); }
 
 function go(p, opt = {}) { if (p === 'review') p = 'practice'; if (p === 'home') needScroll = true; TTS.stop(); textMode.playing = -1; textMode.all = false; if (opt.lesson) { lessonId = opt.lesson; S.lastLesson = lessonId; save(); } if (opt.tab) lessonTab = opt.tab; page = p; render(); window.scrollTo(0, 0); }
-function openLesson(id, tab) { if (DATA && !lessonUnlocked(id)) return toast(lockMsg(id)); textMode.vi = null; textMode.mask = false; go('lesson', { lesson: id, tab: tab || 'text' }); }
+function openLesson(id, tab) { if (DATA && !lessonUnlocked(id)) return toast(lockMsg(id)); vocSub = 'v'; textMode.vi = null; textMode.mask = false; go('lesson', { lesson: id, tab: tab || 'text' }); }
 
 function render() {
   if (!DATA) return renderImport();
@@ -1523,7 +1716,7 @@ function render() {
   $('#view').dataset.page = page;
   $('#view').innerHTML = P();
   decorate();
-  if (page === 'quiz') afterQuizRender();
+  if (page === 'quiz') { try { cheerHide(); } catch (e) { } afterQuizRender(); }
   if (page === 'home' && needScroll) { needScroll = false; setTimeout(() => { const c = $('#curNode'); if (c) window.scrollTo(0, Math.max(0, c.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.45)); }, 30); }
 }
 
@@ -1637,10 +1830,10 @@ const MAP_THEME = {
   B2: { hills: ['#EAF2FB', '#D3E4F5', '#BBD4EC'], tint: 'rgba(214,230,247,.85)', flyer: 'bird',
     big: ['mountain', 'tree2', 'cat', 'mountain'], mid: ['mountain', 'owl', 'panda', 'hedgehog'], sm: ['bunny', 'chick', 'owl', 'mushroom', 'ladybug'] },
 };
-const MAP_WID = { pond: 92, fishpond: 80, tree: 46, tree2: 38, mountain: 58, hedgehog: 44, mushroom: 30, cat: 54, owl: 38, panda: 40, bunny: 34, frog: 38, snail: 36, chick: 30, flowers: 44, tulips: 60, ladybug: 42, bush: 60, bee: 40, grass: 44, caterpillar: 60 };
+const MAP_WID = { xtree: 46, snowman: 42, gift: 30, cane: 22, holly: 32, flake: 24, mai: 46, dao: 46, kumquat: 40, lantern: 26, banhchung: 32, lixi: 22, bigheart: 40, teddy: 52, balloon: 26, rose: 26, choco: 34, letter: 34, pond: 92, fishpond: 80, tree: 46, tree2: 38, mountain: 58, hedgehog: 44, mushroom: 30, cat: 54, owl: 38, panda: 40, bunny: 34, frog: 38, snail: 36, chick: 30, flowers: 44, tulips: 60, ladybug: 42, bush: 60, bee: 40, grass: 44, caterpillar: 60 };
 const MAP_DECO = ['tree', 'flowers', 'mountain', 'mushroom', 'bunny', 'cloud', 'ladybug', 'sun', 'snail', 'tulips', 'frog', 'tree2', 'mountain', 'hedgehog', 'chick', 'cloud2', 'bush', 'owl', 'grass', 'caterpillar', 'bee', 'panda', 'sun', 'cat'];
 function mapDeco(name) {
-  const D = DECO;
+  const D = DECO, sk = skinMapDeco(name); if (sk) return sk;
   return ({ mountain: () => D.mountain(58), sun: () => D.sun(44), cloud2: () => D.cloud(50, 'a', true) + D.cloud(30), tree: () => D.tree(46), tree2: () => D.tree(38, 'alt'), flowers: () => D.flower('#fff', '#F4A11A', 16) + D.flower('#FFC2CF', '#F4A11A', 13) + D.flower('#FFE48A', '#E2553F', 12), mushroom: () => D.mushroom(26) + D.mushroom(18),
     pond: () => D.pond(92), bunny: () => D.bunny(34), ladybug: () => D.leaf(22) + D.ladybug(20), bush: () => D.bush(48) + D.butterfly(24, 'fly'), snail: () => D.snail(36), tulips: () => D.tulip('#FF9BAE', 22) + D.tulip('#B9A6FF', 18) + D.tulip('#FFC94D', 20),
     frog: () => D.frog(38), hedgehog: () => D.hedgehog(44), bee: () => D.flower('#fff', '#F4A11A', 15) + D.bee(24, 'fly'), chick: () => D.chick(30), stream: () => D.stream(78), lotus: () => D.lotus(40) + D.dragonfly(30, 'flit'), duck: () => D.duck(38), grass: () => D.grass(44, '', 1) + D.flower('#FFE48A', '#E2553F', 12), owl: () => D.owl(38), cloud: () => D.cloud(62, 'a', true), caterpillar: () => D.caterpillar(46) + D.leaf(18), panda: () => D.panda(40), fishpond: () => D.fish(40, 'swim') + D.fish(30, '', '#FFC94D'), cat: () => D.cat('happy', 54) }[name] || (() => ''))();
@@ -1668,7 +1861,7 @@ function levelEnd(lv, H) { return `<div class="mend" style="top:${H - 46}px">${l
 function homePage() {
   const cid = currentLessonId(), cLock = !lessonUnlocked(cid);
   let clv = levelOf(cid); if (cLock && !levelUnlocked(clv) && LEVELS.indexOf(clv) > 0) clv = LEVELS[LEVELS.indexOf(clv) - 1];
-  const lv = mapLv || clv, th = MAP_THEME[lv] || MAP_THEME.A1;
+  const lv = mapLv || clv, th = skinMapTheme(MAP_THEME[lv] || MAP_THEME.A1);
   const lvLs = DATA.lessons.filter(l => l['Cấp'] === lv);
   const lvMain = levelLessons(lv), lvDone = lvMain.filter(l => lessonDone(l['Mã bài'])).length;
   const nextLv = LEVELS[LEVELS.indexOf(lv) + 1];
@@ -1680,8 +1873,9 @@ function homePage() {
   if (!S.seenInit) { doneKeys.forEach(k => seen[k] = 1); S.seenInit = 1; save(); }
   else { doneKeys.forEach(k => { if (!seen[k]) { fresh[k] = 1; seen[k] = 1; } }); if (Object.keys(fresh).length) save(); }
   const anyFresh = Object.keys(fresh).length > 0;
-  const W = Math.max(300, Math.min(520, $('#view')?.clientWidth || 390)), GAP = 112, TOP = 46, GG = 140, EXTRA = 150;
-  let y = TOP; const pts = lvLs.map((l, i) => { const o = { l, i, x: MAPX[i % MAPX.length] / 100 * W, y }; y += GAP + (cpAfter(l['Mã bài']) ? GG : 0) + (l['Mã bài'] === cid && !cLock ? EXTRA : 0); return o; });
+  const selId = mapSel && lvLs.some(l => l['Mã bài'] === mapSel) && lessonUnlocked(mapSel) ? mapSel : (!cLock ? cid : null);
+  const W = Math.max(300, Math.min(520, $('#view')?.clientWidth || 390)), GAP = 112, TOP = 112, GG = 140, EXTRA = 226;
+  let y = TOP; const pts = lvLs.map((l, i) => { const o = { l, i, x: MAPX[i % MAPX.length] / 100 * W, y }; y += GAP + (cpAfter(l['Mã bài']) ? GG : 0) + (l['Mã bài'] === selId ? EXTRA : 0); return o; });
   const H = y + 150;
   const bez = (A, B) => { const d = (B.y - A.y) / 2; return [[A.x, A.y], [A.x, A.y + d], [B.x, B.y - d], [B.x, B.y]]; };
   const curve = arr => arr.map((p, i) => { if (!i) return `M${p.x} ${p.y}`; const a = arr[i - 1], d = (p.y - a.y) / 2; return `C${a.x} ${a.y + d} ${p.x} ${p.y - d} ${p.x} ${p.y}`; }).join(' ');
@@ -1708,7 +1902,7 @@ function homePage() {
     }
   }
   const rx = yy => { if (!pts.length) return W / 2; if (yy <= pts[0].y) return pts[0].x; for (let k = 1; k < pts.length; k++) { if (yy <= pts[k].y) { const A = pts[k - 1], B = pts[k], t = (yy - A.y) / (B.y - A.y); return A.x + (B.x - A.x) * (3 * t * t - 2 * t * t * t); } } return W / 2; };
-  const cur0 = pts.find(p => p.l['Mã bài'] === cid && !cLock);
+  const cur0 = pts.find(p => p.l['Mã bài'] === selId);
   const gates = pts.map((p, i) => cpAfter(p.l['Mã bài']) ? (pts[i + 1] ? pts[i + 1].y - (GAP + GG) / 2 : p.y + 70) : null).filter(v => v != null);
   const roomAt = yy => {
     let L = 1e9, R = 1e9;
@@ -1722,12 +1916,14 @@ function homePage() {
     const id = p.l['Mã bài'], st = S.lessons[id], ok = lessonDone(id), lk = !lessonUnlocked(id), cur = id === cid && !lk, base = p.l['Loại bài'] === 'Từ nền';
     const sp = [st?.text, st?.vocab, st?.grammar, ok], steps = sp.filter(Boolean).length, num = base ? '★' : String(+(id.split('-')[1] || i));
     const isNew = !!fresh[id], prevNew = i > 0 && !!fresh[pts[i - 1].l['Mã bài']];
-    h += `<button class="nd2 ${ok ? 'done' : cur ? 'cur' : lk ? 'lock' : steps ? 'part' : ''} ${isNew ? 'pop' : ''}" ${cur ? 'id="curNode"' : ''} style="left:${p.x}px;top:${p.y}px" onclick="openLesson('${id}')" aria-label="${esc(id + ' ' + p.l['Chủ đề'])}"><div class="disc">${ok ? '✓' : lk ? '🔒' : num}</div>${isNew ? '<span class="spk"><i></i><i></i><i></i><i></i><i></i><i></i></span>' : ''}<div class="st">${ok ? starRow(starsOf(st.best), 13) : ''}<small>${esc(shortTitle(p.l['Chủ đề']))}</small></div></button>`;
+    h += `<button class="nd2 ${ok ? 'done' : cur ? 'cur' : lk ? 'lock' : steps ? 'part' : ''} ${isNew ? 'pop' : ''}" ${cur ? 'id="curNode"' : ''} style="left:${p.x}px;top:${p.y}px" onclick="selectNode('${id}')" aria-label="${esc(id + ' ' + p.l['Chủ đề'])}"><div class="disc">${ok ? '✓' : lk ? '🔒' : num}</div>${isNew ? '<span class="spk"><i></i><i></i><i></i><i></i><i></i><i></i></span>' : ''}<div class="st">${ok ? starRow(starsOf(st.best), 13) : ''}<small>${esc(shortTitle(p.l['Chủ đề']))}</small></div></button>`;
     if (lk) fogs += `<div class="fog" style="left:${p.x}px;top:${p.y}px"></div>`;
     if (cur && prevNew) fogs += `<div class="fog clear" style="left:${p.x}px;top:${p.y}px"></div>`;
     if (cur) {
-      h += `<div class="glow" style="left:${p.x}px;top:${p.y}px"></div><div class="pm" style="left:${p.x}px;top:${p.y}px">${DECO.panda(56, 'bob')}</div>
-      <div class="tip2" style="left:${Math.round(Math.max(10, Math.min(W - 246, p.x - 118)))}px;top:${p.y + 78}px"><b>${esc(p.l['Chủ đề'])}</b><span class="s">Bài ${esc(id)}${p.l['Nhiệm vụ giao tiếp'] ? ' · ' + esc(p.l['Nhiệm vụ giao tiếp']) : ''}</span><div class="steps">${sp.map(x => `<i class="${x ? 'on' : ''}"></i>`).join('')}</div><button class="go" onclick="openLesson('${id}')">${steps ? 'Học tiếp ▶' : 'Bắt đầu ▶'}</button></div>`;
+      h += `<div class="glow" style="left:${p.x}px;top:${p.y}px"></div><div class="pm" style="left:${p.x}px;top:${p.y}px">${DECO.panda(56, 'bob')}</div>`;
+    }
+    if (id === selId) {
+      h += `<div class="tip2" style="left:${Math.round(Math.max(10, Math.min(W - 246, p.x - 118)))}px;top:${p.y + 78}px"><b>${esc(p.l['Chủ đề'])}</b><span class="s">Bài ${esc(id)}${p.l['Nhiệm vụ giao tiếp'] ? ' · ' + esc(p.l['Nhiệm vụ giao tiếp']) : ''}</span><div class="steps">${sp.map(x => `<i class="${x ? 'on' : ''}"></i>`).join('')}</div><button class="go" onclick="openLesson('${id}')">${ok ? 'Xem lại ▶' : steps ? 'Học tiếp ▶' : 'Bắt đầu ▶'}</button></div>`;
     }
     const cp = cpAfter(id);
     if (cp) {
@@ -1757,7 +1953,7 @@ function homePage() {
     const pool = room >= 112 ? big : room >= 78 ? mid : sm, nm = pool[(di++) % pool.length], w = Math.min(MAP_WID[nm] || 40, room - 10);
     const c = Math.max(w / 2 + 4, Math.min(room - w / 2 - 2, 6 + room / 2)), cx = sd === 'L' ? c : W - c;
     ed += `<div class="mdeco" style="left:${Math.round(cx)}px;top:${Math.round(yy - 14)}px">${mapDeco(nm)}</div>`;
-    if (di % 3 === 0) ed += `<div class="mdeco roam" style="left:${Math.round(sd === 'L' ? cx + 36 : cx - 36)}px;top:${Math.round(yy - 52)}px;animation-delay:${-(di * 2) % 9}s">${th.flyer === 'bird' ? DECO.bird(26) : DECO.butterfly(22, 'fly')}</div>`;
+    if (di % 3 === 0) ed += `<div class="mdeco roam" style="left:${Math.round(sd === 'L' ? cx + 36 : cx - 36)}px;top:${Math.round(yy - 52)}px;animation-delay:${-(di * 2) % 9}s">${th.flyerFn ? th.flyerFn() : th.flyer === 'bird' ? DECO.bird(26) : DECO.butterfly(22, 'fly')}</div>`;
     lastY = yy;
   }
   let bg = ''; for (let yy = 30; yy < H; yy += 420) bg += `<div class="hills" style="top:${yy}px">${hillsSvg(W, 200, yy / 100, th.hills)}</div><div class="cl" style="left:${rx(yy + 30) > W / 2 ? 6 : W - 62}px;top:${yy + 20}px;animation-delay:${-(yy / 40) % 18}s">${DECO.cloud(52, 'a', true)}</div>`;
@@ -1870,15 +2066,17 @@ function phraseCard(p, full = true, n) {
   const ex = exRows(p, [1, 2], '');
   return `<article class="vc ph" id="w-${esc(p['Mã'])}"><div class="vh">${n ? `<div class="vn">💬</div>` : ''}<div class="vw"><div class="w1"><b class="phr">${esc(p['Cụm từ'])}</b><span class="pos">${esc(p['Loại'] || 'Cụm từ')}</span></div></div><div class="vact">${sndBtn(p['Cụm từ'])}</div></div>
    <div class="mean">${esc(p['Nghĩa'])}</div>
-   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng'] ? `<div class="call tip"><b>💡 Cách dùng</b>${esc(p['Ghi chú dùng'])}</div>` : ''}` : ''}</article>`;
+   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng'] ? `<div class="call usage"><b>💡 Cách dùng</b>${esc(p['Ghi chú dùng'])}</div>` : ''}` : ''}</article>`;
 }
 function toggleFav(code) { const i = S.fav.indexOf(code); i >= 0 ? S.fav.splice(i, 1) : S.fav.push(code); save(); render(); }
 function vocabTab(it) {
   if (!it.v.length && !it.p.length) return '<div class="empty">Bài này không có từ mới.</div>';
+  const both = it.v.length && it.p.length, sub = both ? vocSub : it.v.length ? 'v' : 'p', list = sub === 'v' ? it.v : it.p;
+  const tabs = both ? `<span class="vsub"><button class="${sub === 'v' ? 'on' : ''}" onclick="setVocSub('v')">Từ vựng <i>${it.v.length}</i></button><button class="${sub === 'p' ? 'on' : ''}" onclick="setVocSub('p')">Cụm từ <i>${it.p.length}</i></button></span>` : `<span class="muted small">${it.v.length} từ · ${it.p.length} cụm</span>`;
   return `${it.linked ? '<p class="lead">Bài ôn tập: đây là các từ, cụm từ được nhắc lại trong bài khóa.</p>' : ''}
-   <div class="row between" style="margin:0 0 10px"><span class="muted small">${it.v.length} từ · ${it.p.length} cụm</span><span class="row" style="gap:6px"><button class="chip ${S.settings.showIpa ? 'on' : ''}" onclick="S.settings.showIpa=!S.settings.showIpa;save();render()">IPA</button><button class="chip" onclick="startQuiz('lesson-vocab')">Kiểm tra nhanh</button></span></div>
-   <div class="wchips">${[...it.v, ...it.p].map(x => `<button onclick="document.getElementById('w-${x['Mã']}').scrollIntoView({behavior:'smooth',block:'start'})">${esc(x['Từ'] || x['Cụm từ'])}</button>`).join('')}</div>
-   ${it.v.map((v, i) => vocabCard(v, true, i + 1)).join('')}${it.p.length ? `<div class="section-title" style="margin-top:16px">Cụm từ & câu chức năng</div>${it.p.map(p => phraseCard(p, true, 1)).join('')}` : ''}${stepBar('vocab', 'từ vựng', it)}`;
+   <div class="row between wrap" style="margin:0 0 10px">${tabs}<span class="row" style="gap:6px">${sub === 'v' ? `<button class="chip ${S.settings.showIpa ? 'on' : ''}" onclick="S.settings.showIpa=!S.settings.showIpa;save();render()">IPA</button>` : ''}<button class="chip" onclick="startQuiz('lesson-vocab')">Kiểm tra nhanh</button></span></div>
+   <div class="wchips">${list.map(x => `<button onclick="document.getElementById('w-${x['Mã']}').scrollIntoView({behavior:'smooth',block:'start'})">${esc(x['Từ'] || x['Cụm từ'])}</button>`).join('')}</div>
+   ${sub === 'v' ? it.v.map((v, i) => vocabCard(v, true, i + 1)).join('') : it.p.map(p => phraseCard(p, true, 1)).join('')}${stepBar('vocab', 'từ vựng', it)}`;
 }
 function formulaRows(f) {
   return String(f).split('|').map(r => r.trim()).filter(Boolean).map(r => {
@@ -1954,7 +2152,7 @@ function taskCard(id, it) {
   const l = L(id), tk = S.tasks[id] || {}, ws = taskWords(it), used = taskUsed(tk.text, it), nS = String(tk.text || '').split(/[.!?]+/).filter(x => x.trim().split(/\s+/).length >= 2).length;
   const samples = [...(DATA.by[id]?.s || []).slice(0, 4).map(s => [s['Câu tiếng Anh'], s['Nghĩa tiếng Việt']]), ...it.g.slice(0, 2).map(g => [g['Ví dụ 1 (Anh)'], g['Ví dụ 1 (Việt)']])].filter(x => x[0]);
   const work = it.g.map(g => g['Dùng khi nào trong công việc']).filter(Boolean)[0];
-  return `<section class="card task hasdc ${tk.done ? 'done' : ''}">${DECO.butterfly(26, 'corner fly')}<div class="section-title">✍️ Nhiệm vụ vận dụng</div>
+  return `<section class="card task ${tk.done ? 'done' : ''}"><div class="section-title">✍️ Nhiệm vụ vận dụng</div>
    <p class="tq"><b>${esc(l['Nhiệm vụ giao tiếp'] || l['Chủ đề'])}</b><br>Viết 3–5 câu tiếng Anh, dùng ít nhất <b>3 từ mới</b> và điểm ngữ pháp của bài.</p>
    <div class="tw">${ws.slice(0, 12).map(x => `<span class="${used.some(u => u.w === x.w) ? 'on' : ''}">${esc(x.t)}</span>`).join('')}</div>
    ${it.g.length ? `<p class="muted tiny" style="margin:6px 0 0">Ngữ pháp: ${it.g.map(g => esc(String(g['Điểm ngữ pháp']).split(/:\s| \(/)[0])).join(' · ')}</p>` : ''}
@@ -2022,6 +2220,7 @@ function mePage() {
    <div class="stats3 mt"><div><b>${Object.keys(S.learnedV).length}</b><span>từ đã học</span></div><div><b>${Object.keys(S.srs).length}</b><span>thẻ ôn</span></div><div><b>${passed}</b><span>bài đã qua</span></div></div>
    <div class="bars">${last7.map(d => `<div><i style="height:${Math.round(d.n / mx * 52)}px"></i><span>${d.k.slice(8)}</span></div>`).join('')}</div><div class="muted tiny" style="text-align:center">7 ngày gần nhất (câu trả lời + thẻ ôn)</div></section>
   ${skillCard()}
+  ${skinCard()}
   <section class="card"><div class="section-title">Hiển thị</div>
    <div class="set"><span>Cỡ chữ<br><span class="muted tiny">áp dụng cho cả app</span></span><span class="row" style="gap:6px">${[['', 'Vừa'], ['l', 'Lớn'], ['xl', 'Rất lớn']].map(([k, t]) => `<button class="chip ${(S.fontSize || '') === k ? 'on' : ''}" onclick="setFontSize('${k}')">${t}</button>`).join('')}</span></div>
    <div class="set"><span>Câu động viên<br><span class="muted tiny">bạn nhỏ nói tiếng Anh, bấm để nghe</span></span><button class="chip ${S.cheerOff ? '' : 'on'}" onclick="setCheerEnabled(${!!S.cheerOff})">${S.cheerOff ? 'Tắt' : 'Bật'}</button></div></section>
@@ -2403,6 +2602,8 @@ function answer(val) {
   else if (q.kind === 'arrange' || q.kind === 'dict') ok = normSent(q.order.map(i => q.tokens[i].t).join(' ')) === normSent(q.answer);
   else ok = val === q.answer;
   quiz.ans[quiz.i] = { ok, val };
+  try { cheerHide(); } catch (e) { }
+  try { quiz.praise = cheerAnswer(ok, q.kind, true); } catch (e) { quiz.praise = null; }
   quiz.combo = ok ? (quiz.combo || 0) + 1 : 0;
   bump('a'); if (ok) bump('ok'); bumpSkill(q.kind, ok); if (quiz.type === 'errors') bumpQ('err');
   if (!ok) srsBoost(q.ref);
@@ -2411,7 +2612,6 @@ function answer(val) {
   else if (S.errors[key]) { S.errors[key].streak++; if (S.errors[key].streak >= 2 || quiz.type === 'errors') delete S.errors[key]; }
   if (quiz.s) quiz.s.at = Date.now();
   statUpdate(); save(); render();
-  try { cheerAnswer(ok, q.kind); } catch (e) { }
   if (q.audioAfter && (ok || ['listen', 'dict', 'type', 'trans', 'spell', 'cloze'].includes(q.kind))) setTimeout(() => say(q.audioAfter, q.g), 150);
 }
 function nextUnanswered(from) { const n = quiz.items.length; for (let d = 1; d <= n; d++) { const j = (from + d) % n; if (!quiz.ans[j]) return j; } return -1; }
@@ -2440,9 +2640,16 @@ function finishQuiz() {
   setTimeout(() => { try { cheerShow(cheer, { lv: lvName }); } catch (e) { } }, 500);
 }
 function quitQuiz() { TTS.stop(); const b = quiz && quiz.back || 'practice'; quiz = null; go(['quiz', 'qlist', 'result'].includes(b) ? 'practice' : b); }
-function redoWrong() { quiz.items.forEach((q, i) => { const a = quiz.ans[i]; if (a && !a.ok) { quiz.ans[i] = null; if (q.order) q.order = []; q.typed = ''; } }); quiz.combo = 0; statUpdate(); save(); const j = quiz.ans.findIndex((a, i) => !a && i < quiz.items.length); gotoQ(j < 0 ? nextUnanswered(-1) : j); }
+function redoWrong() { quiz.items.forEach((q, i) => { const a = quiz.ans[i]; if (a && !a.ok) { quiz.ans[i] = null; q.sel = null; if (q.order) q.order = []; q.typed = ''; } }); quiz.combo = 0; statUpdate(); save(); const j = quiz.ans.findIndex((a, i) => !a && i < quiz.items.length); gotoQ(j < 0 ? nextUnanswered(-1) : j); }
 function doUnanswered() { const j = nextUnanswered(-1); if (j >= 0) gotoQ(j); }
-function pickTile(idx) { const q = curQ(); if (quiz.ans[quiz.i] || q.order.includes(idx)) return; q.order.push(idx); if (q.order.length === q.tokens.length) answer(); else render(); }
+function pickTile(idx) { const q = curQ(); if (quiz.ans[quiz.i] || q.order.includes(idx)) return; q.order.push(idx); render(); }
+function pickOpt(o) { const q = curQ(); if (!q || quiz.ans[quiz.i]) return; q.sel = o; render(); }
+function checkAns() {
+  const q = curQ(); if (!q || quiz.ans[quiz.i]) return;
+  if (q.options) { if (q.sel == null) return; answer(q.sel); }
+  else if (q.tokens) { if (q.order.length !== q.tokens.length) return; answer(); }
+  else { const t = $('#typed'); if (!t || !t.value.trim()) return; answer(t.value); }
+}
 function unpickTile(pos) { const q = curQ(); if (quiz.ans[quiz.i]) return; q.order.splice(pos, 1); render(); }
 
 /* ---------- so khớp chép chính tả ---------- */
@@ -2493,7 +2700,7 @@ function quizPage() {
   const q = curQ(), a = quiz.ans[quiz.i], n = quiz.items.length, c = sessCounts(quiz.s);
   const strip = `<div class="strip" id="qstrip">${quiz.items.map((_, i) => { const x = quiz.ans[i]; return `<button class="${x ? (x.ok ? 'g' : 'r') : ''} ${i === quiz.i ? 'cur' : ''}" onclick="gotoQ(${i})" aria-label="Câu ${i + 1}">${i + 1}</button>`; }).join('')}</div>`;
   const top = `<div class="qtop"><button class="back" onclick="quitQuiz()" aria-label="Thoát">✕</button><div class="bar"><i style="width:${(c.ok + c.bad) / n * 100}%"></i></div>${(quiz.combo || 0) >= 2 ? `<span class="combo">🔥 x${quiz.combo}</span>` : `<span class="qn"><b>${quiz.i + 1}</b>/${n}</span>`}<button class="lbtn" onclick="go('qlist')">☰ Danh sách</button></div>${strip}`;
-  const audioBtns = q.audio ? `<div><button class="play" onclick="say(${ja(q.audio)},'${q.g || 'D'}')" aria-label="Nghe">${IC.sound}</button><button class="play slow" onclick="say(${ja(q.audio)},'${q.g || 'D'}',true)" aria-label="Nghe chậm">0.7×</button></div>` : '';
+  const audioBtns = q.audio ? `<div class="qaud ${q.prompt ? '' : 'big'}"><button class="play" onclick="say(${ja(q.audio)},'${q.g || 'D'}')" aria-label="Nghe">${IC.sound}</button><button class="play slow" onclick="say(${ja(q.audio)},'${q.g || 'D'}',true)" aria-label="Nghe chậm">0.7×</button></div>` : '';
   let body = '';
   if (q.kind === 'arrange' || q.kind === 'dict') {
     body = `<div class="answer-zone" aria-label="Câu bạn ghép">${q.order.map((ti, p) => `<button class="tile" onclick="unpickTile(${p})">${esc(q.tokens[ti].t)}</button>`).join('') || '<span class="muted small" style="padding:8px">Chạm các từ bên dưới theo đúng thứ tự…</span>'}</div>
@@ -2501,31 +2708,36 @@ function quizPage() {
       ${!a && q.order.length ? `<div style="padding:0 16px"><button class="btn ghost block" onclick="curQ().order=[];render()">Xóa làm lại</button></div>` : ''}`;
   } else if (q.kind === 'spell' || q.kind === 'cloze') {
     body = `${q.hint ? `<div class="hint">💡 ${esc(q.hint)}</div>` : ''}<input id="typed" class="typebox one" placeholder="Gõ từ tiếng Anh…" autocomplete="off" autocapitalize="off" spellcheck="false" ${a ? 'disabled' : ''} value="${esc(a ? a.val : q.typed || '')}">
-      ${!a ? `<div style="padding:0 16px"><button class="btn block" onclick="answer($('#typed').value)">Kiểm tra</button><button class="btn ghost block mt" onclick="answer('')">Không nhớ – xem đáp án</button></div>` : ''}`;
+      ${!a ? `<div style="padding:0 16px"><button class="btn ghost block" onclick="answer('')">Không nhớ – xem đáp án</button></div>` : ''}`;
   } else if (q.kind === 'type' || q.kind === 'trans') {
     body = `<textarea id="typed" class="typebox" placeholder="${q.kind === 'trans' ? 'Gõ câu tiếng Anh…' : 'Gõ câu bạn nghe được…'}" autocomplete="off" autocapitalize="sentences" spellcheck="false" ${a ? 'disabled' : ''}>${esc(a ? a.val : q.typed)}</textarea>
-      ${!a ? `<div style="padding:0 16px"><button class="btn block" onclick="answer($('#typed').value)">Kiểm tra</button><button class="btn ghost block mt" onclick="answer('')">${q.kind === 'trans' ? 'Không biết – xem đáp án' : 'Không nghe được – xem đáp án'}</button></div>` : ''}`;
+      ${!a ? `<div style="padding:0 16px"><button class="btn ghost block" onclick="answer('')">${q.kind === 'trans' ? 'Không biết – xem đáp án' : 'Không nghe được – xem đáp án'}</button></div>` : ''}`;
   } else {
     const L = 'ABCDEFGH';
-    body = `<div class="opts ${q.options.length === 4 && q.options.every(o => String(o).length <= 22) ? 'two' : ''}">${q.options.map((o, k) => { const cls = a ? (o === q.answer ? 'right' : o === a.val ? 'wrong' : '') : ''; return `<button class="opt ${cls}" ${a ? 'disabled' : ''} onclick="answer(${ja(o)})"><i>${L[k]}</i><span>${esc(o)}</span></button>`; }).join('')}</div>`;
+    body = `<div class="opts ${q.options.length === 4 && q.options.every(o => String(o).length <= 22) ? 'two' : ''}">${q.options.map((o, k) => { const cls = a ? (o === q.answer ? 'right' : o === a.val ? 'wrong' : '') : ''; return `<button class="opt ${cls} ${!a && q.sel === o ? 'sel' : ''}" ${a ? 'disabled' : ''} onclick="pickOpt(${ja(o)})"><i>${L[k]}</i><span>${esc(o)}</span></button>`; }).join('')}</div>`;
   }
   let fb = '';
   if (a) {
     let detail = esc(q.explain || '');
     if (['type', 'trans', 'dict', 'arrange'].includes(q.kind)) detail = (a.ok ? '' : `<div class="diff" style="margin-bottom:4px">${diffWords(q.answer, q.kind === 'type' || q.kind === 'trans' ? a.val : q.order.map(i => q.tokens[i].t).join(' '))}</div>`) + `<b>${esc(q.en)}</b><br>${esc(q.vi)}`;
-    const left = c.none;
-    fb = `<div style="height:200px"></div><div class="feedback ${a.ok ? 'good' : 'bad'}">${a.ok ? DECO.panda(46, 'fbm') : DECO.hedgehog(50, 'fbm')}<div class="row between"><span class="fh">${a.ok ? 'Chính xác!' : 'Chưa đúng'} ${a.ok ? '<span class="xp">+10 XP</span>' : ''}</span>${q.audioAfter ? `<button class="snd" onclick="say(${ja(q.audioAfter)},'${q.g || 'D'}')">${IC.sound}</button>` : ''}</div>
-      ${!a.ok && !['type', 'trans', 'dict', 'arrange'].includes(q.kind) ? `<div class="fx">Đáp án: <b>${esc(q.answer)}</b>${a.val && (q.kind === 'spell' || q.kind === 'cloze') ? ` · bạn gõ: <s>${esc(a.val)}</s>` : ''}</div>` : ''}<div class="fx">${detail}</div>
-      <div class="fbr"><button class="btn ghost" onclick="finishQuiz()">Kết quả · ${c.ok + c.bad}/${n}</button><button class="btn" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Kết quả ›'}</button></div></div>`;
-  } else fb = `<div class="qfoot"><button class="btn ghost block" onclick="finishQuiz()">Xem kết quả · ${c.ok + c.bad}/${n} đã làm</button></div>`;
-  return `${top}<div class="qcard"><div class="qkind">${esc(KIND_LABEL[q.kind] || '')}</div>${q.prompt ? `<div class="qprompt ${q.long ? 'long' : ''}">${esc(q.prompt)}</div>` : ''}${q.sub ? `<div class="qsub ${q.kind === 'mean' ? 'ipa' : ''}">${esc(q.sub)}</div>` : ''}${audioBtns}</div>${body}${fb}`;
+    const left = c.none, pr = quiz.praise, mas = a.ok ? DECO.panda(44, 'fbm') : DECO.hedgehog(46, 'fbm');
+    const praise = pr && pr.en ? `<button class="fpr" type="button" data-en="${esc(pr.en)}" onclick="cheerSpeak(event)" aria-label="Nghe câu tiếng Anh"><span>${esc(pr.en)}</span><span class="sn">🔊</span></button>` : '';
+    const ans = !a.ok && !['type', 'trans', 'dict', 'arrange'].includes(q.kind) ? `<div class="fans"><small>Đáp án</small><b>${esc(q.answer)}</b>${a.val && (q.kind === 'spell' || q.kind === 'cloze') ? `<span class="you">bạn gõ: <s>${esc(a.val)}</s></span>` : ''}</div>` : '';
+    fb = `<div class="fbsp" id="fbsp"></div><div class="feedback ${a.ok ? 'good' : 'bad'}" id="fbpanel" role="status"><div class="fhead"><span class="fm">${mas}</span><div class="ft"><div class="fh"><span>${a.ok ? 'Chính xác!' : 'Chưa đúng'}</span>${a.ok ? '<span class="xp">+10 XP</span>' : ''}</div>${praise}</div>${q.audioAfter ? `<button class="snd" onclick="say(${ja(q.audioAfter)},'${q.g || 'D'}')" aria-label="Nghe lại">${IC.sound}</button>` : ''}</div>
+      ${ans}${detail ? `<div class="fdet">${detail}</div>` : ''}
+      <button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
+  } else {
+    const ready = q.options ? q.sel != null : q.tokens ? q.order.length === q.tokens.length : !!String(q.typed || '').trim();
+    fb = `<div class="cksp"></div><div class="checkbar"><button class="btn block" id="checkBtn" ${ready ? '' : 'disabled'} onclick="checkAns()">Check</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
+  }
+  return `${top}<div class="qz ${q.prompt && !q.long ? 'short' : ''}"><div class="qhd"><span class="qkind">${esc(KIND_LABEL[q.kind] || '')}</span>${q.prompt ? audioBtns : ''}</div>${q.prompt ? `<div class="qprompt ${q.long ? 'long' : ''}">${esc(q.prompt)}</div>` : ''}${q.sub ? `<div class="qsub ${q.kind === 'mean' ? 'ipa' : ''}">${esc(q.sub)}</div>` : ''}${q.prompt ? '' : audioBtns}</div>${body}${fb}`;
 }
 function afterQuizRender() {
   const q = curQ(); if (!q) return;
   const cur = $('#qstrip .cur'); if (cur) { const st = $('#qstrip'); st.scrollLeft = cur.offsetLeft - st.clientWidth / 2 + cur.clientWidth / 2; }
   if (q.audio && !quiz.played && !quiz.ans[quiz.i]) { quiz.played = true; setTimeout(() => say(q.audio, q.g), 250); }
-  if (INPUT_KINDS.includes(q.kind) && !quiz.ans[quiz.i]) { const t = $('#typed'); if (t) { t.focus(); t.oninput = () => q.typed = t.value; t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); answer(t.value); } }; } }
-  if (quiz.ans[quiz.i]) { const b = $('#nextBtn'); if (b) b.focus({ preventScroll: true }); }
+  if (INPUT_KINDS.includes(q.kind) && !quiz.ans[quiz.i]) { const t = $('#typed'); if (t) { t.focus(); t.oninput = () => { q.typed = t.value; const cb = $('#checkBtn'); if (cb) cb.disabled = !t.value.trim(); }; t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); checkAns(); } }; } }
+  if (quiz.ans[quiz.i]) { const b = $('#nextBtn'); if (b) b.focus({ preventScroll: true }); const f = $('#fbpanel'), sp = $('#fbsp'); if (f && sp) sp.style.height = (f.offsetHeight + 16) + 'px'; }
 }
 function qLabel(q) {
   if (q.kind === 'listen') return '🔊 Nghe và chọn từ';
@@ -2879,6 +3091,29 @@ function admDraw() {
    <p class="muted tiny">Thu hồi / gỡ máy / xóa có hiệu lực ở lần người đó mở app (hoặc quay lại app) có mạng tiếp theo.</p>`);
   const bg = $('#modal .modalbg'); if (bg) bg.classList.add('adm');
 }
+
+/* ===== v6.2 · hạt rơi mờ trên mọi màn hình (lá; v6.4: tuyết / cánh hoa / trái tim theo giao diện). Chỉ trang trí, không chặn chạm ===== */
+const LEAF_KINDS = {
+  leaf: ['#8CCB93', '#A9D98A', '#F2B65A', '#F0997A', '#74BF8B', '#D9C26A'],
+  snow: ['#A9CCE8', '#8EC0E6', '#BCD8EE'],
+  petal: ['#FFD43B', '#FF9DB8', '#FFC233', '#FFB3C6'],
+  heart: ['#FF6F91', '#F0587C', '#FFA3BA']
+};
+function leavesBuild(kind) {
+  try {
+    kind = LEAF_KINDS[kind] ? kind : 'leaf';
+    let box = document.getElementById('leaves');
+    if (!box) { box = document.createElement('div'); box.id = 'leaves'; box.setAttribute('aria-hidden', 'true'); document.body.appendChild(box); }
+    box.className = 'k-' + kind;
+    const COL = LEAF_KINDS[kind], N = 14; let h = '';
+    for (let i = 0; i < N; i++) {
+      const left = (i * 100 / N + (i * 37 % 7) * 1.3).toFixed(1), size = 12 + (i * 5) % 11, dur = 15 + (i * 7) % 11, delay = -((i * 53) % 26), sway = 18 + (i * 13) % 30, sd = 3.4 + (i % 4) * .8;
+      h += `<i class="lf" style="left:${left}%;width:${size}px;height:${size}px;font-size:${Math.round(size * 1.25)}px;animation-duration:${dur}s;animation-delay:${delay}s"><b style="--sw:${i % 2 ? sway : -sway}px;--c:${COL[i % COL.length]};animation-duration:${sd}s;animation-delay:${-(i % 5)}s"></b></i>`;
+    }
+    box.innerHTML = h;
+  } catch (e) { }
+}
+leavesBuild('leaf');
 
 (async function boot() {
   applyTheme(); try { applyFontSize(); } catch (e) { }
