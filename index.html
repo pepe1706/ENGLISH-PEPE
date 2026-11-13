@@ -2482,7 +2482,7 @@ function mePage() {
    ${TTS.ok ? `<p class="small" style="margin-top:0">Cả app dùng <b>một giọng</b> cho mọi phần. Máy này có <b>${vs.length}</b> giọng tiếng Anh · <b>${nN}</b> giọng ✨ tự nhiên.</p>
    <div class="set"><span>Giọng đọc</span><select class="sel" style="max-width:64%" onchange="S.settings.voice=this.value;save();render();say('Hello! Nice to meet you. This is my voice.')">${vopt(st.voice)}</select></div>
    <div class="set"><span>Nghe thử</span><button class="chip" onclick="say('Hello! Nice to meet you. This is my voice.')">🔊 Nghe thử</button></div>
-   <div class="set"><span>Tốc độ đọc</span><select class="sel" onchange="S.settings.rate=+this.value;save();say('This is the reading speed.')">${[0.7, 0.8, 0.9, 0.95, 1, 1.1].map(r => `<option value="${r}" ${r === st.rate ? 'selected' : ''}>${r}×</option>`).join('')}</select></div>
+   ${rateRows()}
    <div class="set"><span>Tự đọc từ khi mở thẻ</span><button class="chip ${st.autoplay ? 'on' : ''}" onclick="S.settings.autoplay=!S.settings.autoplay;save();render()">${st.autoplay ? 'Bật' : 'Tắt'}</button></div>
    <p class="muted tiny">“Tự chọn” = giọng US tự nhiên nhất trên máy. Giọng ✨ tự nhiên thường cần có mạng.</p>
    <details class="vtips"><summary>💡 Cách có giọng tự nhiên hơn</summary>
@@ -3585,6 +3585,44 @@ function bkCard() {
 }
 bkLoad().then(() => setTimeout(bkAuto, 2500));
 document.addEventListener('visibilitychange', () => { if (!document.hidden) bkAuto(); });
+
+/* ---------- giọng đọc tự nhiên hơn: tách câu, ngắt nghỉ, ngữ điệu ---------- */
+const TTS_ABBR = /\b(Mr|Mrs|Ms|Dr|St|Prof|vs|etc|No|Jr|Sr|a\.m|p\.m|e\.g|i\.e)\.$/i;
+function ttsChunks(text) {
+  const t = String(text).replace(/\s*\/\s*/g, ', ').replace(/\s+/g, ' ').trim();
+  const parts = t.split(/(?<=[.!?…])\s+(?=[A-Z"'“(¿¡0-9])/), out = [];
+  for (const p of parts) { if (out.length && TTS_ABBR.test(out[out.length - 1])) out[out.length - 1] += ' ' + p; else out.push(p); }
+  const res = [];
+  for (const c of out) { if (c.length > 110) { const sub = c.split(/(?<=[,;:])\s+/); let cur = ''; for (const s of sub) { if ((cur + ' ' + s).length > 90 && cur) { res.push(cur); cur = s; } else cur = cur ? cur + ' ' + s : s; } if (cur) res.push(cur); } else res.push(c); }
+  return res.filter(Boolean);
+}
+TTS.speak = function (text, opt = {}) {
+  if (!this.ok) { toast('Trình duyệt này không có giọng đọc.'); return; }
+  speechSynthesis.cancel();
+  const tk = ++this.token, chunks = ttsChunks(text), v = this.best(), gap = S.settings.gap ?? 250;
+  const rate = Math.max(.4, (opt.rate || S.settings.rate) * (opt.slow ? 0.75 : 1));
+  let i = 0;
+  const next = () => {
+    if (tk !== this.token) return;
+    if (i >= chunks.length) { if (opt.onend) opt.onend(); return; }
+    const c = chunks[i++], u = new SpeechSynthesisUtterance(c);
+    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-US';
+    u.rate = rate; u.pitch = /\?$/.test(c) ? 1.06 : /!$/.test(c) ? 1.04 : 1;
+    const done = () => { if (tk !== this.token) return; if (i < chunks.length && gap) setTimeout(next, gap * (/[.!?…]$/.test(c) ? 1 : .4)); else next(); };
+    u.onend = done; u.onerror = done; this.cur = u; speechSynthesis.speak(u);
+  };
+  next();
+};
+const RATE_OPTS = [[0.5, 'Rất chậm · mới bắt đầu'], [0.6, 'Chậm · nghe từng từ'], [0.7, 'Chậm · hợp A1'], [0.8, 'Hơi chậm · hợp A2'], [0.9, 'Vừa · hợp B1'], [0.95, 'Gần tự nhiên'], [1, 'Tự nhiên · hợp B2'], [1.1, 'Nhanh']];
+function setRate(r) { S.settings.rate = +r; save(); say('Hello! This is the reading speed. How does it sound?'); render(); }
+function setGap(g) { S.settings.gap = +g; save(); say('First sentence. Then a short pause. And the next one.'); render(); }
+function rateRows() {
+  const st = S.settings, r = st.rate, lv = (typeof lessonId === 'string' && lessonId.slice(0, 2)) || 'A1', sug = { A1: .7, A2: .8, B1: .9, B2: 1 }[lv] || .8;
+  return `<div class="set"><span>Tốc độ đọc<br><span class="muted tiny">máy Android đọc dưới 0.6× có thể hơi méo tiếng</span></span><select class="sel" onchange="setRate(this.value)">${RATE_OPTS.map(([k, t]) => `<option value="${k}" ${k === r ? 'selected' : ''}>${k}× · ${t}</option>`).join('')}${RATE_OPTS.some(o => o[0] === r) ? '' : `<option selected>${r}×</option>`}</select></div>
+   <div class="set"><span>Gợi ý nhanh<br><span class="muted tiny">chọn theo mức bạn thấy nghe vừa tai</span></span><span class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end">${[[.6, 'Chậm'], [.7, 'A1'], [.8, 'A2'], [.9, 'B1']].map(([k, t]) => `<button class="chip ${r === k ? 'on' : ''}" onclick="setRate(${k})">${t}</button>`).join('')}</span></div>
+   <div class="set"><span>Nghỉ giữa các câu<br><span class="muted tiny">giúp đọc nhiều câu nghe tự nhiên, dễ theo dõi</span></span><select class="sel" onchange="setGap(this.value)">${[[0, 'Không nghỉ'], [250, 'Ngắn'], [500, 'Vừa'], [900, 'Dài']].map(([k, t]) => `<option value="${k}" ${(st.gap ?? 250) === k ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+   <p class="muted tiny" style="margin:2px 0 6px">💡 Mới học nên chọn <b>${sug}×</b> cho trình độ ${lv}; khi quen thì tăng dần lên 0.95×–1×. Nút “nghe chậm” trên từng câu luôn đọc chậm hơn thêm 25%.</p>`;
+}
 
 /* ===== v6.2 · hạt rơi mờ trên mọi màn hình (lá; v6.4: tuyết / cánh hoa / trái tim theo giao diện). Chỉ trang trí, không chặn chạm ===== */
 const LEAF_KINDS = {
