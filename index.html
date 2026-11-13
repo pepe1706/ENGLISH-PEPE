@@ -794,6 +794,198 @@ html[data-skin] .nd2 .disc::after{border-color:var(--pd);opacity:.4}
 #leaves.k-petal .lf b{border-radius:50% 0 50% 50%}
 @keyframes lfSwayH{from{transform:translateX(0) rotate(-18deg)}to{transform:translateX(var(--sw,24px)) rotate(18deg)}}
 
+/* ===== v6.5 · thanh điều hướng theo giao diện */
+.nav .ni{display:block;font-size:calc(24px*var(--fz));line-height:26px;height:26px}
+html[data-skin] .nav{background:color-mix(in srgb,var(--ps) 55%,#fff);border-top:2.5px solid var(--p);box-shadow:0 -3px 14px color-mix(in srgb,var(--p) 18%,transparent)}
+html[data-skin] .nav button{color:var(--pd)}
+html[data-skin] .nav button.on{color:var(--pd);background:var(--ps);border-radius:16px;box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--p) 55%,transparent)}
+html[data-skin] .nav button.on svg{color:var(--p)}
+html[data-skin="xmas"] .nav{background-image:radial-gradient(circle at 12px 0,#fff 5px,transparent 6px),radial-gradient(circle at 38px 0,#fff 4px,transparent 5px);background-size:52px 12px;background-repeat:repeat-x;background-position:0 -1px;background-color:#EAF4F8;border-top-color:#2F9A5C}
+html[data-skin="tet"] .nav{background-color:#FFF0D0;border-top-color:#D8322B;border-image:repeating-linear-gradient(90deg,#D8322B 0 14px,#F6C945 14px 22px) 1}
+html[data-skin="valentine"] .nav{background-color:#FFE9F0}
+
+/* ===== v7.0 · giao diện mới: Trung thu, Mùa hè, Đêm sao, Chế độ tối */
+html[data-skin="trungthu"]{--bg:#FFF8E8;--navy:#B86509;--navy2:#E8870E;--p:#E8870E;--pd:#B86509;--ps:#FFEBCC;--btn:#E8870E;--chipon:#E8870E;--acc:#D8322B;--accd:#A82525;--line:#F2DFB8;--shadow:0 2px 0 #F0DDB2;--band1:#FFE2A8;--band2:#FFF4D6;--h1:#FFF8E8;--h2:#FFEBC0;--h3:#FFD98F;--cur1:#FFB03A;--cur2:#D0640A;--curd:#9A4A06}
+html[data-skin="summer"]{--bg:#F2FBFF;--navy:#0B7C87;--navy2:#0FA3B1;--p:#0FA3B1;--pd:#0B7C87;--ps:#D8F4F7;--btn:#0FA3B1;--chipon:#0FA3B1;--acc:#FF8A3D;--accd:#D9661D;--amber:#FFC93C;--line:#CFE7EE;--shadow:0 2px 0 #C9E3EB;--band1:#8ED8F5;--band2:#E8F9FF;--h1:#F2FBFF;--h2:#CFEFFA;--h3:#F7E3B0;--cur1:#37D0D9;--cur2:#0B8E99;--curd:#07646C}
+html[data-skin="night"]{--bg:#0E1424;--card:#182036;--ink:#EDEFFF;--ink2:#D3D8F2;--muted:#9AA3CC;--line:#2A3358;--shadow:0 2px 0 #090D1A;--navy:#6D5FD6;--navy2:#8B7CF6;--p:#8B7CF6;--pd:#B7ACFF;--ps:#2A2F5C;--btn:#7A6BE8;--chipon:#7A6BE8;--acc:#FFC857;--accd:#E0A92E;--amber:#FFC857;--amber-soft:#3A3556;--band1:#1B2450;--band2:#2B2F6B;--h1:#0E1424;--h2:#161E3C;--h3:#1F2A55;--cur1:#A99BFF;--cur2:#5B4BD6;--curd:#3A2F9E;--green-soft:#1D3A3A;--blue-soft:#232C58;--coral-soft:#402A3A}
+html[data-skin="dark"]{--bg:#121A22;--card:#1C2631;--ink:#EEF2F7;--ink2:#D5DDE8;--muted:#9AA8BA;--line:#2C3948;--shadow:0 2px 0 #0D131A;--ps:#1D3A2D;--amber-soft:#3A3322;--green-soft:#1D3A2B;--blue-soft:#1D3A2B;--coral-soft:#3C2623;--band1:#1B3A33;--band2:#223344;--h1:#121A22;--h2:#16261F;--h3:#10201A;--cur1:#4CCB84;--cur2:#1F8A56;--curd:#145F3B;--pd:#6FD79D}
+html[data-skin="trungthu"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cg fill='%23F5C56A' opacity='.5'%3E%3Cpath d='M20 14a7 7 0 1 0 8 8a5.500 5.500 0 0 1-8-8Z'/%3E%3Ccircle cx='70' cy='30' r='1.800'/%3E%3Ccircle cx='44' cy='70' r='2'/%3E%3Ccircle cx='88' cy='84' r='1.500'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin="summer"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='60'%3E%3Cg fill='none' stroke='%239ADFF0' stroke-width='1.600' opacity='.65'%3E%3Cpath d='M0 20q12.500-9 25 0t25 0 25 0 25 0'/%3E%3Cpath d='M-12 48q12.500-9 25 0t25 0 25 0 25 0 25 0'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin="night"] body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='110' height='110'%3E%3Cg fill='%23FFE9A0' opacity='.55'%3E%3Ccircle cx='14' cy='18' r='1.600'/%3E%3Ccircle cx='62' cy='40' r='1.200'/%3E%3Ccircle cx='90' cy='14' r='1.800'/%3E%3Ccircle cx='36' cy='84' r='1.400'/%3E%3Ccircle cx='100' cy='96' r='1.200'/%3E%3C/g%3E%3C/svg%3E");background-attachment:fixed}
+html[data-skin="trungthu"] .nav{background-color:#FFF0CF;border-top-color:#E8870E}
+html[data-skin="summer"] .nav{background-color:#E6F8FB;border-top-color:#0FA3B1}
+html[data-dark] .nav{background:color-mix(in srgb,var(--card) 94%,transparent);border-top-color:var(--p)}
+html[data-dark] .nav button{color:var(--muted)}
+html[data-dark] .nav button.on{color:var(--pd);background:var(--ps)}
+html[data-dark]{color-scheme:dark}
+/* hạt rơi: sao, bong bóng */
+#leaves.k-star .lf{opacity:.6}#leaves.k-bubble .lf{opacity:.6}
+#leaves.k-star .lf b{background:none;border-radius:0;color:var(--c);font-size:inherit;line-height:1;display:grid;place-items:center;animation-name:lfTwk}
+#leaves.k-star .lf b::before{content:'\2726\FE0E'}
+#leaves.k-bubble .lf b{background:rgba(255,255,255,.35);border:2px solid var(--c);border-radius:50%;animation-name:lfSwayH}
+@keyframes lfTwk{from{transform:translateX(0) scale(.7);opacity:.5}to{transform:translateX(var(--sw,24px)) scale(1.15);opacity:1}}
+
+/* ===== v7.0 · lịch chuỗi · huy hiệu · thử thách tuần · chúc mừng · cỡ chữ Anh ===== */
+.stkbtn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--ps);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px}
+.stk-n{min-width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#FF9A3C,#FF5A36);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.stk-t{flex:1;display:flex;flex-direction:column;font-size:13px;color:var(--muted)} .stk-t b{color:var(--ink);font-size:15px}
+.stk-go{font-size:22px;color:var(--muted)}
+.wk{background:var(--ps);border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px}
+.wk .qbar{margin:8px 0 6px}
+.row.between{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.stk-top{display:flex;gap:8px;margin:8px 0}
+.stk-top>div{flex:1;background:var(--ps);border-radius:12px;padding:8px 4px;text-align:center;display:flex;flex-direction:column}
+.stk-top b{font-size:22px;color:var(--ink)} .stk-top span{font-size:11px;color:var(--muted)}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin:6px 0}
+.cal-h button{width:36px;height:34px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);font-size:20px;color:var(--ink)}
+.cal-h button:disabled{opacity:.35}
+.cal-w,.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal-w span{font-size:11px;color:var(--muted);font-weight:700}
+.cd{position:relative;height:36px;border-radius:10px;font-size:13px;display:flex;align-items:center;justify-content:center;color:var(--ink2);background:var(--ps)}
+.cd.e{background:none}.cd.fut{opacity:.4}
+.cd.on{background:#FFE7CF;font-size:18px}.cd.on small{position:absolute;right:3px;bottom:1px;font-size:9px;color:#9A5B1B;font-weight:700}
+.cd.now{outline:2px solid var(--p);outline-offset:-1px}
+.stk-marks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:10px 0 4px}
+.stk-marks span{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--ps);color:var(--muted);font-weight:700}
+.stk-marks span.ok{background:#FFE7CF;color:#9A5B1B}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.bdg{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:12px;border:1.5px solid var(--line);background:var(--ps);filter:grayscale(1);opacity:.5}
+.bdg.on{filter:none;opacity:1;background:var(--card);border-color:var(--p)}
+.bdg span{font-size:26px;line-height:1.1}.bdg small{font-size:10.5px;color:var(--ink2);font-weight:700;text-align:center;line-height:1.15}
+#celeb{position:fixed;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:100002;overflow:hidden}
+#celeb i{position:absolute;left:50%;top:60%;font-style:normal;opacity:0;animation:celebPop 2.4s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes celebPop{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.4)}12%{opacity:1}45%{transform:translate(var(--dx),var(--up)) rotate(calc(var(--rot)/2)) scale(1)}100%{opacity:0;transform:translate(calc(var(--dx)*1.25),var(--dn)) rotate(var(--rot)) scale(.9)}}
+#celebcard{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:100003;background:var(--card);border:2px solid var(--p);border-radius:20px;padding:14px 22px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:200px;max-width:86vw;animation:ccIn .5s cubic-bezier(.2,1.3,.4,1)}
+#celebcard b{font-size:19px;color:var(--ink)}#celebcard span{font-size:13px;color:var(--muted)}
+@keyframes ccIn{from{opacity:0;transform:translate(-50%,-30%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion:reduce){#celeb{display:none}}
+/* cỡ chữ tiếng Anh riêng */
+.line .en{font-size:calc(17px*var(--fz)*var(--fze,1))}
+.ex .e{font-size:calc(14.5px*var(--fz)*var(--fze,1))}
+.exr .e{font-size:calc(15px*var(--fz)*var(--fze,1))}
+.w1 b{font-size:calc(25px*var(--fz)*var(--fze,1))}
+.qz .qprompt{font-size:calc(21px*var(--fz)*var(--fze,1))}.qz .qprompt.long{font-size:calc(18px*var(--fz)*var(--fze,1))}
+
+/* ===== v7.0 · chế độ tối (sinh tự động) ===== */
+html[data-dark] .btn.ghost{background:var(--card)}
+html[data-dark] .badge.warn{background:var(--ps)}
+html[data-dark] .ub s{background:var(--card)}
+html[data-dark] .quick button{background:var(--card)}
+html[data-dark] .lvtabs button{background:var(--card)}
+html[data-dark] .nd{background:var(--ps)}
+html[data-dark] .nd.part{background:var(--ps)}
+html[data-dark] .ncode{color:var(--ink)}
+html[data-dark] .tip{background:var(--card)}
+html[data-dark] .tip>span{color:var(--ink)}
+html[data-dark] .chest span{background:var(--ps);color:var(--ink)}
+html[data-dark] .chest.open span{background:var(--ps)}
+html[data-dark] .mend{background:var(--card)}
+html[data-dark] .lrow.cur{background:var(--ps)}
+html[data-dark] .tabs button{background:var(--card)}
+html[data-dark] .line.playing{background:var(--card)}
+html[data-dark] .wchips button{background:var(--card)}
+html[data-dark] .vc,html[data-dark] .gc{background:var(--card)}
+html[data-dark] .vn{background:var(--ps);color:var(--ink)}
+html[data-dark] .mean{background:var(--ps);color:var(--ink)}
+html[data-dark] .call.err{color:var(--ink)}
+html[data-dark] .call.us{background:var(--ps);color:var(--ink)}
+html[data-dark] .call.us>b:first-child{color:var(--ink)}
+html[data-dark] .call.usage,html[data-dark] .call.work{background:var(--ps);color:var(--ink)}
+html[data-dark] .gcode{background:var(--ps);color:var(--ink)}
+html[data-dark] .fl{background:var(--ps)}
+html[data-dark] .fl.a{background:var(--ps);color:var(--ink)}
+html[data-dark] .ptype{background:var(--card)}
+html[data-dark] .ptype .ic.a{background:var(--ps)}
+html[data-dark] .ptype .ic.b{background:var(--ps);color:var(--ink)}
+html[data-dark] .play2{background:var(--ps)}
+html[data-dark] .sbar{background:var(--ps)}
+html[data-dark] .stat3 .o{background:var(--ps)}
+html[data-dark] .card.test{border-color:var(--line);background:var(--card)}
+html[data-dark] .qtop .back{background:var(--card)}
+html[data-dark] .qtop .bar{background:var(--ps)}
+html[data-dark] .combo{background:var(--ps)}
+html[data-dark] .lbtn{background:var(--card)}
+html[data-dark] .strip button{background:var(--card)}
+html[data-dark] .bub{background:var(--card)}
+html[data-dark] .opt.right{background:var(--ps)}
+html[data-dark] .answer-zone{border:2px dashed var(--line);background:var(--card)}
+html[data-dark] .feedback{border-top:2px solid var(--line);background:var(--ps)}
+html[data-dark] .feedback.bad{background:var(--ps)}
+html[data-dark] .qhead .back,html[data-dark] .rhead .back{background:var(--card)}
+html[data-dark] .qn2,html[data-dark] .qrow .qn,html[data-dark] .wr .qn{background:var(--ps)}
+html[data-dark] .rw div{background:var(--card)}
+html[data-dark] .t.g{background:var(--ps);color:var(--ink)}
+html[data-dark] .t.r{background:var(--ps)}
+html[data-dark] .t.o{background:var(--ps)}
+html[data-dark] .drop{border:2px dashed var(--line);background:var(--card)}
+html[data-dark] .seg2{background:var(--ps)}
+html[data-dark] .vtips{background:var(--card)}
+html[data-dark] .vtips summary{color:var(--ink)}
+html[data-dark] .nd.lock{background:var(--ps)}
+html[data-dark] .lvx.done{background:var(--ps);color:var(--ink)}
+html[data-dark] .lvx.lock{background:var(--card)}
+html[data-dark] .lvcta{background:var(--card)}
+html[data-dark] .gate{background:var(--card)}
+html[data-dark] .bkb{background:var(--ps);border:1.5px solid var(--line);color:var(--ink)}
+html[data-dark] .bkb button.x{color:var(--ink)}
+html[data-dark] .hint{background:var(--ps);color:var(--ink)}
+html[data-dark] .cpinfo{border-color:var(--line)}
+html[data-dark] .cpl span{background:var(--ps)}
+html[data-dark] .cpl .flag{background:var(--ps)}
+html[data-dark] .task{border-color:var(--line)}
+html[data-dark] .task.done{background:var(--card)}
+html[data-dark] .tw span{background:var(--ps)}
+html[data-dark] .tchk span{background:var(--ps)}
+html[data-dark] .ptype.daily{border-color:var(--line);background:var(--card)}
+html[data-dark] .skb{background:var(--ps)}
+html[data-dark] .skw{background:var(--ps)}
+html[data-dark] .card.inst{border-color:var(--line);background:var(--card)}
+html[data-dark] #cheer.mood-happy .ch-bub,html[data-dark] #cheer.mood-happy .ch-bub::before{background:var(--card)}
+html[data-dark] .qring{background:var(--card)}
+html[data-dark] .qrow.ok{border-color:var(--line)}
+html[data-dark] .pmodes .chip{background:var(--card)}
+html[data-dark] .drill.done{border-color:var(--line)}
+html[data-dark] .drill.next,html[data-dark] .qrow.next{background:var(--card)}
+html[data-dark] .warnl{color:var(--ink)}
+html[data-dark] .road{border-color:var(--line)}
+html[data-dark] .qsteps i.ok{border-color:var(--line)}
+html[data-dark] .nd2 .disc{background:var(--card)}
+html[data-dark] .nd2.lock .disc{background:var(--ps);border-color:var(--line)}
+html[data-dark] .nd2.lock .disc::after{border-color:var(--line)}
+html[data-dark] .nd2.cur .disc{border:3px solid var(--line)}
+html[data-dark] .spk i{background:var(--ps)}
+html[data-dark] .spk i:nth-child(2){background:var(--card)}
+html[data-dark] .spk i:nth-child(5){background:var(--card)}
+html[data-dark] .tip2{background:var(--card)}
+html[data-dark] .tip2 .steps i{background:var(--ps)}
+html[data-dark] .gate2 .lab{background:var(--card)}
+html[data-dark] .gate2.done .lab{background:var(--ps);color:var(--ink)}
+html[data-dark] .sign b{background:var(--ps);color:var(--ink)}
+html[data-dark] #gate .gin{background:var(--card)}
+html[data-dark] #gate .gtip{background:var(--card)}
+html[data-dark] .gin2{background:var(--card)}
+html[data-dark] .admrow{background:var(--card)}
+html[data-dark] #gate .gtabs{background:var(--ps)}
+html[data-dark] #gate .gtabs button.on{background:var(--card)}
+html[data-dark] .admsum div{background:var(--card)}
+html[data-dark] .qz{background:var(--card)}
+html[data-dark] .qz .qsub.ipa{background:var(--ps)}
+html[data-dark] .feedback .snd{background:var(--card)}
+html[data-dark] .feedback .fans{background:var(--card)}
+html[data-dark] .checkbar .btn:disabled{background:var(--ps)}
+html[data-dark] .opt.sel{background:var(--ps)}
+html[data-dark] .vsub{background:var(--card)}
+html[data-dark] .skin{background:var(--card)}
+html[data-dark] .skin .sk-sw i{border:1.5px solid var(--line)}
+html[data-dark] .cd.on{background:var(--ps)}
+html[data-dark] .stk-marks span.ok{background:var(--ps)}
+html[data-dark] .band .back{background:var(--card);color:var(--ink)}
+html[data-dark] .cd.on{background:#4A3A22}html[data-dark] .cd.on small{color:#FFC98A}html[data-dark] .stk-marks span.ok{background:#4A3A22;color:#FFC98A}
+html[data-dark] .stk-n{color:#fff}
+html[data-dark] .nd2 .st small{background:color-mix(in srgb,var(--card) 90%,transparent);color:var(--ink)}
+.bkrow{margin-top:8px}.bkrow a{color:var(--pd);font-weight:700}
+.bksn{display:flex;flex-wrap:wrap;gap:6px}
+
 </style>
 </head>
 <body>
@@ -962,7 +1154,7 @@ function lessonState(id) { if (!S.lessons[id]) S.lessons[id] = { text: false, vo
 function bump(field, n = 1) { const k = dayKey(); const fresh = !S.days[k] && (field === 'a' || field === 'cards'), before = todayCount(); S.days[k] = S.days[k] || { a: 0, ok: 0, cards: 0, fresh: 0 }; S.days[k][field] = (S.days[k][field] || 0) + n;
   if (fresh) setTimeout(() => { try { cheerNewDay(); } catch (e) { } }, 1200);
   if ((field === 'a' || field === 'cards') && before < S.settings.goal && todayCount() >= S.settings.goal) setTimeout(() => { try { cheerShow('goal'); } catch (e) { } }, 900);
-  try { questCheck(); } catch (e) { } }
+  try { questCheck(); } catch (e) { } try { extrasCheck(); } catch (e) { } }
 function todayCount() { const d = S.days[dayKey()]; return d ? (d.a || 0) + (d.cards || 0) : 0; }
 function streak() { let n = 0, t = today(); if (!S.days[dayKey(t)]) t--; while (S.days[dayKey(t)]) { n++; t--; } return n; }
 
@@ -1183,7 +1375,7 @@ function applyTheme() { document.documentElement.setAttribute('data-theme', 'lig
 /* ---------- sao, XP (v3) ---------- */
 function starsOf(pct) { return pct >= 85 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0; }
 function totalStars() { let n = 0; for (const q of Object.values(S.qstat || {})) n += starsOf(q.best || 0); return n; }
-function xpTotal() { let x = 0; for (const d of Object.values(S.days)) x += (d.ok || 0) * 10 + (d.a || 0) * 2 + (d.cards || 0) * 3 + (d.qb || 0) * 30; return x + Object.values(S.cpBest || {}).filter(v => v >= PASS).length * 50 + Object.values(S.tasks || {}).filter(t => t.done).length * 20; }
+function xpTotal() { let x = 0; for (const d of Object.values(S.days)) x += (d.ok || 0) * 10 + (d.a || 0) * 2 + (d.cards || 0) * 3 + (d.qb || 0) * 30; x += Object.keys(S.wk || {}).length * 50; return x + Object.values(S.cpBest || {}).filter(v => v >= PASS).length * 50 + Object.values(S.tasks || {}).filter(t => t.done).length * 20; }
 function chestsOpened() { if (!DATA) return 0; let n = 0, run = 0; for (const l of DATA.lessons) { if (l['Loại bài'] === 'Từ nền') continue; if (!lessonDone(l['Mã bài'])) break; run++; if (run % 5 === 0) n++; } return n; }
 
 /* ===== English Lab · trang trí chibi: con vật nhỏ, hoa lá cỏ cây, suối, cá, mây (SVG nhúng, không cần mạng) =====
@@ -1438,6 +1630,22 @@ Object.assign(DECO, {
   balloon: (s = 24, cls = '') => svg('0 0 22 46', s, s * 2.1, G('o-t a-sway', '<path d="M11 36C5 28 1 24 1 17A5.500 5.500 0 0 1 11 14A5.500 5.500 0 0 1 21 17C21 24 17 28 11 36Z" fill="#FF6F91"/><path d="M5 14q2-2.500 4-1" stroke="#fff" stroke-width="1.800" fill="none" stroke-linecap="round" opacity=".7"/><path d="M11 36q-3 4 0 5t0 5" stroke="#B07A86" stroke-width="1.100" fill="none"/>', '--r:4deg;transform-origin:11px 46px;animation-duration:4s'), cls),
   teddy: (s = 40, cls = '') => DECO.bear(s) + DECO.heart(14, 'pulse'),
 });
+
+const STAR5 = (r, ri = r * .42) => Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, q = i % 2 ? ri : r; return `${(Math.cos(a) * q).toFixed(1)},${(Math.sin(a) * q).toFixed(1)}`; }).join(' ');
+Object.assign(DECO, {
+  /* --- Trung thu --- */
+  moon: (s = 44, cls = '') => svg('0 0 44 44', s, s, G('o-c a-pulse', '<circle cx="22" cy="22" r="19" fill="#FFE9A0"/><circle cx="14" cy="16" r="4" fill="#F5D575"/><circle cx="29" cy="28" r="5.500" fill="#F5D575"/><circle cx="30" cy="13" r="2.500" fill="#F5D575"/><circle cx="17" cy="21" r="1.700" fill="#7A5A10"/><circle cx="26" cy="21" r="1.700" fill="#7A5A10"/><path d="M18 26q4 4 8 0" stroke="#7A5A10" stroke-width="1.600" fill="none" stroke-linecap="round"/><ellipse cx="13.500" cy="25" rx="2.800" ry="1.800" fill="#FF9BAE" opacity=".7"/><ellipse cx="30.500" cy="25" rx="2.800" ry="1.800" fill="#FF9BAE" opacity=".7"/>', 'animation-duration:3.600s'), cls),
+  stlantern: (s = 34, cls = '') => svg('0 0 36 48', s, s * 1.33, `<path d="M18 0V6" stroke="#8B5E3C" stroke-width="1.500"/>${G('o-t a-sway', `<polygon points="${STAR5(16, 7)}" transform="translate(18 22)" fill="#E5322D" stroke="#F2B632" stroke-width="1.500" stroke-linejoin="round"/><circle cx="18" cy="23" r="4.500" fill="#FFE17A"/><path d="M14 38l-3 9M18 38v10M22 38l3 9" stroke="#F2B632" stroke-width="1.500" stroke-linecap="round"/>`, '--r:4deg;animation-duration:3.200s')}`, cls),
+  mooncake: (s = 30, cls = '') => svg('0 0 30 30', s, s, '<circle cx="15" cy="15" r="13" fill="#C98A3C"/><circle cx="15" cy="15" r="13" fill="none" stroke="#9A6422" stroke-width="1.500"/><circle cx="15" cy="15" r="8" fill="#D9A04F" stroke="#9A6422" stroke-width="1"/><path d="M15 9v12M9 15h12M10.800 10.800l8.400 8.400M19.200 10.800l-8.400 8.400" stroke="#9A6422" stroke-width="1" stroke-linecap="round"/>', cls),
+  /* --- Mùa hè --- */
+  palm: (s = 46, cls = '') => svg('0 0 46 56', s, s * 1.22, `<path d="M24 54C23 42 25 32 28 22" stroke="#9A6A3A" stroke-width="4" fill="none" stroke-linecap="round"/>${G('o-b a-sway', '<path d="M28 22C20 14 10 16 4 24C14 20 20 22 28 22ZM28 22C28 10 20 4 10 6C18 10 24 14 28 22ZM28 22C36 12 44 12 44 22C38 18 32 20 28 22ZM28 22C38 18 44 28 42 34C38 28 32 26 28 22Z" fill="#3FB06A"/><circle cx="26" cy="25" r="2.600" fill="#7A4B1E"/><circle cx="30" cy="26" r="2.600" fill="#7A4B1E"/>', '--r:2deg;animation-duration:5s;transform-origin:28px 24px')}`, cls),
+  umbrella: (s = 40, cls = '') => svg('0 0 40 44', s, s * 1.1, '<path d="M20 12V43" stroke="#8B5E3C" stroke-width="2.500" stroke-linecap="round"/><path d="M2 20C2 8 12 3 20 3C28 3 38 8 38 20Z" fill="#FF6B6B"/><path d="M20 3C14 6 11 12 11 20H20ZM20 3C26 6 29 12 29 20H20Z" fill="#fff" opacity=".9"/><path d="M2 20q4.500 3 9 0t9 0 9 0 9 0" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/>', cls),
+  icecream: (s = 22, cls = '') => svg('0 0 22 38', s, s * 1.7, `<path d="M4 16L11 37 18 16Z" fill="#E7B061"/><path d="M7 20l7 8M12 18l5 6M5 25l5 6" stroke="#C48A3A" stroke-width="1"/>${G('o-b a-sway', '<circle cx="11" cy="12" r="8" fill="#FF9BC2"/><circle cx="6" cy="14" r="5" fill="#FFD27A"/><circle cx="16" cy="14" r="5" fill="#9BE3D2"/><circle cx="11" cy="6" r="2.200" fill="#E5322D"/>', '--r:2deg;transform-origin:11px 18px')}`, cls),
+  shell: (s = 24, cls = '') => svg('0 0 24 22', s, s * .92, '<path d="M12 2C5 2 1 9 3 16C5 20 9 21 12 21C15 21 19 20 21 16C23 9 19 2 12 2Z" fill="#FFC4D0" stroke="#F29BB0" stroke-width="1.200"/><path d="M12 21V4M12 21L5 7M12 21L19 7M12 21L2.500 13M12 21l9.500-8" stroke="#F29BB0" stroke-width="1" fill="none"/>', cls),
+  /* --- Đêm sao --- */
+  nstar: (s = 20, cls = '') => svg('-12 -12 24 24', s, s, G('o-c a-twinkle', `<polygon points="${STAR5(10, 4.200)}" fill="#FFE17A"/>`, 'animation-duration:2.400s'), cls),
+  stars3: (s = 40, cls = '') => svg('0 0 40 30', s, s * .75, [[8, 20, 7, '0s'], [26, 10, 9, '-.8s'], [32, 24, 5, '-1.600s']].map(([x, y, r, d]) => G('o-c a-twinkle', `<polygon points="${STAR5(r, r * .42)}" transform="translate(${x} ${y})" fill="#FFE17A"/>`, `animation-delay:${d}`)).join(''), cls),
+});
 const SKINS = {
   default: { name: 'Mặc định', ico: '🌿', sw: ['#36A86B', '#FFF9EF', '#FFB938'], desc: 'Khu vườn xanh' },
   xmas: { name: 'Giáng sinh', ico: '🎄', sw: ['#2F9A5C', '#E5484D', '#BFDDF2'], desc: 'Cây thông, người tuyết, tuyết rơi', particle: 'snow',
@@ -1464,6 +1672,33 @@ const SKINS = {
     sun: '<path d="M0 26C-18 12 -26 4 -26 -6A13 13 0 0 1 0 -12A13 13 0 0 1 26 -6C26 4 18 12 0 26Z" fill="#FF6F91"/><g transform="translate(0 -1)">' + SKIN_FACE.replace(/#5A3A00/g, '#7A1F3D') + '</g>',
     scene: () => `<g transform="translate(240 72)">${DECO.balloon(18)}</g><g transform="translate(274 62)">${DECO.bigheart(34)}</g><g transform="translate(318 74)">${DECO.teddy(30)}</g><g transform="translate(352 64)">${DECO.balloon(18)}</g>`,
     front: () => `<g transform="translate(120 112)">${DECO.rose(12)}</g><g transform="translate(150 114)">${DECO.letter(20)}</g>` },
+  trungthu: { name: 'Trung thu', ico: '🥮', sw: ['#E8870E', '#FFE9A0', '#E5322D'], desc: 'Trăng rằm, đèn ông sao, bánh trung thu', particle: 'star',
+    hills: ['#FFE6B0', '#FFD58A', '#F5BD66'], tint: 'rgba(255,214,150,.55)',
+    big: ['moon', 'stlantern', 'bunny', 'moon'], mid: ['stlantern', 'mooncake', 'bunny', 'lantern', 'mushroom'], sm: ['mooncake', 'stlantern', 'bunny', 'lantern', 'mooncake'],
+    wid: { moon: 46, stlantern: 34, mooncake: 30, lantern: 26 }, flyer: () => DECO.spark('#FFE17A', 14),
+    sun: '<circle r="22" fill="#FFF1B8" opacity=".5"/><circle r="17" fill="#FFE9A0"/><circle cx="-7" cy="-8" r="3" fill="#F5D575"/><circle cx="8" cy="8" r="4" fill="#F5D575"/>' + SKIN_FACE,
+    scene: () => `<g transform="translate(236 66)">${DECO.stlantern(22)}</g><g transform="translate(270 70)">${DECO.bunny(34)}</g><g transform="translate(314 78)">${DECO.mooncake(24)}</g><g transform="translate(346 62)">${DECO.stlantern(24)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.mooncake(18)}</g><g transform="translate(150 114)">${DECO.lantern(12)}</g>` },
+  summer: { name: 'Mùa hè', ico: '🏖️', sw: ['#0FA3B1', '#FFC93C', '#8ED8F5'], desc: 'Biển xanh, dừa, kem, bong bóng', particle: 'bubble',
+    hills: ['#CFF1F8', '#AEE6F2', '#F3DDA0'], tint: 'rgba(160,225,245,.45)',
+    big: ['palm', 'umbrella', 'palm', 'pond'], mid: ['palm', 'umbrella', 'icecream', 'shell', 'palm'], sm: ['shell', 'icecream', 'shell', 'icecream', 'shell'],
+    wid: { palm: 46, umbrella: 40, icecream: 22, shell: 24 }, flyer: () => DECO.bird(24),
+    sun: '<g stroke="#FFB52E" stroke-width="3" stroke-linecap="round">' + [0, 45, 90, 135, 180, 225, 270, 315].map(a => `<path d="M0 -30v6" transform="rotate(${a})"/>`).join('') + '</g><circle r="19" fill="#FFD43B"/><rect x="-14" y="-6" width="12" height="7" rx="3" fill="#1F2A37"/><rect x="2" y="-6" width="12" height="7" rx="3" fill="#1F2A37"/><path d="M-2 -3h4" stroke="#1F2A37" stroke-width="1.600"/><path d="M-6 7q6 5 12 0" stroke="#7A4B00" stroke-width="1.800" fill="none" stroke-linecap="round"/>',
+    scene: () => `<g transform="translate(236 70)">${DECO.umbrella(34)}</g><g transform="translate(284 56)">${DECO.palm(40)}</g><g transform="translate(330 62)">${DECO.palm(34)}</g><g transform="translate(360 84)">${DECO.shell(18)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.icecream(12)}</g><g transform="translate(150 118)">${DECO.shell(16)}</g>` },
+  night: { name: 'Đêm sao', ico: '🌙', sw: ['#8B7CF6', '#182036', '#FFE17A'], desc: 'Giao diện tối, trăng sao lấp lánh', particle: 'star', dark: true,
+    hills: ['#2B3563', '#222B52', '#1A2144'], tint: 'rgba(20,26,60,.5)',
+    big: ['moon', 'owl', 'stars3', 'moon'], mid: ['owl', 'stars3', 'nstar', 'mushroom'], sm: ['nstar', 'stars3', 'nstar', 'ladybug'],
+    wid: { moon: 46, stars3: 40, nstar: 22, owl: 38 }, flyer: () => DECO.nstar(14),
+    sun: '<path d="M8 -22A22 22 0 1 0 22 8A17 17 0 0 1 8 -22Z" fill="#FFE9A0"/><circle cx="-6" cy="-1" r="1.700" fill="#7A5A10"/><path d="M-8 6q4 4 8 0" stroke="#7A5A10" stroke-width="1.600" fill="none" stroke-linecap="round"/>',
+    scene: () => `<g transform="translate(232 40)">${DECO.nstar(14)}</g><g transform="translate(262 62)">${DECO.stars3(32)}</g><g transform="translate(308 64)">${DECO.owl(34)}</g><g transform="translate(350 46)">${DECO.nstar(16)}</g>`,
+    front: () => `<g transform="translate(120 112)">${DECO.nstar(12)}</g>` },
+  dark: { name: 'Chế độ tối', ico: '🌑', sw: ['#36A86B', '#1F2834', '#9AA8BA'], desc: 'Dịu mắt khi học buổi tối', particle: 'leaf', dark: true,
+    hills: ['#264535', '#1E382B', '#173024'], tint: 'rgba(10,20,16,.35)',
+    big: ['pond', 'tree', 'mountain', 'tree2'], mid: ['hedgehog', 'owl', 'mushroom', 'bush', 'panda'], sm: ['bunny', 'frog', 'snail', 'chick', 'ladybug', 'bee'], wid: {}, flyer: () => DECO.butterfly(22, 'fly'),
+    sun: '<path d="M8 -22A22 22 0 1 0 22 8A17 17 0 0 1 8 -22Z" fill="#E8EEF6"/><circle cx="-6" cy="-1" r="1.700" fill="#4A5568"/><path d="M-8 6q4 4 8 0" stroke="#4A5568" stroke-width="1.600" fill="none" stroke-linecap="round"/>',
+    scene: () => `<g transform="translate(262 64)">${DECO.tree(36)}</g><g transform="translate(306 70)">${DECO.tree(30, 'alt')}</g><g transform="translate(344 80)">${DECO.owl(28)}</g>`,
+    front: () => `<g transform="translate(120 114)">${DECO.mushroom(18)}</g>` },
 };
 function skinId() { try { const k = S.settings.skin; return SKINS[k] ? k : 'default'; } catch (e) { return 'default'; } }
 function skinOn() { return skinId() !== 'default' ? SKINS[skinId()] : null; }
@@ -1483,21 +1718,34 @@ function skinMapDeco(name) {
   const D = DECO, w = k.wid[name];
   return ({ xtree: () => D.xtree(w), snowman: () => D.snowman(w - 8), gift: () => D.gift(w), cane: () => D.cane(w), holly: () => D.holly(w), flake: () => D.flake(w - 6),
     mai: () => D.mai(w), dao: () => D.dao(w), kumquat: () => D.kumquat(w), lantern: () => D.lantern(w), banhchung: () => D.banhchung(w), lixi: () => D.lixi(w),
-    bigheart: () => D.bigheart(w), teddy: () => D.teddy(40), balloon: () => D.balloon(w), rose: () => D.rose(w), choco: () => D.choco(w), letter: () => D.letter(w) })[name]();
+    bigheart: () => D.bigheart(w), teddy: () => D.teddy(40), balloon: () => D.balloon(w), rose: () => D.rose(w), choco: () => D.choco(w), letter: () => D.letter(w),
+    moon: () => D.moon(w), stlantern: () => D.stlantern(w), mooncake: () => D.mooncake(w), palm: () => D.palm(w), umbrella: () => D.umbrella(w), icecream: () => D.icecream(w), shell: () => D.shell(w), nstar: () => D.nstar(w), stars3: () => D.stars3(w), owl: () => D.owl(w) })[name]();
 }
 function applySkin() {
   const id = skinId(), el = document.documentElement;
   if (id === 'default') el.removeAttribute('data-skin'); else el.setAttribute('data-skin', id);
-  try { const m = document.querySelector('meta[name=theme-color]'); if (m) m.setAttribute('content', { default: '#36A86B', xmas: '#2F9A5C', tet: '#D8322B', valentine: '#E0457B' }[id]); } catch (e) { }
+  if (id !== 'default' && SKINS[id].dark) el.setAttribute('data-dark', '1'); else el.removeAttribute('data-dark');
+  try { const m = document.querySelector('meta[name=theme-color]'); if (m) m.setAttribute('content', { default: '#36A86B', xmas: '#2F9A5C', tet: '#D8322B', valentine: '#E0457B', trungthu: '#E8870E', summer: '#0FA3B1', night: '#182036', dark: '#1F2834' }[id]); } catch (e) { }
   try { leavesBuild(id === 'default' ? 'leaf' : SKINS[id].particle); } catch (e) { }
 }
-function setSkin(id) { if (!SKINS[id]) return; S.settings.skin = id; save(); applySkin(); render(); toast(id === 'default' ? 'Đã về giao diện mặc định' : `${SKINS[id].ico} Đã đổi sang giao diện ${SKINS[id].name}`); }
+function setSkin(id) { if (!SKINS[id]) return; S.settings.skin = id; save(); applySkin(); render(); try { sfx('pop'); celebrate('small'); } catch (e) { } toast(id === 'default' ? 'Đã về giao diện mặc định' : `${SKINS[id].ico} Đã đổi sang giao diện ${SKINS[id].name}`); }
 function skinCard() {
   const cur = skinId();
   return `<section class="card"><div class="section-title">🎨 Giao diện</div>
    <p class="muted tiny" style="margin:-2px 0 8px">Đổi màu sắc, phông nền, hình trang trí và hạt rơi trên toàn app. Tiến độ học không bị ảnh hưởng.</p>
    <div class="skins">${Object.entries(SKINS).map(([k, v]) => `<button class="skin ${k === cur ? 'on' : ''}" onclick="setSkin('${k}')" aria-pressed="${k === cur}"><span class="sk-ico">${v.ico}</span><b>${v.name}</b><small>${v.desc}</small><span class="sk-sw">${v.sw.map(c => `<i style="background:${c}"></i>`).join('')}</span></button>`).join('')}</div></section>`;
 }
+
+/* biểu tượng thanh điều hướng theo giao diện */
+const SKIN_NAV = {
+  trungthu: { today: '🥮', home: '🌕', practice: '🏮', lookup: '🔍', me: '🐰' },
+  summer: { today: '🍦', home: '🏖️', practice: '🌴', lookup: '🔍', me: '😎' },
+  night: { today: '⭐', home: '🌙', practice: '🦉', lookup: '🔍', me: '🌠' },
+  xmas: { today: '🎁', home: '🎄', practice: '⛄', lookup: '🔍', me: '🎅' },
+  tet: { today: '🧧', home: '🌸', practice: '🏮', lookup: '🔍', me: '🐉' },
+  valentine: { today: '💌', home: '💖', practice: '💘', lookup: '🔍', me: '🧸' }
+};
+function skinNavIcon(k) { const m = SKIN_NAV[skinId()]; return m && m[k] ? `<span class="ni" aria-hidden="true">${m[k]}</span>` : ''; }
 
 /* ===== Câu động viên (bạn nhỏ nói trong bong bóng) – theo HSK Study Lab, bản tiếng Anh =====
    Sự kiện: open/first/away/streakKeep (mở app) · right/combo/wrong (trả lời) · streak · goal · lessonPass/lessonPerfect/lessonTry
@@ -1635,6 +1883,7 @@ function questList() {
   const g = S.settings.goal; out.push({ id: 'goal', bonus: 1, ic: '🎯', t: `Đạt mục tiêu ${g} câu`, s: 'Tính cả câu luyện tập và thẻ ôn', n: Math.min(g, todayCount()), of: g, unit: 'câu', go: "go('practice')" });
   if (backupDue() || (!S.lastBackup && Object.keys(S.days).length >= 3)) out.push({ id: 'backup', weekly: 1, ic: '💾', t: 'Sao lưu tiến độ', s: 'Tiến độ chỉ nằm trên trình duyệt này', n: (S.lastBackup || 0) >= dayStartMs() ? 1 : 0, of: 1, go: 'exportBackup()' });
   const gt = nextGate(); if (gt) out.push({ id: 'gate', weekly: 1, ic: '🏁', t: gt.t, s: `Cần ≥ ${PASS}% để mở tiếp`, n: gt.done ? 1 : 0, of: 1, go: gt.go });
+  try { out.push(weeklyQuest()); } catch (e) { }
   out.forEach(x => { if (x.done === undefined) x.done = x.n >= x.of; });
   return out;
 }
@@ -1642,10 +1891,12 @@ function questStat() { const l = questList(), main = l.filter(x => x.main); retu
 function questCheck() {
   if (!DATA) return;
   const q = qEnsure(), { l, all } = questStat(); let fresh = null;
+  try { if (S.wk && S.wk[weekKey()] && !q.done.wk) q.done.wk = 1; } catch (e) { }
   l.forEach(x => { if (x.done && !q.done[x.id]) { q.done[x.id] = 1; fresh = x; } });
   if (!fresh) return;
   save();
-  if (all && !q.bonus) { q.bonus = 1; const d = S.days[q.day] = S.days[q.day] || { a: 0, ok: 0, cards: 0, fresh: 0 }; d.qb = 1; save(); setTimeout(() => { toast('🎁 Xong hết nhiệm vụ hôm nay! +30 XP'); try { cheerShow('goal'); } catch (e) { } }, 900); }
+  try { sfx('quest'); if (!(all && !q.bonus)) celebrate('small'); } catch (e) { }
+  if (all && !q.bonus) { q.bonus = 1; try { celebrate('big', { title: 'Xong nhiệm vụ hôm nay!', sub: '+30 XP rương thưởng' }); sfx('win'); } catch (e) { } const d = S.days[q.day] = S.days[q.day] || { a: 0, ok: 0, cards: 0, fresh: 0 }; d.qb = 1; save(); setTimeout(() => { toast('🎁 Xong hết nhiệm vụ hôm nay! +30 XP'); try { cheerShow('goal'); } catch (e) { } }, 900); }
   else setTimeout(() => toast(`✅ Xong nhiệm vụ: ${fresh.t}`), 900);
   if (page === 'home' || page === 'today') setTimeout(render, 950);
 }
@@ -1711,7 +1962,7 @@ function render() {
   const inQuiz = ['quiz', 'srs', 'result'].includes(page);
   $('#nav').classList.toggle('hidden', page === 'quiz' || page === 'srs');
   const due = srsDueCount();
-  $('#nav').innerHTML = NAV.map(([k, t]) => `<button class="${navOn === k ? 'on' : ''}" onclick="go('${k}')" aria-label="${t}">${IC[k]}${k === 'practice' && due ? `<span class="dot">${due > 99 ? '99+' : due}</span>` : ''}<span>${t}</span></button>`).join('');
+  $('#nav').innerHTML = NAV.map(([k, t]) => `<button class="${navOn === k ? 'on' : ''}" onclick="go('${k}')" aria-label="${t}">${skinNavIcon(k) || IC[k]}${k === 'practice' && due ? `<span class="dot">${due > 99 ? '99+' : due}</span>` : ''}<span>${t}</span></button>`).join('');
   const P = { today: todayPage, home: homePage, lessons: lessonsPage, lesson: lessonPage, lookup: lookupPage, practice: practicePage, review: practicePage, me: mePage, quiz: quizPage, qlist: qlistPage, srs: srsPage, result: resultPage }[page] || homePage;
   $('#view').dataset.page = page;
   $('#view').innerHTML = P();
@@ -1830,7 +2081,7 @@ const MAP_THEME = {
   B2: { hills: ['#EAF2FB', '#D3E4F5', '#BBD4EC'], tint: 'rgba(214,230,247,.85)', flyer: 'bird',
     big: ['mountain', 'tree2', 'cat', 'mountain'], mid: ['mountain', 'owl', 'panda', 'hedgehog'], sm: ['bunny', 'chick', 'owl', 'mushroom', 'ladybug'] },
 };
-const MAP_WID = { xtree: 46, snowman: 42, gift: 30, cane: 22, holly: 32, flake: 24, mai: 46, dao: 46, kumquat: 40, lantern: 26, banhchung: 32, lixi: 22, bigheart: 40, teddy: 52, balloon: 26, rose: 26, choco: 34, letter: 34, pond: 92, fishpond: 80, tree: 46, tree2: 38, mountain: 58, hedgehog: 44, mushroom: 30, cat: 54, owl: 38, panda: 40, bunny: 34, frog: 38, snail: 36, chick: 30, flowers: 44, tulips: 60, ladybug: 42, bush: 60, bee: 40, grass: 44, caterpillar: 60 };
+const MAP_WID = { moon: 46, stlantern: 34, mooncake: 30, palm: 46, umbrella: 40, icecream: 22, shell: 24, nstar: 22, stars3: 40, xtree: 46, snowman: 42, gift: 30, cane: 22, holly: 32, flake: 24, mai: 46, dao: 46, kumquat: 40, lantern: 26, banhchung: 32, lixi: 22, bigheart: 40, teddy: 52, balloon: 26, rose: 26, choco: 34, letter: 34, pond: 92, fishpond: 80, tree: 46, tree2: 38, mountain: 58, hedgehog: 44, mushroom: 30, cat: 54, owl: 38, panda: 40, bunny: 34, frog: 38, snail: 36, chick: 30, flowers: 44, tulips: 60, ladybug: 42, bush: 60, bee: 40, grass: 44, caterpillar: 60 };
 const MAP_DECO = ['tree', 'flowers', 'mountain', 'mushroom', 'bunny', 'cloud', 'ladybug', 'sun', 'snail', 'tulips', 'frog', 'tree2', 'mountain', 'hedgehog', 'chick', 'cloud2', 'bush', 'owl', 'grass', 'caterpillar', 'bee', 'panda', 'sun', 'cat'];
 function mapDeco(name) {
   const D = DECO, sk = skinMapDeco(name); if (sk) return sk;
@@ -2219,8 +2470,11 @@ function mePage() {
   <section class="card"><div class="section-title">Thống kê</div><div class="stats3"><div><b>${days}</b><span>ngày học</span></div><div><b>${streak()}</b><span>chuỗi ngày</span></div><div><b>${ans ? Math.round(ok / ans * 100) : 0}%</b><span>trả lời đúng</span></div></div>
    <div class="stats3 mt"><div><b>${Object.keys(S.learnedV).length}</b><span>từ đã học</span></div><div><b>${Object.keys(S.srs).length}</b><span>thẻ ôn</span></div><div><b>${passed}</b><span>bài đã qua</span></div></div>
    <div class="bars">${last7.map(d => `<div><i style="height:${Math.round(d.n / mx * 52)}px"></i><span>${d.k.slice(8)}</span></div>`).join('')}</div><div class="muted tiny" style="text-align:center">7 ngày gần nhất (câu trả lời + thẻ ôn)</div></section>
+  ${streakCard()}
+  ${badgeCard()}
   ${skillCard()}
   ${skinCard()}
+  ${soundCard()}
   <section class="card"><div class="section-title">Hiển thị</div>
    <div class="set"><span>Cỡ chữ<br><span class="muted tiny">áp dụng cho cả app</span></span><span class="row" style="gap:6px">${[['', 'Vừa'], ['l', 'Lớn'], ['xl', 'Rất lớn']].map(([k, t]) => `<button class="chip ${(S.fontSize || '') === k ? 'on' : ''}" onclick="setFontSize('${k}')">${t}</button>`).join('')}</span></div>
    <div class="set"><span>Câu động viên<br><span class="muted tiny">bạn nhỏ nói tiếng Anh, bấm để nghe</span></span><button class="chip ${S.cheerOff ? '' : 'on'}" onclick="setCheerEnabled(${!!S.cheerOff})">${S.cheerOff ? 'Tắt' : 'Bật'}</button></div></section>
@@ -2246,9 +2500,7 @@ function mePage() {
    <div class="set"><span>Thẻ mới tối đa mỗi ngày</span><select class="sel" onchange="S.settings.newLimit=+this.value;save();render()">${[5, 10, 15, 20, 30, 50].map(n => `<option ${n === st.newLimit ? 'selected' : ''}>${n}</option>`).join('')}</select></div>
    <div class="set"><span>Hiện bảng nhiệm vụ khi mở app<br><span class="muted tiny">trượt từ dưới lên · không hiện nếu đã xong nhiệm vụ chính</span></span><button class="chip ${st.questSheet !== false ? 'on' : ''}" onclick="S.settings.questSheet=!(S.settings.questSheet!==false);save();render()">${st.questSheet !== false ? 'Bật' : 'Tắt'}</button></div>
    <div class="set"><span>Mục tiêu mỗi ngày</span><select class="sel" onchange="S.settings.goal=+this.value;save();render()">${[20, 30, 50, 80, 120].map(n => `<option ${n === st.goal ? 'selected' : ''}>${n}</option>`).join('')}</select></div></section>
-  <section class="card"><div class="section-title">Sao lưu & khôi phục tiến độ</div><p class="muted small" style="margin-top:0">Tiến độ chỉ nằm trên trình duyệt này. Xuất file sao lưu để chuyển sang máy khác hoặc phòng khi xóa dữ liệu trình duyệt.</p>
-   <p class="muted tiny" style="margin:-4px 0 8px">Lần sao lưu gần nhất: <b>${S.lastBackup ? new Date(S.lastBackup).toLocaleDateString('vi-VN') : 'chưa có'}</b> · app sẽ nhắc sau 7 ngày.</p>
-   <div class="grid2"><button class="btn soft" onclick="exportBackup()">Xuất sao lưu</button><label class="btn ghost">Khôi phục<input type="file" accept=".json,application/json" class="hidden" onchange="importBackup(this.files[0])"></label></div></section>
+  ${bkCard()}
   <details class="adv"><summary>⚙️ Nâng cao</summary>
   <section class="card"><div class="section-title">Dữ liệu bài học</div><p class="small" style="margin-top:0"><b>${esc(DATA.ds.fileName || '')}</b><br><span class="muted">Nhập lúc ${esc(new Date(DATA.ds.importedAt).toLocaleString('vi-VN'))} · ${DATA.lessons.length} bài · ${DATA.vocab.length} từ · ${DATA.lines.length} câu</span></p>
    <label class="btn ghost block">Nhập file Excel mới<input type="file" accept=".xlsx" class="hidden" onchange="importFile(this.files[0],true)"></label><p class="muted tiny">Khi file Excel được sửa và gửi bản mới, nhập lại ở đây. Tiến độ học giữ nguyên.</p></section>
@@ -2603,6 +2855,7 @@ function answer(val) {
   else ok = val === q.answer;
   quiz.ans[quiz.i] = { ok, val };
   try { cheerHide(); } catch (e) { }
+  try { sfx(ok ? 'ok' : 'bad'); } catch (e) { }
   try { quiz.praise = cheerAnswer(ok, q.kind, true); } catch (e) { quiz.praise = null; }
   quiz.combo = ok ? (quiz.combo || 0) + 1 : 0;
   bump('a'); if (ok) bump('ok'); bumpSkill(q.kind, ok); if (quiz.type === 'errors') bumpQ('err');
@@ -2636,7 +2889,8 @@ function finishQuiz() {
   if (quiz.type === 'cp') { S.cpBest[quiz.cp] = Math.max(S.cpBest[quiz.cp] || 0, c.pct); cheer = c.pct >= PASS ? 'stage' : 'lessonTry'; }
   if (quiz.type === 'level') { S.levelBest[quiz.lv] = Math.max(S.levelBest[quiz.lv] || 0, c.pct); cheer = c.pct >= PASS ? 'level' : 'lessonTry'; }
   const lvName = quiz.lv || '';
-  save(); go('result'); try { questCheck(); } catch (e) { }
+  save(); go('result'); try { questCheck(); extrasCheck(); } catch (e) { }
+  try { if (c.pct >= PASS) { setTimeout(() => { celebrate('big', { title: c.pct === 100 ? 'Điểm tuyệt đối!' : c.pct >= 90 ? 'Xuất sắc!' : 'Tuyệt vời!', sub: c.pct + '% câu đúng' }); sfx('win'); }, 350); } } catch (e) { }
   setTimeout(() => { try { cheerShow(cheer, { lv: lvName }); } catch (e) { } }, 500);
 }
 function quitQuiz() { TTS.stop(); const b = quiz && quiz.back || 'practice'; quiz = null; go(['quiz', 'qlist', 'result'].includes(b) ? 'practice' : b); }
@@ -3092,12 +3346,254 @@ function admDraw() {
   const bg = $('#modal .modalbg'); if (bg) bg.classList.add('adm');
 }
 
+/* ===== v7.0 · âm thanh · hoạt ảnh chúc mừng · lịch chuỗi ngày · huy hiệu · thử thách tuần · vuốt · cỡ chữ tiếng Anh ===== */
+
+/* ---------- âm thanh (tổng hợp bằng WebAudio, không cần file) ---------- */
+const SFXS = { ctx: null, timer: null, step: 0 };
+function sfxCtx() {
+  try {
+    if (!SFXS.ctx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; SFXS.ctx = new C(); }
+    if (SFXS.ctx.state === 'suspended') SFXS.ctx.resume();
+    return SFXS.ctx;
+  } catch (e) { return null; }
+}
+function sfxTone(f, t0, dur, type = 'sine', vol = .13, f2 = 0) {
+  const c = SFXS.ctx; if (!c) return;
+  const o = c.createOscillator(), g = c.createGain(), t = c.currentTime + t0;
+  o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + .05);
+}
+const SFX_LIB = {
+  ok: () => { sfxTone(784, 0, .16, 'sine', .14); sfxTone(1175, .09, .26, 'sine', .12); },
+  bad: () => { sfxTone(247, 0, .22, 'triangle', .11, 175); },
+  tap: () => sfxTone(900, 0, .05, 'sine', .05),
+  pop: () => sfxTone(520, 0, .12, 'sine', .1, 880),
+  quest: () => { [659, 784, 988].forEach((f, i) => sfxTone(f, i * .09, .2, 'sine', .12)); },
+  win: () => { [523, 659, 784, 1047].forEach((f, i) => sfxTone(f, i * .11, .28, 'triangle', .13)); sfxTone(1319, .5, .5, 'sine', .1); },
+  badge: () => { [784, 988, 1175, 1568].forEach((f, i) => sfxTone(f, i * .08, .3, 'sine', .12)); sfxTone(2093, .38, .5, 'sine', .06); },
+};
+function sfx(name) { try { if (S.settings.sfx === false) return; if (!sfxCtx()) return; (SFX_LIB[name] || (() => 0))(); } catch (e) { } }
+/* nhạc nền nhẹ: các nốt ngũ cung ngẫu nhiên, rất nhỏ tiếng */
+const MUSIC_NOTES = [261.6, 293.7, 329.6, 392, 440, 523.3, 587.3, 659.3];
+function musicTick() {
+  if (!S.settings.music || document.hidden || !sfxCtx()) return;
+  const n = MUSIC_NOTES[Math.floor(Math.random() * MUSIC_NOTES.length)], c = SFXS.ctx, o = c.createOscillator(), g = c.createGain(), t = c.currentTime, bell = skinId() === 'xmas';
+  o.type = bell ? 'triangle' : 'sine'; o.frequency.value = bell ? n * 2 : n;
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.035, t + .5); g.gain.exponentialRampToValueAtTime(0.0001, t + 3);
+  o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + 3.1);
+  if (SFXS.step++ % 4 === 0) { const o2 = c.createOscillator(), g2 = c.createGain(); o2.type = 'sine'; o2.frequency.value = n / 2; g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(.03, t + .8); g2.gain.exponentialRampToValueAtTime(0.0001, t + 4); o2.connect(g2); g2.connect(c.destination); o2.start(t); o2.stop(t + 4.1); }
+}
+function musicApply() { clearInterval(SFXS.timer); SFXS.timer = null; if (S.settings.music) SFXS.timer = setInterval(musicTick, 2300); }
+function setSfx(on) { S.settings.sfx = on; save(); if (on) sfx('ok'); render(); }
+function setMusic(on) { S.settings.music = on; save(); musicApply(); if (on) { sfxCtx(); musicTick(); } render(); }
+document.addEventListener('pointerdown', () => { if (S.settings.music && !SFXS.timer) { sfxCtx(); musicApply(); } }, { once: false, passive: true });
+musicApply();
+
+/* ---------- hoạt ảnh chúc mừng theo giao diện ---------- */
+const CELEB_SET = {
+  default: ['🎉', '⭐', '✨', '🎊', '🌟'], xmas: ['❄️', '⭐', '🎁', '🔔', '🎄'], tet: ['🌸', '🏵️', '🧧', '✨', '🎆'], valentine: ['💖', '💕', '🌹', '💌', '💗'],
+  trungthu: ['⭐', '🥮', '🏮', '🌕', '✨'], summer: ['🫧', '🌴', '🍦', '☀️', '🐚'], night: ['⭐', '🌙', '✨', '🌠', '🦉'], dark: ['⭐', '✨', '🎉', '🌟'],
+};
+function celebrate(kind, opt = {}) {
+  try {
+    if (S.settings.celebrate === false || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    const set = CELEB_SET[skinId()] || CELEB_SET.default, n = kind === 'big' ? 44 : 16;
+    let box = document.getElementById('celeb'); if (box) box.remove();
+    box = document.createElement('div'); box.id = 'celeb'; box.setAttribute('aria-hidden', 'true');
+    let h = '';
+    for (let i = 0; i < n; i++) {
+      const dx = (Math.random() - .5) * (kind === 'big' ? 340 : 220), up = 120 + Math.random() * (kind === 'big' ? 360 : 200), dn = 40 + Math.random() * 260, sz = 16 + Math.random() * 16, d = Math.random() * .25, rot = Math.round((Math.random() - .5) * 540);
+      h += `<i style="font-size:${sz.toFixed(0)}px;--dx:${dx.toFixed(0)}px;--up:${-up.toFixed(0)}px;--dn:${dn.toFixed(0)}px;--rot:${rot}deg;animation-delay:${d.toFixed(2)}s">${set[i % set.length]}</i>`;
+    }
+    box.innerHTML = h; document.body.appendChild(box); setTimeout(() => box.remove(), 2900);
+    if (kind === 'big' && opt.title) {
+      let c = document.getElementById('celebcard'); if (c) c.remove();
+      c = document.createElement('div'); c.id = 'celebcard'; c.setAttribute('role', 'status');
+      c.innerHTML = `<div class="cc-m">${DECO.panda(84, 'bob')}</div><b>${esc(opt.title)}</b>${opt.sub ? `<span>${esc(opt.sub)}</span>` : ''}`;
+      c.onclick = () => c.remove(); document.body.appendChild(c); setTimeout(() => c.remove(), 2800);
+    }
+  } catch (e) { }
+}
+function setCelebrate(on) { S.settings.celebrate = on; save(); if (on) celebrate('big', { title: 'Giỏi quá!', sub: 'Thử hoạt ảnh chúc mừng' }); render(); }
+
+/* ---------- chuỗi ngày học ---------- */
+const dayActive = k => { const d = S.days[k]; return !!(d && ((d.a || 0) + (d.cards || 0)) > 0); };
+function bestStreak() { const ks = Object.keys(S.days).filter(dayActive).sort(); let best = 0, run = 0, prev = null; for (const k of ks) { const n = Math.floor(Date.parse(k + 'T00:00:00Z') / 864e5); run = prev !== null && n === prev + 1 ? run + 1 : 1; prev = n; best = Math.max(best, run); } return best; }
+const STREAK_MARKS = [3, 7, 14, 30, 60, 100];
+let calOff = 0;
+function calHTML() {
+  const t = today(), d0 = new Date(t * 864e5), y = d0.getUTCFullYear(), m = d0.getUTCMonth() + calOff, first = new Date(Date.UTC(y, m, 1)), ym = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth(), 1));
+  const days = new Date(Date.UTC(ym.getUTCFullYear(), ym.getUTCMonth() + 1, 0)).getUTCDate(), lead = (ym.getUTCDay() + 6) % 7, base = Math.floor(ym.getTime() / 864e5);
+  let cells = '', act = 0;
+  for (let i = 0; i < lead; i++) cells += '<span class="cd e"></span>';
+  for (let i = 1; i <= days; i++) { const n = base + i - 1, k = dayKey(n), on = dayActive(k), fut = n > t; if (on) act++; cells += `<span class="cd ${on ? 'on' : ''} ${n === t ? 'now' : ''} ${fut ? 'fut' : ''}">${on ? '🔥' : i}${on ? `<small>${i}</small>` : ''}</span>`; }
+  return { html: `<div class="cal-h"><button onclick="calNav(-1)" aria-label="Tháng trước">‹</button><b>Tháng ${ym.getUTCMonth() + 1}/${ym.getUTCFullYear()}</b><button onclick="calNav(1)" aria-label="Tháng sau" ${calOff >= 0 ? 'disabled' : ''}>›</button></div><div class="cal-w">${['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map(x => `<span>${x}</span>`).join('')}</div><div class="cal-g">${cells}</div>`, act };
+}
+function streakBody() {
+  const cur = streak(), best = Math.max(bestStreak(), cur), nxt = STREAK_MARKS.find(x => x > cur) || null, cal = calHTML(), wk = weeklyInfo();
+  return `<div class="stk-top"><div><b>${cur}</b><span>chuỗi hiện tại</span></div><div><b>${best}</b><span>dài nhất</span></div><div><b>${cal.act}</b><span>ngày học tháng này</span></div></div>
+   ${cal.html}
+   <div class="stk-marks">${STREAK_MARKS.map(x => `<span class="${best >= x ? 'ok' : ''}">${best >= x ? '🔥' : '○'} ${x}</span>`).join('')}</div>
+   <div class="muted tiny" style="text-align:center;margin:2px 0 8px">${nxt ? `Còn ${nxt - cur} ngày nữa tới mốc ${nxt} ngày` : 'Bạn đã vượt mọi mốc chuỗi! 👑'}</div>
+   <div class="wk"><div class="row between"><b>🏆 Thử thách tuần</b><span class="muted tiny">${wk.left}</span></div><div>${esc(wk.t)}</div><div class="qbar"><s style="width:${Math.min(100, wk.n / wk.of * 100)}%"></s></div><div class="muted tiny">${wk.n}/${wk.of} ${wk.unit}${wk.done ? ' · ✅ đã xong, +50 XP' : ' · xong được +50 XP'}</div></div>`;
+}
+function calNav(d) { calOff = Math.min(0, calOff + d); const b = document.getElementById('stkBody'); if (b) b.innerHTML = streakBody(); }
+function streakModal() { calOff = 0; modal(`<div class="qhead"><div><b>🔥 Chuỗi ngày học</b><span>Học ít nhất 1 câu hoặc 1 thẻ mỗi ngày để giữ chuỗi</span></div><button class="x" onclick="closeModal()" aria-label="Đóng">✕</button></div><div id="stkBody">${streakBody()}</div><button class="btn block" style="margin-top:10px" onclick="closeModal()">Đóng</button>`); sfx('pop'); }
+document.addEventListener('click', e => { const s = e.target.closest && e.target.closest('.tchips span'); if (s && /🔥/.test(s.textContent) && DATA) streakModal(); });
+
+/* ---------- thử thách tuần ---------- */
+const weekStart = () => { const t = today(); return t - ((t + 3) % 7); };
+const weekKey = () => dayKey(weekStart());
+function weekSum(f) { let n = 0, a = 0; for (let t = weekStart(); t <= today(); t++) { const d = S.days[dayKey(t)]; if (!d) continue; n += d[f] || 0; if ((d.a || 0) + (d.cards || 0) > 0) a++; } return f === '#days' ? a : n; }
+const WK_POOL = [
+  { id: 'days5', t: 'Học ít nhất 5 ngày trong tuần', of: 5, unit: 'ngày', n: () => weekSum('#days') },
+  { id: 'ok120', t: 'Trả lời đúng 120 câu trong tuần', of: 120, unit: 'câu đúng', n: () => weekSum('ok') },
+  { id: 'cards60', t: 'Ôn 60 thẻ ghi nhớ trong tuần', of: 60, unit: 'thẻ', n: () => weekSum('cards') },
+  { id: 'streak4', t: 'Giữ chuỗi học 4 ngày liên tiếp', of: 4, unit: 'ngày liên tiếp', n: () => Math.min(4, streak()) },
+];
+function weeklyInfo() {
+  const w = WK_POOL[Math.floor(weekStart() / 7) % WK_POOL.length], n = Math.min(w.of, w.n()), left = 6 - ((today() + 3) % 7);
+  return { id: w.id, t: w.t, of: w.of, unit: w.unit, n, done: n >= w.of || !!(S.wk && S.wk[weekKey()]), left: left > 0 ? `còn ${left} ngày` : 'hôm nay là ngày cuối' };
+}
+function weeklyQuest() { const w = weeklyInfo(); return { id: 'wk', weekly: 1, ic: '🏆', t: 'Thử thách tuần: ' + w.t, s: 'Thưởng +50 XP · ' + w.left, n: w.n, of: w.of, unit: w.unit, done: w.done, go: "go('practice')" }; }
+
+/* ---------- huy hiệu ---------- */
+const sumDays = f => Object.values(S.days).reduce((a, d) => a + (d[f] || 0), 0);
+const lessonsPassed = () => Object.values(S.lessons || {}).filter(l => l && l.best !== null && l.best >= PASS).length;
+const BADGES = [
+  ['first', '🌱', 'Bước đầu', 'Trả lời câu hỏi đầu tiên', () => sumDays('a') >= 1],
+  ['s3', '🔥', 'Nóng máy', 'Học 3 ngày liên tiếp', () => bestStreak() >= 3],
+  ['s7', '🌟', 'Tuần lửa', 'Học 7 ngày liên tiếp', () => bestStreak() >= 7],
+  ['s30', '🏆', 'Kiên trì', 'Học 30 ngày liên tiếp', () => bestStreak() >= 30],
+  ['s100', '👑', 'Vua chuỗi', 'Học 100 ngày liên tiếp', () => bestStreak() >= 100],
+  ['xp100', '✨', '100 XP', 'Đạt 100 XP', () => xpTotal() >= 100],
+  ['xp500', '💎', '500 XP', 'Đạt 500 XP', () => xpTotal() >= 500],
+  ['xp2000', '🚀', '2000 XP', 'Đạt 2000 XP', () => xpTotal() >= 2000],
+  ['l1', '📘', 'Qua bài đầu', 'Qua 1 bài kiểm tra', () => lessonsPassed() >= 1],
+  ['l10', '📚', 'Mười bài', 'Qua 10 bài', () => lessonsPassed() >= 10],
+  ['l30', '🎓', 'Ba mươi bài', 'Qua 30 bài', () => lessonsPassed() >= 30],
+  ['w50', '🔤', '50 từ', 'Học 50 từ vựng', () => Object.keys(S.learnedV || {}).length >= 50],
+  ['w200', '🧠', '200 từ', 'Học 200 từ vựng', () => Object.keys(S.learnedV || {}).length >= 200],
+  ['perfect', '💯', 'Điểm tuyệt đối', 'Đạt 100% một bài kiểm tra', () => Object.values(S.lessons || {}).some(l => l && l.best === 100)],
+  ['ok500', '🎯', '500 câu đúng', 'Trả lời đúng 500 câu', () => sumDays('ok') >= 500],
+  ['cards100', '🃏', 'Bậc thầy thẻ', 'Ôn 100 thẻ ghi nhớ', () => sumDays('cards') >= 100],
+  ['chest7', '🎁', 'Rương vàng', 'Mở rương thưởng 7 lần', () => sumDays('qb') >= 7],
+  ['wk1', '🏅', 'Thử thách tuần', 'Hoàn thành 1 thử thách tuần', () => Object.keys(S.wk || {}).length >= 1],
+  ['wk5', '🥇', 'Chiến binh tuần', 'Hoàn thành 5 thử thách tuần', () => Object.keys(S.wk || {}).length >= 5],
+];
+function extrasCheck() {
+  try {
+    if (!S.badges) S.badges = {};
+    if (DATA) { const w = weeklyInfo(); S.wk = S.wk || {}; if (w.done && !S.wk[weekKey()] && w.n >= w.of) { S.wk[weekKey()] = dayKey(); save(); setTimeout(() => { toast('🏆 Xong thử thách tuần! +50 XP'); celebrate('big', { title: 'Hoàn thành thử thách tuần!', sub: '+50 XP' }); sfx('win'); }, 700); } }
+    const silent = !S.badgeInit; let got = [];
+    for (const [id, ic, name, desc, ok] of BADGES) { if (S.badges[id]) continue; let r = false; try { r = ok(); } catch (e) { } if (r) { S.badges[id] = dayKey(); got.push([ic, name]); } }
+    if (silent) { S.badgeInit = 1; save(); return; }
+    if (got.length) { save(); setTimeout(() => { toast(`🏅 Huy hiệu mới: ${got.map(g => g[0] + ' ' + g[1]).join(', ')}`); celebrate('big', { title: got.length > 1 ? `${got.length} huy hiệu mới!` : got[0][1], sub: got.length > 1 ? got.map(g => g[0]).join(' ') : 'Huy hiệu mới ' + got[0][0] }); sfx('badge'); }, 1200); }
+  } catch (e) { }
+}
+function xpWeekly() { return Object.keys(S.wk || {}).length * 50; }
+function badgeCard() {
+  const own = S.badges || {}, n = BADGES.filter(b => own[b[0]]).length;
+  return `<section class="card"><div class="section-title">🏅 Huy hiệu · ${n}/${BADGES.length}</div><div class="badges">${BADGES.map(([id, ic, name, desc]) => `<button class="bdg ${own[id] ? 'on' : ''}" onclick="toast('${own[id] ? '🏅 ' + name + ' · đạt ngày ' + own[id] : '🔒 ' + name + ': ' + desc}')" aria-label="${esc(name)}"><span>${ic}</span><small>${esc(name)}</small></button>`).join('')}</div></section>`;
+}
+function streakCard() {
+  const cur = streak(), wk = weeklyInfo();
+  return `<section class="card"><div class="section-title">🔥 Chuỗi ngày học</div><button class="stkbtn" onclick="streakModal()"><span class="stk-n">${cur}</span><span class="stk-t"><b>${cur ? cur + ' ngày liên tiếp' : 'Chưa có chuỗi'}</b><span>Bấm để xem lịch · dài nhất ${Math.max(bestStreak(), cur)} ngày</span></span><span class="stk-go">›</span></button>
+   <div class="wk mt"><div class="row between"><b>🏆 Thử thách tuần</b><span class="muted tiny">${wk.left}</span></div><div>${esc(wk.t)}</div><div class="qbar"><s style="width:${Math.min(100, wk.n / wk.of * 100)}%"></s></div><div class="muted tiny">${wk.n}/${wk.of} ${wk.unit}${wk.done ? ' · ✅ +50 XP' : ''}</div></div></section>`;
+}
+function soundCard() {
+  const on = S.settings.sfx !== false, mu = !!S.settings.music, ce = S.settings.celebrate !== false, en = S.settings.enScale || '1';
+  return `<section class="card"><div class="section-title">🔊 Âm thanh & hiệu ứng</div>
+   <div class="set"><span>Âm báo đúng / sai<br><span class="muted tiny">tiếng “ting” khi trả lời, hoàn thành</span></span><button class="chip ${on ? 'on' : ''}" onclick="setSfx(${!on})">${on ? 'Bật' : 'Tắt'}</button></div>
+   <div class="set"><span>Nhạc nền nhẹ<br><span class="muted tiny">giai điệu êm, rất nhỏ tiếng</span></span><button class="chip ${mu ? 'on' : ''}" onclick="setMusic(${!mu})">${mu ? 'Bật' : 'Tắt'}</button></div>
+   <div class="set"><span>Hoạt ảnh chúc mừng<br><span class="muted tiny">pháo hoa, hoa rơi theo giao diện</span></span><button class="chip ${ce ? 'on' : ''}" onclick="setCelebrate(${!ce})">${ce ? 'Bật' : 'Tắt'}</button></div>
+   <div class="set"><span>Cỡ chữ tiếng Anh<br><span class="muted tiny">riêng cho từ và câu tiếng Anh</span></span><span class="row" style="gap:6px">${[['1', 'Vừa'], ['1.15', 'Lớn'], ['1.3', 'Rất lớn']].map(([k, t]) => `<button class="chip ${en === k ? 'on' : ''}" onclick="setEnScale('${k}')">${t}</button>`).join('')}</span></div></section>`;
+}
+function setEnScale(k) { S.settings.enScale = k; save(); applyEnScale(); render(); }
+function applyEnScale() { document.documentElement.style.setProperty('--fze', S.settings.enScale || '1'); }
+applyEnScale();
+
+/* ---------- vuốt ngang: đổi tab bài học, sang câu kế ---------- */
+(function swipe() {
+  let x0 = 0, y0 = 0, t0 = 0, ok = false;
+  const hscroll = el => { for (; el && el !== document.body; el = el.parentElement) { if (el.scrollWidth > el.clientWidth + 4) { const o = getComputedStyle(el).overflowX; if (o === 'auto' || o === 'scroll') return true; } if (/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) return true; } return false; };
+  document.addEventListener('touchstart', e => { if (e.touches.length !== 1) { ok = false; return; } const t = e.touches[0]; x0 = t.clientX; y0 = t.clientY; t0 = Date.now(); ok = !hscroll(e.target) && !document.querySelector('#modal .modalbg'); }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!ok) return; ok = false; const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Math.abs(dx) < 80 || Math.abs(dy) > 45 || Math.abs(dx) < Math.abs(dy) * 2.2 || Date.now() - t0 > 600) return;
+    try {
+      if (page === 'lesson') { const tabs = ['text', 'vocab', 'grammar', 'ex'], i = tabs.indexOf(lessonTab), j = i + (dx < 0 ? 1 : -1); if (j >= 0 && j < tabs.length) { TTS.stop(); textMode.playing = -1; lessonTab = tabs[j]; render(); window.scrollTo(0, 0); sfx('tap'); } }
+      else if (page === 'quiz' && quiz && quiz.ans[quiz.i] && dx < 0) { nextQ(); }
+    } catch (err) { }
+  }, { passive: true });
+})();
+
+/* ---------- sao lưu: chọn nơi lưu · tự động hằng ngày ---------- */
+const BK = { fs: !!window.showDirectoryPicker, name: '', snaps: [], ready: false };
+function bkDB() { return new Promise((res, rej) => { try { const r = indexedDB.open('englab-bk', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
+async function bkGet(k) { try { const db = await bkDB(); return await new Promise(res => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => res(undefined); }); } catch (e) { return undefined; } }
+async function bkSet(k, v) { try { const db = await bkDB(); await new Promise(res => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = res; }); } catch (e) { } }
+const bkJson = () => JSON.stringify({ app: 'englab', ver: APP_VER, at: new Date().toISOString(), state: S });
+const bkFile = () => `EnglishLab_tien-do_${dayKey()}.json`;
+async function bkLoad() { const h = await bkGet('dir'); BK.name = h ? h.name : ''; BK.snaps = (await bkGet('snaps')) || []; BK.ready = true; if (page === 'me') render(); }
+async function bkPick() {
+  if (!BK.fs) { toast('Trình duyệt Android chưa cho chọn thư mục. Dùng nút “Lưu vào…” để chọn Drive/Tệp'); return; }
+  try { const h = await window.showDirectoryPicker({ mode: 'readwrite', id: 'englab', startIn: 'documents' }); await bkSet('dir', h); BK.name = h.name; S.settings.bkAuto = true; save(); await bkWrite(true); render(); } catch (e) { if (e && e.name !== 'AbortError') toast('Không chọn được thư mục'); }
+}
+async function bkWrite(ask) {
+  const h = await bkGet('dir'); if (!h) return false;
+  try {
+    let p = await h.queryPermission({ mode: 'readwrite' }); if (p !== 'granted' && ask) p = await h.requestPermission({ mode: 'readwrite' });
+    if (p !== 'granted') return false;
+    const f = await h.getFileHandle(bkFile(), { create: true }), w = await f.createWritable(); await w.write(bkJson()); await w.close();
+    S.lastBackup = Date.now(); S.bkDir = dayKey(); save(); if (ask) toast('✅ Đã lưu vào thư mục “' + h.name + '”'); return true;
+  } catch (e) { if (ask) toast('Không ghi được vào thư mục'); return false; }
+}
+async function bkClear() { await bkSet('dir', null); BK.name = ''; S.settings.bkAuto = false; save(); render(); }
+async function bkShare() {
+  try {
+    const f = new File([bkJson()], bkFile(), { type: 'application/json' });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: 'Sao lưu English Lab' }); S.lastBackup = Date.now(); save(); render(); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  exportBackup();
+}
+async function bkSnap() {
+  const k = dayKey(); let sn = (await bkGet('snaps')) || []; sn = sn.filter(x => x.k !== k); sn.unshift({ k, at: Date.now(), json: bkJson() }); sn = sn.slice(0, 7); await bkSet('snaps', sn); BK.snaps = sn; S.bkSnap = k; save();
+}
+async function bkAuto() {
+  try {
+    if (!DATA || S.settings.bkAuto === false || Object.keys(S.days).length < 1) return;
+    if (S.bkSnap !== dayKey()) await bkSnap();
+    if (BK.name && S.bkDir !== dayKey()) await bkWrite(false);
+    if (page === 'me') render();
+  } catch (e) { }
+}
+async function bkRestore(k) {
+  const x = BK.snaps.find(s => s.k === k); if (!x) return;
+  try { const j = JSON.parse(x.json); if (!confirm('Thay tiến độ hiện tại bằng bản tự lưu ngày ' + k + '?')) return; S = { ...structuredClone(DEFAULTS), ...j.state }; save(); toast('Đã khôi phục bản ngày ' + k); setTimeout(() => location.reload(), 600); } catch (e) { toast('Bản lưu không hợp lệ'); }
+}
+function bkCard() {
+  const auto = S.settings.bkAuto !== false, last = S.lastBackup ? new Date(S.lastBackup).toLocaleDateString('vi-VN') : 'chưa có';
+  return `<section class="card"><div class="section-title">Sao lưu & khôi phục tiến độ</div><p class="muted small" style="margin-top:0">Tiến độ chỉ nằm trên trình duyệt này. Xuất file sao lưu để chuyển sang máy khác hoặc phòng khi xóa dữ liệu trình duyệt.</p>
+   <p class="muted tiny" style="margin:-4px 0 8px">Lần sao lưu gần nhất: <b>${last}</b> · app sẽ nhắc sau 7 ngày.</p>
+   <div class="grid2"><button class="btn soft" onclick="exportBackup()">Xuất sao lưu</button><label class="btn ghost">Khôi phục<input type="file" accept=".json,application/json" class="hidden" onchange="importBackup(this.files[0])"></label></div>
+   <div class="bkrow"><button class="btn ghost block" onclick="bkShare()">📤 Lưu vào… (Drive, Tệp, Zalo…)</button></div>
+   <div class="bkrow"><button class="btn ghost block" onclick="bkPick()">📁 ${BK.name ? 'Đổi thư mục lưu' : 'Chọn thư mục lưu'}</button>${BK.name ? `<div class="muted tiny" style="margin-top:4px">Thư mục: <b>${esc(BK.name)}</b> · <a href="#" onclick="bkWrite(true);return false">lưu ngay</a> · <a href="#" onclick="bkClear();return false">bỏ chọn</a></div>` : ''}${BK.fs ? '' : '<div class="muted tiny" style="margin-top:4px">Chrome trên Android chưa hỗ trợ chọn thư mục (máy tính thì được). Dùng “Lưu vào…” để chọn nơi lưu.</div>'}</div>
+   <div class="set"><span>Tự lưu mỗi ngày<br><span class="muted tiny">giữ 7 bản gần nhất trong app${BK.name ? ' và ghi vào thư mục đã chọn' : ''}, chạy khi mở app</span></span><button class="chip ${auto ? 'on' : ''}" onclick="S.settings.bkAuto=${!auto};save();render()">${auto ? 'Bật' : 'Tắt'}</button></div>
+   ${BK.snaps.length ? `<div class="muted tiny" style="margin:6px 0 4px">Bản tự lưu (nằm trong trình duyệt, mất nếu xóa dữ liệu trình duyệt):</div><div class="bksn">${BK.snaps.map(x => `<button class="chip" onclick="bkRestore('${x.k}')">↩ ${x.k.slice(8)}/${x.k.slice(5, 7)}</button>`).join('')}</div>` : ''}</section>`;
+}
+bkLoad().then(() => setTimeout(bkAuto, 2500));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) bkAuto(); });
+
 /* ===== v6.2 · hạt rơi mờ trên mọi màn hình (lá; v6.4: tuyết / cánh hoa / trái tim theo giao diện). Chỉ trang trí, không chặn chạm ===== */
 const LEAF_KINDS = {
   leaf: ['#8CCB93', '#A9D98A', '#F2B65A', '#F0997A', '#74BF8B', '#D9C26A'],
   snow: ['#A9CCE8', '#8EC0E6', '#BCD8EE'],
   petal: ['#FFD43B', '#FF9DB8', '#FFC233', '#FFB3C6'],
-  heart: ['#FF6F91', '#F0587C', '#FFA3BA']
+  heart: ['#FF6F91', '#F0587C', '#FFA3BA'],
+  star: ['#FFE17A', '#FFD54A', '#FFF1B8'],
+  bubble: ['#6FCBE6', '#9ADFF0', '#B5E8F4']
 };
 function leavesBuild(kind) {
   try {
