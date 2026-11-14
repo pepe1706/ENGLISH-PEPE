@@ -1010,6 +1010,9 @@ html[data-dark] .nd2 .st small{background:color-mix(in srgb,var(--card) 90%,tran
 .page>.lazy{margin:0 0 10px}
 .hintw{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:4px 16px 8px}.hintw span{background:var(--ps);color:var(--pd);font-weight:800;border-radius:8px;padding:4px 9px;font-size:calc(13.5px*var(--fz))}
 
+.hardbtn{display:block;width:100%;margin:0 0 8px;padding:9px 12px;border-radius:10px;border:1.5px dashed #E3B24D;background:#FFF6DC;color:#8A5200;font:inherit;font-weight:800;font-size:calc(13.5px*var(--fz))}
+.hardnote{margin:0 0 8px;padding:8px 12px;border-radius:10px;background:#FFF6DC;color:#8A5200;font-weight:800;font-size:calc(13px*var(--fz));text-align:center}
+
 </style>
 </head>
 <body>
@@ -1354,6 +1357,11 @@ function highlight(text, items) {
 }
 
 /* ---------- giọng đọc (v3.2: MỘT giọng cho cả app, mặc định giọng US tự nhiên nhất) ---------- */
+/* chữ viết tắt có dấu chấm: máy đọc "Ms" rồi dừng ở dấu chấm → đọc liền thành từ đầy đủ */
+function speakFix(t) {
+  return String(t).replace(/\bMs\.?(?=\s)/g, 'Mizz').replace(/\bMrs\.?(?=\s)/g, 'Missus').replace(/\bMr\.?(?=\s)/g, 'Mister').replace(/\bDr\.?(?=\s)/g, 'Doctor')
+    .replace(/\bNo\.\s*(?=\d)/g, 'number ').replace(/\ba\.m\./gi, 'A M').replace(/\bp\.m\./gi, 'P M').replace(/\s*\/\s*/g, ', ');
+}
 const TTS = {
   voices: [], ok: 'speechSynthesis' in window, cur: null, token: 0,
   load() { if (!this.ok) return; const all = speechSynthesis.getVoices(); this.voices = all.filter(v => /^en[-_]/i.test(v.lang) || /^en$/i.test(v.lang)); },
@@ -1369,7 +1377,7 @@ const TTS = {
     if (!this.ok) { toast('Trình duyệt này không có giọng đọc.'); return; }
     speechSynthesis.cancel();
     const t = ++this.token;
-    const u = new SpeechSynthesisUtterance(String(text).replace(/\s*\/\s*/g, ', '));
+    const u = new SpeechSynthesisUtterance(speakFix(text));
     const v = this.best();
     if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-US';
     u.rate = (opt.rate || S.settings.rate) * (opt.slow ? 0.7 : 1);
@@ -2722,16 +2730,18 @@ function sentencesOf(pool, withGrammar = true) {
 const seenN = ref => (S.seenQ || {})[ref] || 0;
 const itemRef = it => typeof it === 'string' ? it : (it['Mã'] || it['Mã câu']);
 const fresher = items => shuffle(items).map(it => [seenN(itemRef(it)), it]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
-const KIND_D = { mean: 1, listen: 1, phrase: 1, stress: 1.5, ipa: 1.5, meanR: 2, phraseR: 2, fill: 2.5, translate: 3, dict: 3, arrange: 3.5, spell: 4, cloze: 4.5, pspell: 4.5, trans: 6, type: 6.5 };
-function qDiff(q) {
-  const len = q.en ? tokens(q.en).length : (q.kind === 'fill' || q.kind === 'cloze') ? tokens(q.prompt).length : String(q.answer || '').split(' ').length;
-  return (KIND_D[q.kind] || 3) + Math.min(len, 18) * 0.22 + Math.random() * 0.7;
+/* thứ hạng dạng bài: dễ (chọn đáp án) → trung bình (điền, ghép) → khó (tự gõ từ, gõ cụm) → khó nhất (gõ cả câu) */
+const KIND_D = { mean: 1, listen: 1.2, phrase: 1.4, stress: 1.6, ipa: 1.8, meanR: 2, phraseR: 2.2, fill: 2.5, translate: 3, dict: 3.2, arrange: 3.5, spell: 4, cloze: 4.5, pspell: 4.8, trans: 6, type: 6.5 };
+/* "kích thước" câu hỏi: số từ của câu cần đọc/gõ (×10) hoặc độ dài đáp án; ngắn → dài */
+function qSize(q) {
+  if (q.en) return tokens(q.en).length * 10;
+  if (q.kind === 'fill' || q.kind === 'cloze') return tokens(q.prompt).length * 10;
+  if (q.kind === 'translate') return tokens(q.answer).length * 10;
+  return tokens(q.answer || '').length * 10 + String(q.answer || '').length / 10;
 }
-/* dễ → khó, nhưng không để hai câu cùng dạng đứng liền nhau */
+/* sắp theo dạng dễ → khó, trong cùng dạng ngắn → dài (không xáo ngẫu nhiên) */
 function orderEasy(items) {
-  const rest = items.map(q => [qDiff(q), q]).sort((a, b) => a[0] - b[0]).map(x => x[1]), out = [];
-  while (rest.length) { const last = out.length ? out[out.length - 1].kind : ''; let i = rest.slice(0, 5).findIndex(q => q.kind !== last); if (i < 0) i = 0; out.push(rest.splice(i, 1)[0]); }
-  return out;
+  return items.map((q, n) => ({ q, r: KIND_D[q.kind] || 3, z: qSize(q), n })).sort((a, b) => a.r - b.r || a.z - b.z || a.n - b.n).map(x => x.q);
 }
 function build(kinds, items, n, toQ) {
   const out = [], used = new Set();
@@ -2809,6 +2819,8 @@ function openSess(meta, builder, fresh) {
   let resume = !!(s && s.items && s.items.length);
   /* làm xong rồi mà bấm lại → tạo bộ câu MỚI (không cho nhớ vị trí đáp án), điểm cao nhất vẫn giữ */
   if (resume && s.ans.filter(Boolean).length >= s.items.length) { resume = false; s = null; }
+  /* bộ câu cũ đã lưu: sắp lại phần chưa làm theo dễ → khó, ngắn → dài */
+  if (resume) { const idx = s.items.map((_, i) => i).filter(i => !s.ans[i]); const so = orderEasy(idx.map(i => s.items[i])); idx.forEach((i, k) => { s.items[i] = so[k]; }); }
   if (!resume) {
     let items = builder();
     if (!meta.noSort) items = orderEasy(items);
@@ -3084,7 +3096,7 @@ function quizPage() {
     const ans = !a.ok && !['type', 'trans', 'dict', 'arrange'].includes(q.kind) ? `<div class="fans"><small>Đáp án</small><b>${esc(q.answer)}</b>${a.val && (q.kind === 'spell' || q.kind === 'cloze') ? `<span class="you">bạn gõ: <s>${esc(a.val)}</s></span>` : ''}</div>` : '';
     fb = `<div class="fbsp" id="fbsp"></div><div class="feedback ${a.ok ? 'good' : 'bad'}" id="fbpanel" role="status"><div class="fhead"><span class="fm">${mas}</span><div class="ft"><div class="fh"><span>${a.ok ? 'Chính xác!' : 'Chưa đúng'}</span>${a.ok ? '<span class="xp">+10 XP</span>' : ''}</div>${praise}</div>${q.audioAfter ? `<button class="snd" onclick="say(${ja(q.audioAfter)},'${q.g || 'D'}')" aria-label="Nghe lại">${IC.sound}</button>` : ''}</div>
       ${ans}${detail ? `<div class="fdet">${detail}</div>` : ''}
-      <button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
+      ${hardBtn(q, a)}<button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
   } else {
     const ready = q.options ? q.sel != null : q.tokens && q.kind !== 'type' ? q.order.length === q.tokens.length : !!String(q.typed || '').trim();
     fb = `<div class="cksp"></div><div class="checkbar">${INPUT_KINDS.includes(q.kind) ? '' : `<button class="btn block" id="checkBtn" ${ready ? '' : 'disabled'} onclick="checkAns()">Check</button>`}<button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
@@ -3215,10 +3227,14 @@ function srsGrade(q, ok) {
   const c = S.srs[q.srsKey]; if (!c) return;
   const typed = INPUT_KINDS.includes(q.kind), g = ok ? (q.retry ? 3 : typed ? 5 : 4) : 0;
   if (c.due === null) bump('fresh');
+  q.srsPrev = { ...c };
   S.srs[q.srsKey] = { ...sm2(c, g), lk: q.kind };
   if (g >= 3) srsDone()[c.id] = 1;
   if (!ok && !q.retry && quiz) { const nq = srsQuestion(q.srsKey, true); if (nq) quiz.items.push(nq); }
 }
+/* đúng nhưng còn khó nhớ → hạ xuống mức "Khó" (ôn lại sớm hơn) */
+function srsHard() { const q = curQ(); if (!q || !q.srsKey || !q.srsPrev || q.hard) return; q.hard = 1; S.srs[q.srsKey] = { ...sm2(q.srsPrev, 3), lk: q.kind }; save(); render(); }
+const hardBtn = (q, a) => !(a.ok && q.srsKey && q.srsPrev) ? '' : q.hard ? `<div class="hardnote">😅 Đã đánh dấu Khó · ôn lại sau ${ivText(S.srs[q.srsKey].iv)}</div>` : `<button class="hardbtn" type="button" onclick="srsHard()">😅 Đúng nhưng còn khó nhớ → ôn sớm hơn</button>`;
 function spreadKinds(arr) { const out = [], rest = arr.slice(); while (rest.length) { const last = out.length ? out[out.length - 1].kind : ''; let i = rest.slice(0, 4).findIndex(q => q.kind !== last); if (i < 0) i = 0; out.push(rest.splice(i, 1)[0]); } return out; }
 function startSrs(filter, flip) {
   srsFilter = filter || 'all';
