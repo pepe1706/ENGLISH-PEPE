@@ -2070,7 +2070,11 @@ function pwaInit() {
   add('link', { rel: 'apple-touch-icon', href: 'icon-180.png' });
   add('meta', { name: 'apple-mobile-web-app-capable', content: 'yes' });
   add('meta', { name: 'apple-mobile-web-app-title', content: 'English Lab' });
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => { });
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'update') toast('Có bản mới! Đóng hẳn rồi mở lại app để cập nhật.'); });
+    const reg = () => navigator.serviceWorker.register('sw.js').catch(() => { });
+    document.readyState === 'complete' ? setTimeout(reg, 1500) : window.addEventListener('load', () => setTimeout(reg, 1500));
+  }
   window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); window._bip = e; if (page === 'me') render(); });
 }
 function isStandalone() { return matchMedia('(display-mode: standalone)').matches || navigator.standalone; }
@@ -3344,11 +3348,14 @@ function gateLoadCfg() {
 }
 async function gateStart() {
   if (!isWeb()) return;                                 // mở file trực tiếp: không khóa
+  GATE = gateLoad();
+  if (GATE) {   // đã có mã: vào học NGAY, nạp cấu hình + kiểm tra ngầm ở nền (không chờ mạng)
+    gateLoadCfg().then(devInit).then(() => { if (!gateCfg()) { gateScreen('nocfg'); return; } gateWatch(); gateVerify(); });
+    return;
+  }
   await gateLoadCfg(); await devInit();
   if (!gateCfg()) { gateScreen('nocfg'); return new Promise(() => { }); }
-  GATE = gateLoad();
   if (!GATE) { gateScreen(); return new Promise(res => { gateResolve = res; }); }
-  gateWatch(); gateVerify();                            // đã có mã: vào học luôn, kiểm tra ngầm
 }
 let gateWatching = false;
 function gateWatch() {
@@ -3841,7 +3848,7 @@ leavesBuild('leaf');
   if (DATA) lessonId = currentLessonId();
   pwaInit();
   if (!DATA && isWeb()) { importBusy = true; render(); const ok = await remoteSync(); if (!ok) { importBusy = false; render(); } }
-  else { render(); if (DATA) remoteSync(); }
+  else { render(); if (DATA) setTimeout(remoteSync, 5000); }   // đồng bộ Excel ở nền, không tranh với lúc mở app
   setTimeout(() => { try { questOnOpen(); } catch (e) { } }, 1100);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 })();
