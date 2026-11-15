@@ -1038,6 +1038,74 @@ html[data-dark] .selfbtn{background:#173826;border-color:#3F9D68;color:#9BE3B8}
 html[data-dark] .selfbtn small{color:#7FCB9C}
 html[data-dark] .selfnote{background:#173826;color:#9BE3B8}
 
+/* ===== Order Up! (v7.8) ===== */
+.ou{--oa:#e8742c;--ob:#fff;--oc:#ffbf3f;--od:#a3d96b;--ot:#ffb26b;max-width:980px;margin:0 auto;padding:10px 12px 24px}
+.page>.ou{padding:0}
+.ou button{font:inherit;color:var(--ink)}
+.ou-grid{display:grid;gap:10px}
+@media(min-width:800px){.ou-grid{grid-template-columns:1fr 1.1fr;align-items:start}}
+.ou-hud{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.ou-pill{background:var(--card);border:2px solid var(--line);border-radius:99px;padding:1px 12px;font-weight:800;white-space:nowrap}
+.ou-x{margin-left:auto;width:36px;height:36px;border-radius:50%;border:2px solid var(--line);background:var(--card);cursor:pointer}
+.ou-stage,.ou-counter{background:var(--card);border:2px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+.ou-stage{padding:0 12px 12px;background:linear-gradient(color-mix(in srgb,var(--ot) 40%,var(--card)),var(--card))}
+.ou-counter{padding:10px 12px 12px}
+.ou-aw{margin:0 -12px 10px;height:26px;background:repeating-linear-gradient(90deg,var(--oa) 0 28px,var(--ob) 28px 56px);border-bottom:2px solid var(--line);position:relative;z-index:2}
+.ou-row{display:flex;gap:10px;align-items:center;position:relative;z-index:1}
+#ouFace{flex:none;width:68px;height:68px;border-radius:50%;background:var(--od);border:2px solid var(--line);display:grid;place-items:center;font-size:42px;animation:ouIn .4s}
+#ouFace.vip{box-shadow:0 0 0 4px var(--oc)}
+#ouFace.yay{animation:ouYay .6s}
+.ou-bub{flex:1;position:relative;background:#fff;color:#1F2A37;border:2px solid var(--line);border-radius:14px;padding:8px 12px;min-height:68px}
+.ou-bub::before{content:"";position:absolute;left:-11px;top:24px;border:8px solid transparent;border-right:10px solid var(--line);border-left:0}
+.ou-tag{background:var(--oc);color:#1b1340;border-radius:8px;padding:0 6px;font-size:12px;font-weight:800}
+.ou-acts{display:flex;gap:6px;margin-top:6px}
+.ou-acts button,.ou-rp{font-size:13px;padding:1px 10px;border:2px solid var(--line);border-radius:10px;background:var(--oc);color:#1b1340!important;cursor:pointer}
+.ou-wave{display:inline-flex;gap:3px;align-items:center;height:18px;vertical-align:middle}
+.ou-wave s{width:5px;height:100%;background:var(--oa);border-radius:3px;animation:ouWv .9s ease-in-out infinite}
+.ou-wave s:nth-child(2){animation-delay:.1s}.ou-wave s:nth-child(3){animation-delay:.2s}.ou-wave s:nth-child(4){animation-delay:.3s}.ou-wave s:nth-child(5){animation-delay:.4s}
+.ou-pat{height:12px;margin-top:10px;border:2px solid var(--line);border-radius:99px;background:var(--card);overflow:hidden;position:relative;z-index:1}
+#ouPb{height:100%;width:100%;background:var(--od);transition:width .1s linear}
+.ou-deco{position:absolute;top:-30px;opacity:.8;pointer-events:none;animation:ouFall linear infinite;z-index:0}
+#ouPlate{min-height:76px;display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center;justify-content:center;border:2px dashed var(--line);border-radius:40px;padding:4px 12px;background:var(--bg)}
+#ouPlate i{font-style:normal;font-size:30px}#ouPlate i.m{font-size:46px}
+#ouPlate sub{font-size:13px;font-weight:800;background:var(--oc);color:#1b1340;border-radius:7px;padding:0 4px;margin-left:2px}
+#ouPlate em{color:var(--muted);font-size:14px}
+.ou-tabs{display:flex;gap:5px;margin:10px 0 8px}
+.ou-tab{flex:1;min-width:0;padding:2px 1px;display:flex;flex-direction:column;align-items:center;font-size:11px;line-height:1.1;border:2px solid var(--line);border-radius:10px;background:var(--card);position:relative;cursor:pointer}
+.ou-tab b{font-size:20px}
+.ou-tab.cur{background:var(--oc);color:#1b1340}
+.ou-tab.done::after{content:"✓";position:absolute;top:-7px;right:-3px;font-size:10px;background:var(--od);color:#1b1340;border:2px solid var(--line);border-radius:99px;width:17px;height:17px;line-height:13px;text-align:center}
+.ou-tab.off{opacity:.35;pointer-events:none}
+.ou-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:7px;min-height:74px;align-content:start}
+.ou-chip{padding:3px 6px;display:flex;flex-direction:column;align-items:center;line-height:1.1;border:2px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
+.ou-chip b{font-size:26px}.ou-chip span{font-size:12.5px}.ou-chip small{font-size:11px;color:var(--muted)}
+.ou-chip.on{background:var(--od);color:#1b1340}.ou-chip.on small{color:#1b1340}
+.ou-serve{width:100%;margin-top:10px;padding:9px;font-size:20px;font-weight:800;border:2px solid var(--line);border-radius:14px;background:var(--oc);color:#1b1340!important;cursor:pointer}
+.ou-serve:active,.ou-chip:active{transform:translateY(2px)}
+.ou-row2{display:flex;flex-wrap:wrap;gap:6px}
+.ou-row2 .chip.on{background:var(--green-soft);border-color:var(--green)}
+.ou-fb{position:fixed;inset:0;background:rgba(10,15,30,.6);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}
+.ou-fb[hidden]{display:none}
+.ou-card{max-width:420px;width:100%;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;text-align:center;max-height:92vh;overflow-y:auto}
+.ou-card.static{margin:0 auto}
+.ou-card h2{margin:0 0 6px;color:var(--oa)}.ou-card h2.okc{color:var(--green)}
+.ou-em{font-size:38px;margin:4px 0}
+.ou-line{background:var(--bg);border-radius:10px;padding:8px;filter:blur(7px);cursor:pointer}.ou-line.on{filter:none}
+.ou-ch{display:block;width:100%;margin:6px 0;padding:9px 10px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer}
+.ou-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.ou-stats div{background:var(--bg);border:2px solid var(--line);border-radius:12px;padding:4px}.ou-stats b{display:block;font-size:24px}.ou-stats small{font-size:12px;color:var(--muted)}
+.ou-mi{text-align:left;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:14px}.ou-mi small{display:block;color:var(--muted)}
+.ou-fly{position:fixed;left:50%;top:40%;transform:translateX(-50%);font-size:40px;font-weight:900;color:var(--oc);-webkit-text-stroke:6px #1b1340;paint-order:stroke fill;pointer-events:none;animation:ouFly 1s forwards;z-index:70}
+.ou-tile{display:flex;gap:12px;align-items:center;cursor:pointer;border-color:var(--green)}
+.ou-tile .ic{font-size:36px}
+@keyframes ouIn{from{transform:translateX(-50px) scale(.6);opacity:0}}
+@keyframes ouYay{30%{transform:translateY(-14px) scale(1.12)}}
+@keyframes ouWv{50%{transform:scaleY(.25)}}
+@keyframes ouFall{to{transform:translateY(300px) rotate(300deg)}}
+@keyframes ouFly{to{transform:translate(-50%,-90px);opacity:0}}
+@media(max-height:720px){#ouFace{width:58px;height:58px;font-size:36px}.ou-bub{min-height:58px}#ouPlate{min-height:58px}#ouPlate i.m{font-size:38px}#ouPlate i{font-size:24px}}
+@media(prefers-reduced-motion:reduce){.ou *{animation:none!important}.ou-deco{display:none}}
+
 </style>
 </head>
 <body>
@@ -1161,7 +1229,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.7';
+const APP_VER = '7.8';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -2029,12 +2097,12 @@ function openLesson(id, tab) { if (DATA && !lessonUnlocked(id)) return toast(loc
 
 function render() {
   if (!DATA) return renderImport();
-  const navOn = { lesson: 'home', lessons: 'home', quiz: '', qlist: 'practice', srs: 'practice', result: '' }[page] ?? page;
+  const navOn = { lesson: 'home', lessons: 'home', quiz: '', qlist: 'practice', srs: 'practice', orderup: 'practice', result: '' }[page] ?? page;
   const inQuiz = ['quiz', 'srs', 'result'].includes(page);
-  $('#nav').classList.toggle('hidden', page === 'quiz' || page === 'srs');
+  $('#nav').classList.toggle('hidden', page === 'quiz' || page === 'srs' || (page === 'orderup' && OU.scr === 'play'));
   const due = srsDueCount();
   $('#nav').innerHTML = NAV.map(([k, t]) => `<button class="${navOn === k ? 'on' : ''}" onclick="go('${k}')" aria-label="${t}">${skinNavIcon(k) || IC[k]}${k === 'practice' && due ? `<span class="dot">${due > 99 ? '99+' : due}</span>` : ''}<span>${t}</span></button>`).join('');
-  const P = { today: todayPage, home: homePage, lessons: lessonsPage, lesson: lessonPage, lookup: lookupPage, practice: practicePage, review: practicePage, me: mePage, quiz: quizPage, qlist: qlistPage, srs: srsPage, result: resultPage }[page] || homePage;
+  const P = { today: todayPage, home: homePage, lessons: lessonsPage, lesson: lessonPage, lookup: lookupPage, practice: practicePage, review: practicePage, me: mePage, quiz: quizPage, qlist: qlistPage, srs: srsPage, orderup: orderUpPage, result: resultPage }[page] || homePage;
   $('#view').dataset.page = page;
   $('#view').innerHTML = P();
   decorate();
@@ -3361,6 +3429,7 @@ function practicePage() {
   const stepCards = DRILL.filter(d => d.ks.some(k => types.some(t => t.k === k))).map((d, i) => typeCard({ k: 'st:' + d.n, t: d.name, d: d.desc, i: d.ic, c: '', no: i + 1, go: sc => `startPractice('st:${d.n}','${sc}')` }, practiceScope)).join('');
   return `<div class="band compact"><h1>Ôn & Luyện</h1><div class="sub">Ôn mỗi ngày · luyện chủ động theo từng bước</div></div><div class="page">
    ${reviewBlock()}
+   <section class="card ou-tile" onclick="go('orderup')"><div class="ic">🍔</div><div><b>Order Up! · Game quán ăn</b><div class="muted small">Nghe khách order bằng tiếng Anh, làm đúng món. 8 cấp, đổi giao diện theo mùa.</div></div></section>
    <h2 class="st">🧩 Luyện chủ động <span class="muted tiny">tùy bạn chọn</span></h2>
    <section class="card"><div class="section-title">Luyện nội dung nào?</div><select class="sel" style="width:100%" onchange="practiceScope=this.value;render()">${scopes.map(([k, t]) => `<option value="${k}" ${practiceScope === k ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
    ${['lesson', 'cp'].includes(practiceScope) ? `<div class="row mt" style="gap:6px"><select class="sel" style="flex:1" onchange="lessonId=this.value;S.lastLesson=lessonId;save();render()">${DATA.lessons.map(l => `<option value="${l['Mã bài']}" ${l['Mã bài'] === lessonId ? 'selected' : ''}>${esc(l['Mã bài'] + ' · ' + l['Chủ đề'])}</option>`).join('')}</select></div>` : ''}
@@ -3491,6 +3560,232 @@ function srsPage() {
    <div class="sf-actions">${show ? `<div class="grades"><button class="g0" onclick="gradeCard(0)">Quên<small>${prev[0]}</small></button><button class="g3" onclick="gradeCard(3)">Khó<small>${prev[1]}</small></button><button class="g4" onclick="gradeCard(4)">Nhớ<small>${prev[2]}</small></button><button class="g5" onclick="gradeCard(5)">Dễ<small>${prev[3]}</small></button></div>
    <p class="muted tiny" style="text-align:center;margin:8px 0">Số dưới mỗi nút = lần ôn tiếp theo</p>` : `<button class="btn amber block" onclick="srsReveal()">Hiện đáp án</button><p class="muted tiny" style="text-align:center;margin:8px 0">Tự nhớ (hoặc nói to) đáp án trước rồi mới mở.</p>`}
    <button class="chip" onclick="openItem('${c.id}')">Xem chi tiết</button></div>`;
+}
+
+/* ===== v7.8 · Order Up! — game học tiếng Anh qua quán ăn (cấp 1–8, giao diện theo mùa) ===== */
+const OU_M = { burger: ['🍔', 'burger', 'bánh burger'], hotdog: ['🌭', 'hot dog', 'xúc xích kẹp'], pizza: ['🍕', 'slice of pizza', 'miếng pizza'], taco: ['🌮', 'taco', 'bánh taco'] };
+const OU_T = { cheese: ['🧀', 'cheese', 'phô mai'], tomato: ['🍅', 'tomato', 'cà chua'], lettuce: ['🥬', 'lettuce', 'xà lách'], onion: ['🧅', 'onion', 'hành tây'] };
+const OU_S = { fries: ['🍟', 'fries', 'khoai tây chiên'], donut: ['🍩', 'donut', 'bánh donut'], icecream: ['🍦', 'ice cream', 'kem'] };
+const OU_D = { cola: ['🥤', 'cola', 'ly cô-ca'], juice: ['🧃', 'orange juice', 'ly nước cam'], water: ['💧', 'water', 'ly nước lọc'], coffee: ['☕', 'coffee', 'ly cà phê'], tea: ['🧋', 'milk tea', 'ly trà sữa'] };
+const OU_Z = { small: ['S', 'small', 'nhỏ'], large: ['L', 'large', 'lớn'] };
+const OU_S0 = { ...OU_S }, OU_D0 = { ...OU_D };
+const OU_PR = { burger: 5, hotdog: 3.5, pizza: 4, taco: 3, fries: 2, donut: 1.5, icecream: 2, cola: 1.5, juice: 2, water: 1, coffee: 2.5, tea: 3.5 };
+const OU_COLD = ['cola', 'juice', 'water', 'lemonade'];
+const OU_FACES = ['👩🏼‍🎓', '🧑🏽‍🎤', '👦🏻', '👧🏽', '🧔🏻', '👵🏼', '🧑🏾‍💻', '👨🏽‍🎨', '👩🏻‍🦰', '🧑🏻‍🚀'];
+const OU_LV = ['Café', 'Quán ăn', 'Nhà hàng', 'Số lượng', 'Thu ngân', 'Yêu cầu đặc biệt', 'Gọi điện giao hàng', 'Giờ cao điểm'];
+const OU_LVD = ['Một món chính và một đồ uống.', 'Thêm đồ ăn kèm, cỡ ly, nhân thêm (with…).', 'Câu phủ định: “with everything, but no onion”.', 'Số lượng: “two burgers and three coffees”.', 'Có giá tiền: tính tổng và thối lại.', 'Dị ứng, no ice, to go / for here.', 'Khách gọi điện: nghe tên đánh vần, số điện thoại.', 'Có khách đặt bàn và khách phàn nàn; VIP và giờ cao điểm.'];
+const OU_TH = {
+  spring: { n: 'Mùa xuân', e: '🌸', c: ['#ff6fae', '#ffffff', '#ffe066', '#7be0a8', '#ff9ec7'], deco: ['🌸', '🌷', '🦋'], hi: ['Spring is here! ', 'What a lovely day! '], s: { cupcake: ['🧁', 'cupcake', 'bánh cupcake'] }, d: { greentea: ['🍵', 'green tea', 'ly trà xanh'] } },
+  summer: { n: 'Mùa hè', e: '☀️', c: ['#18b4d8', '#ffffff', '#ffd23f', '#38d9e8', '#7fe3ff'], deco: ['☀️', '🌴', '🍉'], hi: ['It’s so hot today! ', 'Summer is here! '], s: { watermelon: ['🍉', 'watermelon', 'dưa hấu'] }, d: { lemonade: ['🍋', 'lemonade', 'ly nước chanh'] } },
+  autumn: { n: 'Mùa thu', e: '🍂', c: ['#e8742c', '#fff1d6', '#ffbf3f', '#a3d96b', '#ffb26b'], deco: ['🍂', '🍁', '🥮'], hi: ['The leaves are so pretty! ', 'Happy Mid-Autumn! '], s: { mooncake: ['🥮', 'mooncake', 'bánh trung thu'] }, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
+  halloween: { n: 'Halloween', e: '🎃', c: ['#ff7a00', '#2b1a3d', '#ffd000', '#b388ff', '#9c6bff'], deco: ['🎃', '👻', '🦇'], hi: ['Trick or treat! ', 'Happy Halloween! '], s: { pie: ['🥧', 'pumpkin pie', 'bánh bí ngô'], candy: ['🍬', 'candy', 'kẹo'] }, d: {} },
+  christmas: { n: 'Giáng sinh', e: '🎄', c: ['#e63946', '#ffffff', '#ffd23f', '#3ddc84', '#8be3a8'], deco: ['❄️', '🎄', '⭐'], hi: ['Merry Christmas! ', 'Happy holidays! '], s: { cookie: ['🍪', 'gingerbread cookie', 'bánh quy gừng'] }, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
+  tet: { n: 'Tết', e: '🧧', c: ['#d62828', '#ffd23f', '#ffd23f', '#ff9f1c', '#ffcf6b'], deco: ['🧧', '🏮', '🌼'], hi: ['Happy New Year! ', 'Happy Lunar New Year! '], s: { tangerine: ['🍊', 'tangerine', 'quýt'], dumpling: ['🥟', 'dumplings', 'bánh sủi cảo'] }, d: {} },
+};
+const OU = { scr: 'start', start: 1, L: 1, hearts: 3, coins: 0, served: 0, combo: 0, bestCombo: 0, o: null, s: null, left: 0, T: 1, paused: true, peek: false, tab: 'main', wrong: [], th: 'autumn' };
+const ouSt = () => (S.ou = S.ou || { best: 0, max: 1, miss: [], theme: 'auto', mode: 'listen' });
+const ouR = n => Math.floor(Math.random() * n), ouP = a => a[ouR(a.length)], ouK = o => Object.keys(o);
+const ouW = ['', 'one', 'two', 'three', 'four', 'five', 'six'];
+const ouA = n => (/^[aeiou]/i.test(n) ? 'an ' : 'a ') + n;
+const ouLst = (a, w) => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' ' + w + ' ' + a[a.length - 1];
+const ouPl = n => /^slice of/.test(n) ? n.replace('slice', 'slices') : /(s|ch|sh|x)$/.test(n) ? n + 'es' : n + 's';
+const ouM = n => '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, '');
+const pr = k => OU_PR[k] || 2.5;
+function ouAuto() { const d = new Date(), m = d.getMonth() + 1, day = d.getDate(); if (m === 12) return 'christmas'; if (m === 10 && day >= 15) return 'halloween'; if (m === 1 || (m === 2 && day <= 20)) return 'tet'; if (m <= 5) return 'spring'; if (m <= 8) return 'summer'; return 'autumn'; }
+function ouApply() {
+  const st = ouSt(); OU.th = st.theme === 'auto' || !OU_TH[st.theme] ? ouAuto() : st.theme; const t = OU_TH[OU.th];
+  ouK(OU_S).forEach(x => delete OU_S[x]); Object.assign(OU_S, OU_S0, t.s); ouK(OU_D).forEach(x => delete OU_D[x]); Object.assign(OU_D, OU_D0, t.d);
+}
+const ouVars = () => { const c = OU_TH[OU.th].c; return `--oa:${c[0]};--ob:${c[1]};--oc:${c[2]};--od:${c[3]};--ot:${c[4]}`; };
+function ouChoice(good, bad) { const s = shuffle([good, ...shuffle(bad.filter(x => x !== good)).slice(0, 2)]); return { ch: s, ok: s.indexOf(good) }; }
+function ouTot(o) { return o.qm * pr(o.main) + (o.side ? pr(o.side) : 0) + o.qd * (pr(o.drink) + (o.size === 'large' ? 1 : 0)); }
+
+/* ---------- tạo khách + câu order ---------- */
+function ouGen() {
+  const L = OU.L, th = OU_TH[OU.th];
+  if (L >= 8) { const r = ouR(10); if (r < 2) return ouRes(); if (r < 4) return ouComp(); }
+  const o = { kind: 'food', main: ouP(ouK(OU_M)), top: [], every: false, no: [], allergy: false, side: null, drink: ouP(ouK(OU_D)), size: null, qm: 1, qd: 1, noice: false, where: null, fu: [], phone: L >= 7 && ouR(10) < 5 };
+  if (L >= 2) {
+    if (ouR(10) < 7) o.side = ouP(ouK(OU_S)); o.size = ouP(['small', 'large']);
+    if (o.main === 'burger') {
+      const t = ouK(OU_T);
+      if (L >= 3 && ouR(10) < 6) { o.every = true; o.no = shuffle(t).slice(0, 1 + ouR(2)); o.top = t.filter(k => !o.no.includes(k)); o.allergy = L >= 6 && ouR(2) === 0; }
+      else o.top = shuffle(t).slice(0, 1 + ouR(3));
+    }
+  }
+  if (L >= 4) { o.qm = 1 + ouR(3); o.qd = 1 + ouR(3); }
+  if (L >= 6) { o.where = ouP(['go', 'here']); o.noice = OU_COLD.includes(o.drink) && ouR(10) < 4; }
+  const m = OU_M[o.main][1], d = OU_D[o.drink][1], nm = a => a.map(k => OU_T[k][1]);
+  let en = (o.phone ? ouP(['Hello? ', 'Hi, is this the café? ']) : ouP(['Hi! ', 'Hello! ', 'Hey there! ', 'Good morning! '].concat(th.hi, th.hi))) + ouP(['I’d like ', 'Can I get ', 'Could I have ']) + (o.qm > 1 ? ouW[o.qm] + ' ' + ouPl(m) : ouA(m));
+  let tp = '';
+  if (o.every) tp = o.allergy ? ' with everything. Oh, and I’m allergic to ' + ouLst(nm(o.no), 'and') : ' with everything, but no ' + ouLst(nm(o.no), 'or');
+  else if (o.top.length) tp = ' with ' + ouLst(nm(o.top), 'and');
+  en += tp + '.';
+  if (o.side) en += ' Also, ' + ((n => /s$/.test(n) ? 'some ' + n : ouA(n))(OU_S[o.side][1])) + '.';
+  const dz = (o.size ? o.size + ' ' : '');
+  en += ' And ' + (o.qd > 1 ? ouW[o.qd] + ' ' + dz + ouPl(d) : ouA(dz + d)) + (o.noice ? ' with no ice' : '') + (o.where ? '.' : ', please.');
+  if (o.where) en += o.where === 'go' ? ' To go, please.' : ' For here, please.';
+  const vn = a => a.map(k => OU_T[k][2]);
+  let vi = (o.phone ? '(Gọi điện) ' : '') + 'Cho mình ' + (o.qm > 1 ? o.qm : 'một') + ' ' + OU_M[o.main][2];
+  if (o.every) vi += o.allergy ? ' đầy đủ nhân. À, mình bị dị ứng ' + ouLst(vn(o.no), 'và') : ' đầy đủ nhân, nhưng không ' + ouLst(vn(o.no), 'và');
+  else if (o.top.length) vi += ', thêm ' + ouLst(vn(o.top), 'và');
+  vi += '.';
+  if (o.side) vi += ' Ăn kèm ' + OU_S[o.side][2] + '.';
+  vi += ' Và ' + (o.qd > 1 ? o.qd : 'một') + ' ' + OU_D[o.drink][2] + (o.size ? ' cỡ ' + OU_Z[o.size][2] : '') + (o.noice ? ', không đá' : '') + '.';
+  if (o.where) vi += o.where === 'go' ? ' Mang đi.' : ' Ăn tại quán.';
+  o.en = en; o.vi = vi;
+  if (o.phone) {
+    const names = ['Anna', 'Ben', 'Chloe', 'Daniel', 'Emma', 'Frank', 'Grace', 'Henry', 'Linda', 'Mark'], n = ouP(names), dg = Array.from({ length: 7 }, () => ouR(10));
+    const fm = a => a.slice(0, 3).join('') + '-' + a.slice(3).join(''), mut = () => { const c = dg.slice(), i = ouR(7); c[i] = (c[i] + 1 + ouR(8)) % 10; return fm(c); };
+    o.fu.push({ line: `My name is ${n}. That’s ${n.toUpperCase().split('').join(', ')}.`, q: 'Tên khách là gì?', ...ouChoice(n, shuffle(names.filter(x => x !== n)).slice(0, 3)), why: 'Tên khách: ' + n });
+    o.fu.push({ line: `My number is ${dg.slice(0, 3).join(' ')}, ${dg.slice(3).join(' ')}.`, q: 'Số điện thoại là gì?', ...ouChoice(fm(dg), (() => { const s = new Set(); while (s.size < 3) { const m = mut(); if (m !== fm(dg)) s.add(m); } return [...s]; })()), why: 'Số điện thoại: ' + fm(dg) });
+  }
+  if (L >= 5) {
+    const t = ouTot(o), bill = [10, 20, 50, 100].find(b => b > t);
+    const parts = [o.qm + '×' + ouM(pr(o.main)), o.side ? ouM(pr(o.side)) : '', o.qd + '×' + ouM(pr(o.drink) + (o.size === 'large' ? 1 : 0))].filter(Boolean).join(' + ');
+    o.fu.push({ line: 'How much is that, please?', q: 'Tổng tiền là bao nhiêu? (xem giá trên từng món)', ...ouChoice(ouM(t), [t + 1, t - 1, t + .5, t - .5, t + 2].map(ouM)), why: parts + ' = ' + ouM(t) + ' (ly size L +$1)' });
+    o.fu.push({ line: 'Here’s ' + ouM(bill) + '.', q: 'Thối lại bao nhiêu?', ...ouChoice(ouM(bill - t), [bill - t + 1, bill - t - 1, bill - t + .5, bill - t - .5, bill - t + 2].map(ouM)), why: ouM(bill) + ' − ' + ouM(t) + ' = ' + ouM(bill - t) });
+  }
+  return o;
+}
+function ouRes() {
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], dv = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ nhật'], ts = [['six', '6:00'], ['six thirty', '6:30'], ['seven', '7:00'], ['seven thirty', '7:30'], ['eight', '8:00']];
+  const n = 2 + ouR(5), d = ouR(7), t = ouR(5), f = (n, d, t) => n + ' người · ' + dv[d] + ' · ' + ts[t][1] + ' tối';
+  const n2 = n % 6 + 2, d2 = (d + 1 + ouR(5)) % 7, t2 = (t + 1 + ouR(3)) % 5, vi = `Cho mình đặt bàn ${n} người vào ${dv[d]} lúc ${ts[t][1]} tối.`;
+  return { kind: 'res', skip: true, phone: ouR(2) === 0, en: `Hi! I’d like to book a table for ${ouW[n]} on ${days[d]} at ${ts[t][0]} p.m.`, vi, fu: [{ line: null, q: 'Ghi đặt bàn nào cho đúng?', ...ouChoice(f(n, d, t), [f(n2, d, t), f(n, d2, t), f(n, d, t2)]), why: vi }] };
+}
+function ouComp() {
+  const C = [
+    ['This isn’t what I ordered!', 'Món này không phải món tôi gọi!', ['I’m so sorry! Let me fix that right away.', 'That’s not my problem.', 'Yes, it is what you ordered.'], 'Xin lỗi và sửa ngay là cách đáp lịch sự.'],
+    ['My coffee is cold.', 'Cà phê của tôi bị nguội.', ['I’m sorry about that. I’ll make you a fresh one.', 'It was hot a minute ago.', 'You should drink faster.'], 'Xin lỗi rồi đề nghị làm ly mới.'],
+    ['I’ve been waiting for thirty minutes!', 'Tôi đợi ba mươi phút rồi!', ['I apologize for the wait. Your order will be ready in two minutes.', 'Please wait more.', 'I don’t know.'], 'Xin lỗi vì chờ lâu và báo thời gian cụ thể.'],
+    ['Can I get a refund, please?', 'Cho tôi hoàn tiền được không?', ['Of course. I’ll take care of your refund now.', 'No. Please go away.', 'What is a refund?'], 'Đồng ý lịch sự và xử lý ngay.'],
+  ], c = ouP(C);
+  return { kind: 'comp', skip: true, phone: false, en: c[0], vi: c[1], fu: [{ line: null, q: 'Trả lời khách thế nào cho lịch sự?', ...ouChoice(c[2][0], c[2].slice(1)), why: c[3] }] };
+}
+
+/* ---------- giọng đọc & tiện ích giao diện ---------- */
+function ouSay(t, ph) { try { TTS.speak(t, { rate: (S.settings.rate || 1) * (OU.L === 1 ? .9 : 1) * (ph ? 1.05 : 1) }); } catch (e) { } }
+function ouFly(t) { const d = document.createElement('div'); d.className = 'ou-fly'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 1000); }
+function ouCard(h) { const f = $('#ouFb'); if (!f) return; f.innerHTML = '<div class="ou-card">' + h + '</div>'; f.hidden = false; }
+const ouHide = () => { const f = $('#ouFb'); if (f) f.hidden = true; };
+function ouLog(en, vi) { const st = ouSt(); st.miss.unshift({ en, vi }); st.miss = st.miss.slice(0, 40); OU.wrong.push({ en, vi }); save(); }
+function ouEml(o) { if (o.skip) return o.kind === 'res' ? '📅' : '😠'; return (o.qm > 1 ? o.qm + '×' : '') + OU_M[o.main][0] + o.top.map(k => OU_T[k][0]).join('') + (o.side ? OU_S[o.side][0] : '') + ' ' + (o.qd > 1 ? o.qd + '×' : '') + OU_D[o.drink][0] + (o.size ? ' ' + OU_Z[o.size][0] : '') + (o.noice ? ' 🧊✗' : '') + (o.where ? (o.where === 'go' ? ' 🥡' : ' 🍽️') : ''); }
+function ouHud() { if (!$('#ouHp')) return; $('#ouHp').textContent = '❤️'.repeat(Math.max(0, OU.hearts)) + '🖤'.repeat(Math.max(0, 3 - OU.hearts)); $('#ouLv').textContent = 'Cấp ' + OU.L + ' · ' + OU_LV[OU.L - 1]; $('#ouCo').textContent = '🪙 ' + OU.coins + (OU.combo > 1 ? ' 🔥' + OU.combo : ''); }
+function ouBub() {
+  if (!$('#ouSay') || !OU.o) return; const s = ouSt().mode === 'read' || OU.peek || !TTS.ok;
+  $('#ouSay').innerHTML = (OU.o.tag ? '<span class="ou-tag">' + OU.o.tag + '</span> ' : '') + (s ? esc(OU.o.en) : '<span class="ou-wave"><s></s><s></s><s></s><s></s><s></s></span> Nghe kỹ nhé…');
+  $('#ouPeek').hidden = s; $('#ouRe').hidden = ouSt().mode === 'read';
+}
+function ouPlate() {
+  const s = OU.s, p = []; if (!s || !$('#ouPlate')) return;
+  if (s.main) p.push('<i class="m">' + OU_M[s.main][0] + (s.qm > 1 ? '<sub>' + s.qm + '×</sub>' : '') + '</i>');
+  [...s.top].forEach(k => p.push('<i>' + OU_T[k][0] + '</i>')); if (s.side) p.push('<i>' + OU_S[s.side][0] + '</i>');
+  if (s.drink) p.push('<i class="m">' + OU_D[s.drink][0] + (s.qd > 1 ? '<sub>' + s.qd + '×</sub>' : '') + (s.size ? '<sub>' + OU_Z[s.size][0] + '</sub>' : '') + '</i>');
+  if (s.noice) p.push('<i>🧊✗</i>'); if (s.where) p.push('<i>' + (s.where === 'go' ? '🥡' : '🍽️') + '</i>');
+  $('#ouPlate').innerHTML = p.join('') || '<em>Chạm vào món bên dưới để bắt đầu</em>';
+}
+const OU_TABS = [['main', '🍔', 'Món chính', 1], ['top', '🧀', 'Nhân', 2], ['side', '🍟', 'Ăn kèm', 2], ['drink', '🥤', 'Đồ uống', 1], ['size', '📏', 'Cỡ ly', 2], ['qty', '🔢', 'Số lượng', 4], ['note', '📝', 'Ghi chú', 6]];
+const ouTabs = () => OU_TABS.filter(t => OU.L >= t[3]);
+const ouHas = g => { const s = OU.s; return g === 'top' ? s.top.size > 0 : g === 'qm' || g === 'qd' ? false : g === 'noice' ? s.noice : !!s[g]; };
+function ouTray() {
+  if (!$('#ouTray') || !OU.s) return; const s = OU.s, L = OU.L, tabs = ouTabs(); if (!tabs.some(t => t[0] === OU.tab)) OU.tab = 'main';
+  const price = k => L >= 5 ? ouM(pr(k)) : '';
+  const chip = (g, k, e, n, on, x) => `<button class="ou-chip${on ? ' on' : ''}" data-g="${g}" data-k="${k}"><b>${e}</b><span>${n}</span>${x ? '<small>' + x + '</small>' : ''}</button>`;
+  const grp = (g, M) => ouK(M).map(k => chip(g, k, M[k][0], M[k][1], g === 'top' ? s.top.has(k) : s[g] === k, g === 'top' ? '' : price(k))).join('');
+  const t = OU.tab; let h;
+  if (t === 'main') h = grp('main', OU_M); else if (t === 'top') h = grp('top', OU_T); else if (t === 'side') h = grp('side', OU_S); else if (t === 'drink') h = grp('drink', OU_D);
+  else if (t === 'size') h = ouK(OU_Z).map(k => chip('size', k, OU_Z[k][0], OU_Z[k][1], s.size === k, L >= 5 && k === 'large' ? '+$1' : '')).join('');
+  else if (t === 'qty') h = [1, 2, 3].map(n => chip('qm', n, s.main ? OU_M[s.main][0] : '🍽️', n + '×', s.qm === n)).join('') + [1, 2, 3].map(n => chip('qd', n, s.drink ? OU_D[s.drink][0] : '🥤', n + '×', s.qd === n)).join('');
+  else h = chip('noice', 1, '🧊', 'no ice', s.noice) + chip('where', 'go', '🥡', 'to go', s.where === 'go') + chip('where', 'here', '🍽️', 'for here', s.where === 'here');
+  $('#ouTray').innerHTML = '<div class="ou-tabs">' + tabs.map(x => `<button class="ou-tab${x[0] === t ? ' cur' : ''}${ouHas(x[0] === 'qty' ? 'qm' : x[0] === 'note' ? 'noice' : x[0]) ? ' done' : ''}${x[0] === 'top' && s.main !== 'burger' ? ' off' : ''}" data-tab="${x[0]}"><b>${x[1]}</b>${x[2]}</button>`).join('') + '</div><div class="ou-chips">' + h + '</div>';
+}
+function ouTap(e) {
+  if (OU.paused) return; const tb = e.target.closest('[data-tab]'), b = e.target.closest('[data-g]');
+  if (tb) { OU.tab = tb.dataset.tab; ouTray(); return; }
+  if (!b) return; const g = b.dataset.g, k = b.dataset.k, s = OU.s, first = !ouHas(g);
+  if (g === 'main') { s.main = k; if (k !== 'burger') s.top.clear(); }
+  else if (g === 'top') s.top.has(k) ? s.top.delete(k) : s.top.add(k);
+  else if (g === 'qm' || g === 'qd') s[g] = +k; else if (g === 'noice') s.noice = !s.noice;
+  else s[g] = s[g] === k ? null : k;
+  try { sfx('tap'); } catch (x) { }
+  if (first && ['main', 'side', 'drink'].includes(g) && ouHas(g)) { const v = ouTabs().filter(x => !(x[0] === 'top' && s.main !== 'burger')).map(x => x[0]), i = v.indexOf(g); if (v[i + 1]) OU.tab = v[i + 1]; }
+  ouPlate(); ouTray();
+}
+function ouOkNow() { const o = OU.o, s = OU.s; return o.main === s.main && o.side === s.side && o.drink === s.drink && o.size === s.size && o.qm === s.qm && o.qd === s.qd && o.noice === s.noice && o.where === s.where && [...s.top].sort().join() === o.top.slice().sort().join(); }
+
+/* ---------- vòng chơi ---------- */
+function ouDeco() {
+  const sg = $('.ou-stage'); if (!sg) return; sg.querySelectorAll('.ou-deco').forEach(x => x.remove()); const t = OU_TH[OU.th];
+  for (let i = 0; i < 8; i++) { const s = document.createElement('span'); s.className = 'ou-deco'; s.textContent = t.deco[i % t.deco.length]; s.style.cssText = `left:${4 + i * 12}%;font-size:${16 + ouR(10)}px;animation-duration:${7 + ouR(7)}s;animation-delay:-${ouR(10)}s`; sg.appendChild(s); }
+}
+function ouNext() {
+  OU.paused = false; const pl = OU.L; OU.L = Math.min(8, OU.start + Math.floor(OU.served / 4)); const st = ouSt(); st.max = Math.max(st.max, OU.L); save();
+  const o = OU.o = ouGen(); OU.s = { main: null, top: new Set(), side: null, drink: null, size: null, qm: 1, qd: 1, noice: false, where: null }; OU.tab = 'main'; OU.peek = false;
+  const vip = OU.L >= 4 && ouR(10) < 1, rush = OU.L >= 4 && ouR(10) < 1; o.vip = vip; o.tag = vip ? '⭐ VIP ×2' : rush ? '⚡ Giờ cao điểm' : '';
+  OU.T = OU.left = (28 + 4 * Math.min(OU.L - 1, 4) + (st.mode === 'listen' ? 6 : 0)) * (vip ? .75 : 1) * (rush ? .8 : 1);
+  const f = $('#ouFace'); if (f) { f.textContent = o.phone ? '📞' : ouP(OU_FACES); f.classList.toggle('vip', vip); f.style.animation = 'none'; void f.offsetWidth; f.style.animation = ''; f.classList.remove('yay'); }
+  ouHud(); ouBub(); ouPlate(); ouTray(); ouHide(); if (OU.L > pl) ouFly('Cấp ' + OU.L + '! 🎉');
+  if (st.mode === 'listen' || o.skip) ouSay(o.en, o.phone);
+  $('#ouServe').hidden = !!o.skip;
+  if (o.skip) { OU.paused = true; setTimeout(() => ouFU(0), 1400); }
+}
+function ouTick() {
+  if (OU.paused || !OU.o || page !== 'orderup' || OU.scr !== 'play') return; OU.left -= .1;
+  const r = Math.max(0, OU.left / OU.T), b = $('#ouPb'); if (b) { b.style.width = r * 100 + '%'; b.style.background = r > .5 ? 'var(--od)' : r > .25 ? 'var(--oc)' : 'var(--oa)'; }
+  if (OU.left <= 0) ouLose('Quá lâu rồi!');
+}
+setInterval(ouTick, 100);
+function ouServe() { if (OU.paused || !OU.o || OU.o.skip) return; if (!OU.s.main || !OU.s.drink) return ouFly('Chọn món + đồ uống!'); ouOkNow() ? ouWin() : ouLose('Sai món rồi!'); }
+function ouWin() {
+  const o = OU.o; OU.paused = true; const g = Math.round((10 + OU.L * 5 + Math.ceil(OU.left / OU.T * 10) - (OU.peek ? 5 : 0) + (OU.combo >= 2 ? 5 : 0)) * (o.vip ? 2 : 1));
+  OU.coins += g; OU.combo++; OU.bestCombo = Math.max(OU.bestCombo, OU.combo); OU.served++; bump('a'); bump('ok'); try { sfx('ok'); } catch (e) { }
+  ouFly('+' + g + ' 🪙'); $('#ouFace').classList.add('yay'); ouHud(); setTimeout(() => o.fu.length ? ouFU(0) : ouNext(), 900);
+}
+function ouLose(t) {
+  const o = OU.o; OU.paused = true; OU.hearts--; OU.combo = 0; ouLog(o.en, o.vi); bump('a'); try { sfx('bad'); } catch (e) { } ouHud();
+  ouCard(`<h2>${t}</h2><p class="muted small">Khách đã gọi:</p><div class="ou-em">${ouEml(o)}</div><p><b>${esc(o.en)}</b></p><p class="muted">${esc(o.vi)}</p><button class="btn" onclick="ouCont()">Tiếp tục</button>`);
+}
+const ouCont = () => { ouHide(); OU.hearts <= 0 ? ouFinish() : ouNext(); };
+function ouFU(i) {
+  const o = OU.o, f = o.fu[i]; if (!f) { if (o.skip) { OU.served++; OU.combo++; } ouNext(); return; }
+  OU.paused = true; ouSay(f.line || o.en, o.phone); const rd = ouSt().mode === 'read';
+  ouCard(`<p class="muted small">Khách nói <button class="ou-rp" onclick="ouRe(${i})">🔊 Nghe lại</button></p><p class="ou-line${rd ? ' on' : ''}" onclick="this.classList.toggle('on')">${esc(f.line || o.en)}</p><p><b>${f.q}</b></p>` + f.ch.map((c, j) => `<button class="ou-ch" onclick="ouPick(${i},${j})">${esc(c)}</button>`).join(''));
+}
+const ouRe = i => { const o = OU.o, f = o.fu[i]; ouSay(f.line || o.en, o.phone); };
+function ouPick(i, j) {
+  const o = OU.o, f = o.fu[i], good = j === f.ok; if (good) { OU.coins += 8; try { sfx('ok'); } catch (e) { } } else { ouLog(f.line || o.en, f.why); try { sfx('bad'); } catch (e) { } } ouHud();
+  ouCard(`<h2 class="${good ? 'okc' : ''}">${good ? 'Chính xác! +8 🪙' : 'Chưa đúng'}</h2><p>${esc(f.why)}</p>` + (good ? '' : `<p class="muted small">Đáp án đúng: <b>${esc(f.ch[f.ok])}</b></p>`) + `<button class="btn" onclick="ouFU(${i + 1})">Tiếp tục</button>`);
+}
+const ouReplay = () => OU.o && ouSay(OU.o.en, OU.o.phone);
+const ouPeek = () => { if (OU.o && !OU.paused) { OU.peek = true; ouBub(); } };
+function ouFinish() { OU.paused = true; OU.o = null; const st = ouSt(); if (OU.coins > st.best) st.best = OU.coins; save(); OU.scr = 'end'; render(); }
+function ouQuit() { OU.paused = true; if (OU.served || OU.coins) ouFinish(); else { OU.scr = 'start'; OU.o = null; render(); } }
+function ouStartGame() { ouApply(); Object.assign(OU, { scr: 'play', L: OU.start, hearts: 3, coins: 0, served: 0, combo: 0, bestCombo: 0, o: null, wrong: [] }); render(); }
+const ouHome = () => { OU.scr = 'start'; render(); };
+const ouSet = (k, v) => { ouSt()[k] = v; save(); render(); };
+const ouLvl = n => { OU.start = n; render(); };
+function ouResume() { ouDeco(); if (!OU.o) ouNext(); else { ouHud(); ouBub(); ouPlate(); ouTray(); } }
+
+/* ---------- màn hình ---------- */
+function orderUpPage() {
+  ouApply(); const st = ouSt(); if (OU.start > st.max) OU.start = st.max;
+  const head = '<div class="band compact"><h1>🍔 Order Up!</h1><div class="sub">Nghe khách order bằng tiếng Anh, làm đúng món, kiếm xu</div></div>';
+  if (OU.scr === 'play') { setTimeout(ouResume, 0); return `<div class="ou" style="${ouVars()}"><div class="ou-hud"><span class="ou-pill" id="ouHp"></span><span class="ou-pill" id="ouLv"></span><span class="ou-pill" id="ouCo"></span><button class="ou-x" onclick="ouQuit()" aria-label="Thoát">✕</button></div>
+  <div class="ou-grid"><div class="ou-stage"><div class="ou-aw"></div><div class="ou-row"><div id="ouFace">🧑</div><div class="ou-bub"><div id="ouSay"></div><div class="ou-acts"><button id="ouRe" onclick="ouReplay()">🔊 Nghe lại</button><button id="ouPeek" onclick="ouPeek()">👁 Xem chữ (−5 xu)</button></div></div></div><div class="ou-pat"><div id="ouPb"></div></div></div>
+  <div class="ou-counter"><div id="ouPlate"></div><div id="ouTray" onclick="ouTap(event)"></div><button class="ou-serve" id="ouServe" onclick="ouServe()">Phục vụ ✔</button></div></div><div class="ou-fb" id="ouFb" hidden></div></div>`; }
+  if (OU.scr === 'end') return `${head}<div class="page"><div class="ou" style="${ouVars()}"><div class="ou-card static"><h2>Hết ca rồi!</h2><div class="ou-stats"><div><b>${OU.served}</b><small>khách</small></div><div><b>${OU.coins}</b><small>xu</small></div><div><b>${OU.bestCombo}</b><small>combo cao nhất</small></div></div>
+  ${OU.wrong.length ? '<p class="muted small">Các câu cần ôn lại:</p>' + OU.wrong.slice(0, 8).map(w => `<div class="ou-mi">${esc(w.en)}<small>${esc(w.vi)}</small></div>`).join('') : '<p>Không sai câu nào, tuyệt vời!</p>'}
+  <button class="btn mt" onclick="ouStartGame()">Chơi lại</button> <button class="btn ghost mt" onclick="ouHome()">Về trang chủ</button></div></div></div>`;
+  const mode = st.mode === 'read' || !TTS.ok ? 'read' : 'listen';
+  const seg = [['listen', '🎧 Nghe'], ['read', '👀 Đọc']].map(([k, t]) => `<button class="chip${mode === k ? ' on' : ''}" onclick="ouSet('mode','${k}')">${t}</button>`).join('');
+  const lv = Array.from({ length: st.max }, (_, i) => i + 1).map(n => `<button class="chip${OU.start === n ? ' on' : ''}" onclick="ouLvl(${n})">Cấp ${n}</button>`).join('');
+  const th = [['auto', '✨ Tự động']].concat(ouK(OU_TH).map(k => [k, OU_TH[k].e + ' ' + OU_TH[k].n])).map(([k, t]) => `<button class="chip${st.theme === k ? ' on' : ''}" onclick="ouSet('theme','${k}')">${t}</button>`).join('');
+  return `${head}<div class="page"><div class="ou" style="${ouVars()}"><section class="card"><div class="section-title">Chế độ</div><div class="ou-row2">${seg}</div><div class="muted small mt">${mode === 'listen' ? 'Chỉ nghe, không hiện chữ. Bí thì bấm “Xem chữ”.' : 'Order hiện bằng chữ, dễ hơn để làm quen.'}</div></section>
+  <section class="card"><div class="section-title">Bắt đầu từ cấp</div><div class="ou-row2">${lv}</div><div class="mt"><b>Cấp ${OU.start} · ${OU_LV[OU.start - 1]}</b><div class="muted small">${OU_LVD[OU.start - 1]}</div></div>${st.max < 8 ? `<div class="muted tiny mt">Chơi tới cấp ${st.max + 1} trong một ca để mở khóa cấp đó. Cứ 4 khách lên 1 cấp.</div>` : ''}</section>
+  <section class="card"><div class="section-title">Giao diện quán</div><div class="ou-row2">${th}</div></section>
+  <button class="btn" style="width:100%" onclick="ouStartGame()">Mở quán</button><p class="muted small" style="text-align:center">Kỷ lục: <b>${st.best}</b> xu · mỗi đơn đúng cộng vào mục tiêu và chuỗi ngày học</p>
+  <details class="card"><summary><b>📒 Sổ câu đã sai</b> (${st.miss.length})</summary>${st.miss.slice(0, 20).map(w => `<div class="ou-mi">${esc(w.en)}<small>${esc(w.vi)}</small></div>`).join('') || '<div class="muted small mt">Chưa có câu nào.</div>'}</details></div></div>`;
 }
 
 /* ===== English Lab · khóa truy cập (v6.0) =====
