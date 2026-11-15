@@ -1106,6 +1106,38 @@ html[data-dark] .selfnote{background:#173826;color:#9BE3B8}
 @media(max-height:720px){#ouFace{width:58px;height:58px;font-size:36px}.ou-bub{min-height:58px}#ouPlate{min-height:58px}#ouPlate i.m{font-size:38px}#ouPlate i{font-size:24px}}
 @media(prefers-reduced-motion:reduce){.ou *{animation:none!important}.ou-deco{display:none}}
 
+/* ===== v7.9 · mỗi ý một dòng + Lỗi hay mắc dạng ✗ / ✓ ===== */
+.pts{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.pts li{position:relative;padding-left:16px;line-height:1.5;overflow-wrap:anywhere}
+.pts li.vi::before{content:'';position:absolute;left:3px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--p)}
+.pts li.en{margin-left:16px;padding:6px 10px;border-radius:8px;background:var(--ps);color:var(--pd);font-weight:800}
+.pts li.en::before{display:none}
+.enx{font-weight:800;color:var(--pd);overflow-wrap:anywhere}
+ul.pts.gx{margin:0;font-weight:500;color:var(--ink2)}
+.call.usage .pts{margin-top:4px;font-weight:600}
+.call.usage .pts li.vi::before{background:#D9861A}
+.call.usage .pts li.en{background:rgba(255,255,255,.75);color:#7A4A00}
+.call.usage .enx{color:#B45309}
+.call.err .vnote{margin-top:8px}.call.err .vnote li.vi::before{background:var(--coral)}
+.call.err .enx{color:#B3261E}
+.call.err .vnote li.en{background:rgba(255,255,255,.6);color:#7A1C20}
+.vp{margin-top:8px;border-radius:10px;overflow:hidden;font-size:calc(14.5px*var(--fz));font-weight:800;box-shadow:0 0 0 1px rgba(240,100,74,.28)}
+.vp>div{display:flex;gap:9px;align-items:flex-start;padding:8px 10px;line-height:1.4}
+.vp>div>span{min-width:0;overflow-wrap:anywhere}
+.vp .x{background:#fff;color:#B3261E}.vp .x>span{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:rgba(240,100,74,.75)}
+.vp .x+.x{border-top:1px dashed rgba(240,100,74,.3)}
+.vp .ok{background:var(--green-soft);color:var(--pd)}
+.vp i{flex:none;width:21px;height:21px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:900;color:#fff;margin-top:0}
+.vp .x i{background:var(--coral)}.vp .ok i{background:var(--green)}
+.vp .cap{background:rgba(255,255,255,.55);color:#7A1C20;font-weight:600;font-size:calc(12.5px*var(--fz));padding:6px 10px 7px 40px}
+html[data-dark] .vp{box-shadow:0 0 0 1px rgba(240,100,74,.45)}
+html[data-dark] .vp .x{background:rgba(255,255,255,.07);color:#FFB4A6}
+html[data-dark] .vp .ok{background:rgba(70,200,130,.16);color:var(--ink)}
+html[data-dark] .vp .cap{background:rgba(255,255,255,.05);color:var(--muted)}
+html[data-dark] .call.err .enx,html[data-dark] .call.usage .enx{color:var(--amber)}
+html[data-dark] .call.err .vnote li.en,html[data-dark] .call.usage .pts li.en{background:rgba(255,255,255,.08);color:var(--ink)}
+html[data-dark] .pts li.en{color:var(--ink)}
+
 </style>
 </head>
 <body>
@@ -1229,7 +1261,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.8';
+const APP_VER = '7.9a';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -2084,6 +2116,191 @@ function questOnOpen() {
     questModal();
   } catch (e) { }
 }
+/* ===== v7.9 · Trình bày chữ dễ đọc =====
+   - tfIdeas(text): tách đoạn dài thành từng ý (mỗi ý một dòng); ví dụ tiếng Anh sau dấu ':' xuống dòng riêng.
+   - tfMistake(text): tách ô "Lỗi hay mắc" của từ vựng thành cặp ✗ (sai, dòng trên) / ✓ (đúng, dòng dưới) + ghi chú còn lại.
+   Dữ liệu Excel giữ nguyên, chỉ xử lý khi hiển thị. */
+const TF_VI = /[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i;
+const tfHasVi = s => TF_VI.test(s);
+const tfIsEn = s => !TF_VI.test(s) && (/[A-Za-z]{2,}/.test(s) || /\/[^/\s]+\//.test(s));
+const TF_ABBR = /(?:^|[\s(])(?:vd|vs|e\.g|i\.e|Mr|Ms|Mrs|Dr|No|St|a\.m|p\.m|etc|adj|adv|n|v|prep|pl|sb|sth|U\.S|U\.K)$/i;
+const TF_UP = /[A-ZÀ-ỸĐ'‘“"(\d]/;
+
+/* quét văn bản: gọi cb(i, ch, state) và trả về các vị trí ngắt câu ở ngoài ngoặc/nháy */
+function tfCuts(text) {
+  const cuts = []; let depth = 0, inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], prev = i ? text[i - 1] : ' ', next = text[i + 1] || ' ';
+    if (ch === '(') depth++; else if (ch === ')') depth = Math.max(0, depth - 1);
+    else if (ch === "'" || ch === '‘' || ch === '’') {
+      if (!inQ && /[\s(\[]/.test(prev) && !/\s/.test(next) && next !== "'") inQ = true;
+      else if (inQ && !/\s/.test(prev) && /[\s.,;:!?)→–-]/.test(next)) { inQ = false; if (/^\s*(Đúng|Chuẩn|Nên viết|Viết đúng|Lịch sự hơn)\b/.test(text.slice(i + 1))) cuts.push(i + 1); }
+    }
+    if (depth || inQ) continue;
+    if (ch === ';' && next === ' ') cuts.push(i + 1);
+    else if (ch === '…' && next === ' ' && /^[A-ZÀ-ỸĐ]/.test(text.slice(i + 2)) && /[a-zà-ỹ]/.test(text.slice(Math.max(0, i - 6), i))) cuts.push(i + 1);
+    else if ((ch === '.' || ch === '!' || ch === '?') && next === ' ' && prev !== '.' && prev !== '…') {
+      const head = text.slice(0, i + 1); if (ch === '.' && TF_ABBR.test(head.slice(0, -1))) continue;
+      const rest = text.slice(i + 1).trimStart(); if (!rest) continue;
+      if (TF_UP.test(rest[0])) cuts.push(i + 1);
+      else if (/[a-zà-ỹđ]/.test(rest[0]) && ch === '.' && i >= 6 && /[A-Za-zà-ỹ)'’…?!]$/i.test(head.slice(0, -1)) && /[A-Za-zà-ỹ]{2,}\W*$/i.test(head.slice(0, -1).slice(-14))) cuts.push(i + 1);
+    }
+  }
+  return cuts;
+}
+function tfSplitAt(text, cuts) { const out = []; let a = 0; for (const c of cuts) { out.push(text.slice(a, c)); a = c; } out.push(text.slice(a)); return out.map(s => s.trim()).filter(Boolean); }
+/* vị trí dấu ':' ở ngoài ngoặc/nháy, sau đó là cụm tiếng Anh thuần */
+function tfColon(s) {
+  let depth = 0, inQ = false;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i], prev = i ? s[i - 1] : ' ', next = s[i + 1] || ' ';
+    if (ch === '(') depth++; else if (ch === ')') depth = Math.max(0, depth - 1);
+    else if (ch === "'" || ch === '‘' || ch === '’') { if (!inQ && /[\s(\[]/.test(prev) && !/\s/.test(next) && next !== "'") inQ = true; else if (inQ && !/\s/.test(prev) && /[\s.,;:!?)→–-]/.test(next)) inQ = false; }
+    if (!depth && !inQ && ch === ':' && next === ' ') { const L = s.slice(0, i + 1), R = s.slice(i + 1).trim(); if (R && tfHasVi(L) && tfIsEn(R)) return { L, R }; }
+  }
+  return null;
+}
+/* trả về [{en:boolean, s, lead?}] */
+function tfIdeas(text) {
+  text = String(text || '').replace(/\s+/g, ' ').trim(); if (!text) return [];
+  let segs = tfSplitAt(text, tfCuts(text)), out = [];
+  for (const s of segs) {
+    const c = tfColon(s);
+    if (c && c.L.length >= 24) { out.push({ en: false, s: c.L }); out.push({ en: true, s: c.R }); }
+    else if (c) out.push({ en: false, s: c.L, tail: c.R });
+    else out.push({ en: tfIsEn(s) && s.length <= 90, s });
+  }
+  const m = [];
+  for (const x of out) { const p = m[m.length - 1]; if (p && x.en && p.en && (p.s + x.s).length < 70) p.s += ' ' + x.s; else m.push({ ...x }); }
+  return m;
+}
+function tfIdeasHtml(text, cls) {
+  const it = tfIdeas(text); if (!it.length) return '';
+  const row = x => x.tail ? `${esc(x.s)} <span class="enx">${esc(x.tail)}</span>` : esc(x.s);
+  if (it.length === 1 && !it[0].en) return `<p class="${cls || 'gx'}">${row(it[0])}</p>`;
+  return `<ul class="pts ${cls || ''}">${it.map(x => `<li class="${x.en ? 'en' : 'vi'}">${row(x)}</li>`).join('')}</ul>`;
+}
+
+function tfTrailEn(s) { /* cụm tiếng Anh ở cuối chuỗi */
+  s = s.replace(/[\s(,–—-]+$/, ''); const tk = s.split(/\s+/), keep = [];
+  for (let i = tk.length - 1; i >= 0; i--) { if (tfHasVi(tk[i]) || /^(không|khong|hay|dùng|nói|là|cho|với)$/i.test(tk[i]) || /:$/.test(tk[i]) && keep.length) break; keep.unshift(tk[i]); }
+  return keep.join(' ').replace(/^[:,;.\s→]+/, '').trim();
+}
+/* ---------- Lỗi hay mắc (từ vựng) ---------- */
+function tfQuotes(t) {
+  const out = []; let st = -1;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i], prev = i ? t[i - 1] : ' ', next = t[i + 1] || ' ';
+    if (ch !== "'" && ch !== '‘' && ch !== '’') continue;
+    if (st < 0) { if (/[\s(\[]/.test(prev) && !/\s/.test(next) && next !== "'") st = i; }
+    else if (!/\s/.test(prev) && /[\s.,;:!?)→–-]/.test(next)) { out.push({ a: st, b: i + 1, w: t.slice(st + 1, i).trim() }); st = -1; }
+  }
+  return out;
+}
+const tfBal = x => { x = String(x || '').trim(); let o = 0, c = 0; for (const ch of x) { if (ch === '(') o++; else if (ch === ')') c++; } while (c > o && /\)\s*$/.test(x)) { x = x.replace(/\)\s*$/, '').trim(); c--; } return x; };
+const TF_NO = /(không nói|không dùng|không viết|KHÔNG)\s*$/i;
+const tfStrip = x => String(x || '').replace(/^[\s:;,.–—-]+|[\s.;,:–—-]+$/g, '').trim();
+/* làm sạch vế phải → { r, cap } ; r rỗng nếu vế phải chỉ là lời giải thích tiếng Việt */
+function tfRightClean(r) {
+  r = tfStrip(r).replace(/^(đúng|Đúng|nên viết|viết đúng|nên nói)\s*:\s*/, ''); let cap = '';
+  const q = tfQuotes(r)[0]; if (q && q.a === 0) { cap = tfStrip(r.slice(q.b)); r = q.w; }
+  let op = 0, cl = 0; for (const ch of r) { if (ch === '(') op++; else if (ch === ')') cl++; } if (cl > op) r = r.replace(/\)+$/, '');
+  const m = /^(.*?)\s*\(([^()]*)\)\s*$/.exec(r);
+  if (m && tfIsEn(m[1]) && tfHasVi(m[2])) { r = m[1]; if (!/^(không|KHÔNG)\b[^']*'/.test(m[2])) cap = tfStrip((cap ? cap + ' · ' : '') + m[2]); }
+  const k = r.indexOf(', '); if (k > 0 && tfIsEn(r.slice(0, k)) && tfHasVi(r.slice(k + 2))) { cap = tfStrip((cap ? cap + ' · ' : '') + r.slice(k + 2)); r = r.slice(0, k); }
+  const d = r.search(/\s[–—]\s/); if (d > 0 && tfIsEn(r.slice(0, d))) { cap = tfStrip((cap ? cap + ' · ' : '') + r.slice(d + 3)); r = r.slice(0, d); }
+  r = tfStrip(r);
+  if (tfHasVi(r) && !tfIsEn(r)) return { r: '', cap: tfStrip((cap ? r + ' · ' + cap : r)) };
+  return { r, cap };
+}
+/* chuỗi trích dẫn liền nhau trước vị trí pos: 'a' / 'b' */
+function tfChain(s, qs, endIdx) {
+  const chain = [qs[endIdx]];
+  for (let k = endIdx - 1; k >= 0; k--) { const sep = s.slice(qs[k].b, chain[0].a); if (/^\s*(?:[,/]|hoặc|và)\s*$/.test(sep) || /^\s*(?:,|hoặc)[^']{1,30}$/.test(sep)) chain.unshift(qs[k]); else break; }
+  return chain;
+}
+function tfLeadNote(lead) { /* phần mở đầu: ngắn → chú thích; dài → ghi chú */
+  lead = tfStrip(lead.replace(/[(\s]*(không nói|không dùng|không viết|KHÔNG)?\s*$/i, ''));
+  return lead;
+}
+const TF_MARK = /^(Đúng|đúng|Chuẩn|Nên viết|Viết đúng|Nên nói|Lịch sự hơn)\s*:?\s*(.+)$/;
+const tfPlain = t => String(t || '').replace(/\s+hoặc\s+/gi, ' / ');
+function tfQList(r) { /* 'a' / 'b' → "a / b" khi cả chuỗi chỉ gồm các trích dẫn */
+  const qs = tfQuotes(r); if (!qs.length) return null; const rest = qs.reduceRight((t, q) => t.slice(0, q.a) + ' ' + t.slice(q.b), r);
+  return /^[\s,/;.]*(?:hoặc|và)?[\s,/;.]*$/.test(rest.replace(/\s+(hoặc|và)\s+/g, ' ')) ? qs.map(q => q.w).join(' / ') : null;
+}
+function tfRightFull(raw) { const ql = tfQList(tfStrip(raw)); if (ql) return { r: ql, cap: '' }; return tfRightClean(tfPlain(raw)); }
+function tfMistake(text) {
+  text = String(text || '').replace(/\s+/g, ' ').trim(); if (!text) return { pairs: [], notes: [] };
+  const S = tfSplitAt(text, tfCuts(text)), pairs = [], notes = [];
+  for (let i = 0; i < S.length; i++) {
+    const s = S[i], qs = tfQuotes(s), ai = s.indexOf('→'); let mm;
+    /* 0) các mẫu câu đặc biệt */
+    if ((mm = /^(.*?)'([^']+)'\s*thay (?:vì|cho)\s*'([^']+)'/.exec(s)) && mm[1].length < 20) { pairs.push({ ws: [mm[2]], r: mm[3], cap: '' }); const t = tfStrip(s.slice(mm[0].length)); if (t) notes.push(...tfIdeas(t)); continue; }
+    if ((mm = /^Viết thường\s*'([^']+)'/.exec(s)) && mm[1].length <= 3) { pairs.push({ ws: [mm[1]], r: mm[1].toUpperCase(), cap: '' }); continue; }
+    if ((mm = /^(?:Phát âm|Đọc)\s+(\/[^/]+\/)\s*(?:\(([^)]*)\))?\s*thay vì\s*(\/[^/]+\/)\s*(?:\(([^)]*)\))?/.exec(s))) { pairs.push({ ws: [mm[1]], r: mm[3], cap: tfStrip([mm[2] && 'sai: ' + mm[2], mm[4] && 'đúng: ' + mm[4]].filter(Boolean).join(' · ')) }); const t = tfStrip(s.slice(mm[0].length)); if (t) notes.push(...tfIdeas(t)); continue; }
+    if ((mm = /^(?:Phát âm|Đọc)\s+(.+?)\s+(?:thành|như)\s+'([^']+)'(?:\s+(?:hoặc|hay)\s+'([^']+)')?(.*)$/.exec(s)) && /^(?:\/[^/]+\/|'[^']+'|[A-Za-z-]+(?:\s*\/[^/]+\/)?)$/.test(mm[1].trim())) {
+      let ok = tfStrip(mm[1].replace(/^'([^']+)'$/, '$1')), nxs = S[i + 1], k = nxs && TF_MARK.exec(nxs), used = false;
+      if (k) { const rc = tfRightFull(k[2]); if (rc.r && /^\//.test(rc.r)) { ok = /\//.test(ok) ? rc.r : ok + ' ' + rc.r; used = true; if (rc.cap) notes.push({ en: false, s: rc.cap }); } }
+      pairs.push({ ws: [mm[2], mm[3]].filter(Boolean), r: ok, cap: '' }); if (used) i++; const t = tfStrip(mm[4]); if (t) notes.push(...tfIdeas(t)); continue;
+    }
+    if ((mm = /^(.*?)'([^']+)'\s*(\([^)]*\))?\s*≠\s*'([^']+)'\s*(\([^)]*\))?\s*\.?\s*$/.exec(s))) { pairs.push({ ws: [(mm[2] + ' ' + (mm[3] || '')).trim()], r: (mm[4] + ' ' + (mm[5] || '')).trim(), cap: tfStrip(mm[1]) }); continue; }
+    if (!qs.length && (mm = /^((?:Quên|Bỏ|Thêm|Sai|Nhầm|Viết sai)[^:→']{0,34}):\s*([^→'()]{1,40}?)\s*→\s*(.+)$/.exec(s)) && tfIsEn(mm[2]) && tfIsEn(mm[3].split('(')[0])) { const rc = tfRightClean(mm[3]); pairs.push({ ws: [tfStrip(mm[2])], r: rc.r, cap: tfStrip([mm[1], rc.cap].filter(Boolean).join(' · ')) }); continue; }
+    /* 1) 'sai' → đúng */
+    if (ai > 0 && qs.length) {
+      let e = -1; qs.forEach((q, k) => { if (q.b <= ai) e = k; });
+      if (e >= 0 && /^\s*$/.test(s.slice(qs[e].b, ai)) && !tfHasVi(qs[e].w)) {
+        const ch = tfChain(s, qs, e); let lead = tfLeadNote(s.slice(0, ch[0].a)); const rc = tfRightFull(s.slice(ai + 1));
+        let cap = rc.cap;
+        if (lead) { if (lead.length <= 46 && !/\(/.test(lead)) cap = tfStrip(lead + (cap ? ' · ' + cap : '')); else { let o = 0, c = 0; for (const x of lead) { if (x === '(') o++; else if (x === ')') c++; } notes.push({ en: false, s: lead + ')'.repeat(Math.max(0, o - c)) }); } }
+        pairs.push({ ws: ch.map(q => q.w), r: rc.r, cap }); continue;
+      }
+    }
+    /* 2) câu có 'sai', câu sau là đáp án (Đúng: / Chuẩn: / dùng in: / X dùng Y …) */
+    if (qs.length && i + 1 < S.length && !qs.some(q => TF_NO.test(s.slice(0, q.a)))) {
+      const ci = s.lastIndexOf(': '); let wq = qs.filter(q => ci < 0 || q.a > ci); if (!wq.length) wq = [qs[qs.length - 1]];
+      const lq = wq[wq.length - 1], ch = tfChain(s, wq, wq.length - 1), tail = s.slice(lq.b), lead = s.slice(0, ch[0].a);
+      const okTail = /^[.\s]*(?:[^'→:]{0,42})?$/.test(tail) && !/→/.test(tail);
+      const l = tfLeadNote(lead), nx = S[i + 1]; let r = null, ncap = '', mk = false;
+      if ((mm = TF_MARK.exec(nx))) { mk = true; r = tfRightFull(mm[2]); if (!r.r) { const raw = tfStrip(mm[2]); if (raw.length <= 60 && /[A-Za-z]{2,}/.test(raw)) r = { r: raw, cap: '' }; } if (/^Lịch sự hơn/.test(mm[1])) ncap = 'Lịch sự hơn'; }
+      else if ((mm = /^([^→':]{0,46}?)\s*→\s*(.+)$/.exec(nx)) && tfIsEn(mm[2])) { r = tfRightClean(mm[2]); ncap = tfStrip(mm[1]); }
+      else if ((mm = /^([^:'→]{3,60}):\s*(.+)$/.exec(nx)) && /(dùng|nên|đúng|chuẩn|viết|nói|đọc|dạng)/i.test(mm[1]) && tfIsEn(mm[2]) && !tfHasVi(mm[2])) { r = tfRightFull(mm[2]); }
+      else if ((mm = /^([^']{2,40}?)\s+dùng\s+'?([A-Za-z][^'()]{1,40}?)'?\s*(\([^)]*\))?\s*\.?$/.exec(nx)) && !tfHasVi(mm[2])) { r = { r: tfStrip(mm[2]), cap: '' }; ncap = tfStrip(mm[1]); }
+      if (okTail && lead.length <= 70 && r && r.r && r.r.length <= 60) {
+        const lab = tfStrip(l), tl2 = tfStrip(tail); let cap = [ncap, r.cap].filter(Boolean).join(' · ');
+        if (!ncap) cap = tfStrip([lab.length > 5 && !/\(/.test(lab) ? lab : '', tl2.length > 3 ? tl2 : '', r.cap].filter(Boolean).join(' · '));
+        pairs.push({ ws: ch.map(q => q.w), r: r.r, cap }); i++; continue;
+      }
+    }
+    /* 3) chỉ có phần sai: không nói 'X' / KHÔNG 'X' → lấy cụm đúng đứng ngay trước */
+    const nqs = qs.filter(q => TF_NO.test(s.slice(0, q.a))), nq = nqs[0];
+    if (nq) {
+      let pre = s.slice(0, nq.a).replace(TF_NO, ''); pre = pre.replace(/[\s(,–—:-]+$/, '');
+      let cand = ''; const ar = pre.lastIndexOf('→'); let lead = '';
+      if (ar >= 0) { cand = tfTrailEn(pre.slice(ar + 1)); lead = pre.slice(0, ar); }
+      else { const cl = pre.lastIndexOf(': '); const base = cl >= 0 ? pre.slice(cl + 2) : pre; cand = tfTrailEn(base); lead = pre.slice(0, pre.length - cand.length); }
+      lead = tfStrip(lead);
+      if (cand && cand.length >= 2 && cand.length <= 40 && !/^(đây|là|và|hay|the)$/i.test(cand)) {
+        let after = tfStrip(s.slice(nqs[nqs.length - 1].b).replace(/^\s*\)/, '')), cap = lead && lead.length <= 46 && !/'/.test(lead) ? lead : '';
+        if (lead && !cap) notes.push({ en: false, s: tfBal(lead) });
+        if (after && after.length <= 40 && !/[.;]/.test(after) && /[À-ỹ]/.test(after)) { cap = tfStrip([cap, tfBal(after)].filter(Boolean).join(' · ')); after = ''; }
+        pairs.push({ ws: nqs.map(q => q.w), r: cand, cap });
+        if (after && /[A-Za-zÀ-ỹ]{2,}/.test(after)) notes.push(...tfIdeas(tfBal(after)));
+        continue;
+      }
+    }
+    notes.push(...tfIdeas(s));
+  }
+  const seen = new Set(); const n2 = notes.filter(x => { const k = x.s.replace(/\W+/g, '').toLowerCase(); if (k.length < 2 || seen.has(k)) return false; seen.add(k); return true; });
+  return { pairs, notes: n2 };
+}
+function tfMistakeHtml(text) {
+  const m = tfMistake(text); if (!m.pairs.length && !m.notes.length) return '';
+  const pr = m.pairs.map(p => `<div class="vp">${p.ws.map(w => `<div class="x"><i>✗</i><span>${esc(w)}</span></div>`).join('')}${p.r ? `<div class="ok"><i>✓</i><span>${esc(p.r)}</span></div>` : ''}${p.cap ? `<div class="cap">${esc(p.cap)}</div>` : ''}</div>`).join('');
+  const nt = m.notes.length ? `<ul class="pts vnote">${m.notes.map(x => `<li class="${x.en ? 'en' : 'vi'}">${x.tail ? `${esc(x.s)} <span class="enx">${esc(x.tail)}</span>` : esc(x.s)}</li>`).join('')}</ul>` : '';
+  return pr + nt;
+}
+
 /* ===== English Lab · các trang ===== */
 let page = 'home', lessonId = '', lessonTab = 'text', lookTab = 'v', lookQ = '', lookLv = '', lookN = 40, lessonsQ = '';
 let textMode = { vi: null, mask: false, playing: -1, all: false };
@@ -2454,13 +2671,13 @@ function vocabCard(v, full = true, n) {
     <div class="vact">${sndBtn(w || v['Từ'])}<button class="star ${fav ? 'on' : ''}" aria-label="Đánh dấu" onclick="event.stopPropagation();toggleFav('${v['Mã']}')">★</button></div></div>
     <div class="mean">${esc(v['Nghĩa tiếng Việt'])}</div>
     ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${kv.length ? `<div class="kvg">${kv.map(([k, t]) => `<div class="kvr"><span class="kl">${k}</span><span class="kd">${esc(t)}</span></div>`).join('')}</div>` : ''}
-    ${v['Lỗi người Việt hay mắc'] ? `<div class="call err"><b>⚠ Lỗi hay mắc</b>${esc(v['Lỗi người Việt hay mắc'])}</div>` : ''}${v['Ghi chú Anh–Mỹ'] ? `<div class="call us"><b>🇺🇸 Anh – Mỹ</b>${esc(v['Ghi chú Anh–Mỹ'])}</div>` : ''}` : ''}</article>`;
+    ${v['Lỗi người Việt hay mắc'] ? `<div class="call err"><b>⚠ Lỗi hay mắc</b>${tfMistakeHtml(v['Lỗi người Việt hay mắc'])}</div>` : ''}${v['Ghi chú Anh–Mỹ'] ? `<div class="call us"><b>🇺🇸 Anh – Mỹ</b>${esc(v['Ghi chú Anh–Mỹ'])}</div>` : ''}` : ''}</article>`;
 }
 function phraseCard(p, full = true, n) {
   const ex = exRows(p, [1, 2], '');
   return `<article class="vc ph" id="w-${esc(p['Mã'])}"><div class="vh">${n ? `<div class="vn">💬</div>` : ''}<div class="vw"><div class="w1"><b class="phr">${esc(p['Cụm từ'])}</b><span class="pos">${esc(p['Loại'] || 'Cụm từ')}</span></div></div><div class="vact">${sndBtn(p['Cụm từ'])}</div></div>
    <div class="mean">${esc(p['Nghĩa'])}</div>
-   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng'] ? `<div class="call usage"><b>💡 Cách dùng</b>${esc(p['Ghi chú dùng'])}</div>` : ''}` : ''}</article>`;
+   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng'] ? `<div class="call usage"><b>💡 Cách dùng</b>${tfIdeasHtml(p['Ghi chú dùng'], 'tfu')}</div>` : ''}` : ''}</article>`;
 }
 function toggleFav(code) { const i = S.fav.indexOf(code); i >= 0 ? S.fav.splice(i, 1) : S.fav.push(code); save(); render(); }
 function vocabTab(it) {
@@ -2511,7 +2728,7 @@ function grammarCard(g, open) {
   const ex = exRows(g, [1, 2, 3], '');
   return `<details class="gc" ${open ? 'open' : ''}><summary><div class="gh"><span class="gcode">${esc(String(g['Mã']).split('-').pop())}</span><span class="lv ${esc(g['Cấp'])}">${esc(g['Cấp'])}</span><span class="gcar">▾</span></div><h3>${esc(main)}</h3>${sub ? `<div class="gsub">${esc(sub)}</div>` : ''}</summary>
    <div class="gbody">${g['Công thức'] ? `<div class="sl">📐 Công thức</div><div class="ftab">${formulaRows(g['Công thức'])}</div>` : ''}
-   ${g['Giải thích ngắn'] ? `<div class="sl">💡 Giải thích</div><p class="gx">${esc(g['Giải thích ngắn'])}</p>` : ''}
+   ${g['Giải thích ngắn'] ? `<div class="sl">💡 Giải thích</div>${tfIdeasHtml(g['Giải thích ngắn'], 'gx')}` : ''}
    ${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}
    ${g['Dùng khi nào trong công việc'] ? `<div class="call work"><b>💼 Dùng trong công việc</b>${esc(g['Dùng khi nào trong công việc'])}</div>` : ''}
    ${g['Lỗi thường gặp'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${mistakeBlock(g, mp)}` : ''}
@@ -3574,16 +3791,20 @@ const OU_COLD = ['cola', 'juice', 'water', 'lemonade'];
 const OU_FACES = ['👩🏼‍🎓', '🧑🏽‍🎤', '👦🏻', '👧🏽', '🧔🏻', '👵🏼', '🧑🏾‍💻', '👨🏽‍🎨', '👩🏻‍🦰', '🧑🏻‍🚀'];
 const OU_LV = ['Café', 'Quán ăn', 'Nhà hàng', 'Số lượng', 'Thu ngân', 'Yêu cầu đặc biệt', 'Gọi điện giao hàng', 'Giờ cao điểm'];
 const OU_LVD = ['Một món chính và một đồ uống.', 'Thêm đồ ăn kèm, cỡ ly, nhân thêm (with…).', 'Câu phủ định: “with everything, but no onion”.', 'Số lượng: “two burgers and three coffees”.', 'Có giá tiền: tính tổng và thối lại.', 'Dị ứng, no ice, to go / for here.', 'Khách gọi điện: nghe tên đánh vần, số điện thoại.', 'Có khách đặt bàn và khách phàn nàn; VIP và giờ cao điểm.'];
+/* v7.9: giao diện quán = giao diện của app (S.settings.skin). Không còn mục chọn riêng. */
+const OU_SK = { default: 'garden', xmas: 'christmas', tet: 'tet', valentine: 'valentine', trungthu: 'trungthu', summer: 'summer', night: 'night', dark: 'darkmode' };
 const OU_TH = {
-  spring: { n: 'Mùa xuân', e: '🌸', c: ['#ff6fae', '#ffffff', '#ffe066', '#7be0a8', '#ff9ec7'], deco: ['🌸', '🌷', '🦋'], hi: ['Spring is here! ', 'What a lovely day! '], s: { cupcake: ['🧁', 'cupcake', 'bánh cupcake'] }, d: { greentea: ['🍵', 'green tea', 'ly trà xanh'] } },
+  garden: { n: 'Khu vườn xanh', e: '🌿', c: ['#36a86b', '#fff9ef', '#ffbf3f', '#7be0a8', '#a8e6c3'], deco: ['🌿', '🍃', '🦋'], hi: ['Nice to see you! ', 'What a lovely day! '], s: { cupcake: ['🧁', 'cupcake', 'bánh cupcake'] }, d: { greentea: ['🍵', 'green tea', 'ly trà xanh'] } },
   summer: { n: 'Mùa hè', e: '☀️', c: ['#18b4d8', '#ffffff', '#ffd23f', '#38d9e8', '#7fe3ff'], deco: ['☀️', '🌴', '🍉'], hi: ['It’s so hot today! ', 'Summer is here! '], s: { watermelon: ['🍉', 'watermelon', 'dưa hấu'] }, d: { lemonade: ['🍋', 'lemonade', 'ly nước chanh'] } },
-  autumn: { n: 'Mùa thu', e: '🍂', c: ['#e8742c', '#fff1d6', '#ffbf3f', '#a3d96b', '#ffb26b'], deco: ['🍂', '🍁', '🥮'], hi: ['The leaves are so pretty! ', 'Happy Mid-Autumn! '], s: { mooncake: ['🥮', 'mooncake', 'bánh trung thu'] }, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
-  halloween: { n: 'Halloween', e: '🎃', c: ['#ff7a00', '#2b1a3d', '#ffd000', '#b388ff', '#9c6bff'], deco: ['🎃', '👻', '🦇'], hi: ['Trick or treat! ', 'Happy Halloween! '], s: { pie: ['🥧', 'pumpkin pie', 'bánh bí ngô'], candy: ['🍬', 'candy', 'kẹo'] }, d: {} },
+  trungthu: { n: 'Trung thu', e: '🥮', c: ['#e8742c', '#fff1d6', '#ffbf3f', '#a3d96b', '#ffb26b'], deco: ['🥮', '🏮', '🌕'], hi: ['Happy Mid-Autumn! ', 'The moon is so bright! '], s: { mooncake: ['🥮', 'mooncake', 'bánh trung thu'] }, d: { greentea: ['🍵', 'green tea', 'ly trà xanh'] } },
   christmas: { n: 'Giáng sinh', e: '🎄', c: ['#e63946', '#ffffff', '#ffd23f', '#3ddc84', '#8be3a8'], deco: ['❄️', '🎄', '⭐'], hi: ['Merry Christmas! ', 'Happy holidays! '], s: { cookie: ['🍪', 'gingerbread cookie', 'bánh quy gừng'] }, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
   tet: { n: 'Tết', e: '🧧', c: ['#d62828', '#ffd23f', '#ffd23f', '#ff9f1c', '#ffcf6b'], deco: ['🧧', '🏮', '🌼'], hi: ['Happy New Year! ', 'Happy Lunar New Year! '], s: { tangerine: ['🍊', 'tangerine', 'quýt'], dumpling: ['🥟', 'dumplings', 'bánh sủi cảo'] }, d: {} },
+  valentine: { n: 'Valentine', e: '💝', c: ['#e0457b', '#ffd3e0', '#ffd23f', '#ffb3c6', '#ff9ab8'], deco: ['💝', '🌹', '💌'], hi: ['Happy Valentine’s Day! ', 'Love is in the air! '], s: { cupcake: ['🧁', 'cupcake', 'bánh cupcake'], candy: ['🍬', 'candy', 'kẹo'] }, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
+  night: { n: 'Đêm sao', e: '🌙', c: ['#8b7cf6', '#2a3358', '#ffe17a', '#b6adff', '#a99bff'], deco: ['🌙', '⭐', '🦉'], hi: ['Good evening! ', 'What a quiet night! '], s: {}, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
+  darkmode: { n: 'Chế độ tối', e: '🌑', c: ['#36a86b', '#2a3645', '#ffbf3f', '#7be0a8', '#5fbf8d'], deco: ['🌑', '🍃', '🦉'], hi: ['Good evening! ', 'Hello there! '], s: {}, d: { cocoa: ['🍫', 'hot chocolate', 'ly sô-cô-la nóng'] } },
 };
-const OU = { scr: 'start', start: 1, L: 1, hearts: 3, coins: 0, served: 0, combo: 0, bestCombo: 0, o: null, s: null, left: 0, T: 1, paused: true, peek: false, tab: 'main', wrong: [], th: 'autumn' };
-const ouSt = () => (S.ou = S.ou || { best: 0, max: 1, miss: [], theme: 'auto', mode: 'listen' });
+const OU = { scr: 'start', start: 1, L: 1, hearts: 3, coins: 0, served: 0, combo: 0, bestCombo: 0, o: null, s: null, left: 0, T: 1, paused: true, peek: false, tab: 'main', wrong: [], th: 'garden' };
+const ouSt = () => (S.ou = S.ou || { best: 0, max: 1, miss: [], mode: 'listen' });
 const ouR = n => Math.floor(Math.random() * n), ouP = a => a[ouR(a.length)], ouK = o => Object.keys(o);
 const ouW = ['', 'one', 'two', 'three', 'four', 'five', 'six'];
 const ouA = n => (/^[aeiou]/i.test(n) ? 'an ' : 'a ') + n;
@@ -3591,9 +3812,9 @@ const ouLst = (a, w) => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + 
 const ouPl = n => /^slice of/.test(n) ? n.replace('slice', 'slices') : /(s|ch|sh|x)$/.test(n) ? n + 'es' : n + 's';
 const ouM = n => '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, '');
 const pr = k => OU_PR[k] || 2.5;
-function ouAuto() { const d = new Date(), m = d.getMonth() + 1, day = d.getDate(); if (m === 12) return 'christmas'; if (m === 10 && day >= 15) return 'halloween'; if (m === 1 || (m === 2 && day <= 20)) return 'tet'; if (m <= 5) return 'spring'; if (m <= 8) return 'summer'; return 'autumn'; }
+function ouThemeKey() { let k = 'default'; try { k = skinId(); } catch (e) { } return OU_SK[k] || 'garden'; }
 function ouApply() {
-  const st = ouSt(); OU.th = st.theme === 'auto' || !OU_TH[st.theme] ? ouAuto() : st.theme; const t = OU_TH[OU.th];
+  const st = ouSt(); OU.th = ouThemeKey(); const t = OU_TH[OU.th];
   ouK(OU_S).forEach(x => delete OU_S[x]); Object.assign(OU_S, OU_S0, t.s); ouK(OU_D).forEach(x => delete OU_D[x]); Object.assign(OU_D, OU_D0, t.d);
 }
 const ouVars = () => { const c = OU_TH[OU.th].c; return `--oa:${c[0]};--ob:${c[1]};--oc:${c[2]};--od:${c[3]};--ot:${c[4]}`; };
@@ -3780,10 +4001,8 @@ function orderUpPage() {
   const mode = st.mode === 'read' || !TTS.ok ? 'read' : 'listen';
   const seg = [['listen', '🎧 Nghe'], ['read', '👀 Đọc']].map(([k, t]) => `<button class="chip${mode === k ? ' on' : ''}" onclick="ouSet('mode','${k}')">${t}</button>`).join('');
   const lv = Array.from({ length: st.max }, (_, i) => i + 1).map(n => `<button class="chip${OU.start === n ? ' on' : ''}" onclick="ouLvl(${n})">Cấp ${n}</button>`).join('');
-  const th = [['auto', '✨ Tự động']].concat(ouK(OU_TH).map(k => [k, OU_TH[k].e + ' ' + OU_TH[k].n])).map(([k, t]) => `<button class="chip${st.theme === k ? ' on' : ''}" onclick="ouSet('theme','${k}')">${t}</button>`).join('');
   return `${head}<div class="page"><div class="ou" style="${ouVars()}"><section class="card"><div class="section-title">Chế độ</div><div class="ou-row2">${seg}</div><div class="muted small mt">${mode === 'listen' ? 'Chỉ nghe, không hiện chữ. Bí thì bấm “Xem chữ”.' : 'Order hiện bằng chữ, dễ hơn để làm quen.'}</div></section>
   <section class="card"><div class="section-title">Bắt đầu từ cấp</div><div class="ou-row2">${lv}</div><div class="mt"><b>Cấp ${OU.start} · ${OU_LV[OU.start - 1]}</b><div class="muted small">${OU_LVD[OU.start - 1]}</div></div>${st.max < 8 ? `<div class="muted tiny mt">Chơi tới cấp ${st.max + 1} trong một ca để mở khóa cấp đó. Cứ 4 khách lên 1 cấp.</div>` : ''}</section>
-  <section class="card"><div class="section-title">Giao diện quán</div><div class="ou-row2">${th}</div></section>
   <button class="btn" style="width:100%" onclick="ouStartGame()">Mở quán</button><p class="muted small" style="text-align:center">Kỷ lục: <b>${st.best}</b> xu · mỗi đơn đúng cộng vào mục tiêu và chuỗi ngày học</p>
   <details class="card"><summary><b>📒 Sổ câu đã sai</b> (${st.miss.length})</summary>${st.miss.slice(0, 20).map(w => `<div class="ou-mi">${esc(w.en)}<small>${esc(w.vi)}</small></div>`).join('') || '<div class="muted small mt">Chưa có câu nào.</div>'}</details></div></div>`;
 }
