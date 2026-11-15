@@ -1,5 +1,5 @@
 /* English Lab – service worker: mở NGAY từ bản đã lưu trong máy, tải bản mới ở nền (lần mở sau sẽ dùng bản mới) */
-const CACHE = 'englab-v7.6';
+const CACHE = 'englab-v7.7';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './gate-config.js'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
