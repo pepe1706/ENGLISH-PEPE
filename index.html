@@ -582,6 +582,7 @@ html[data-dark] .mconf .mh{color:var(--amber)}
 .qchest{cursor:default;border-style:dashed}
 
 .pgrp{margin:0 0 10px}.pgrp .ptype{margin:0}
+.qmodes{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:2px 16px 10px}.qmodes .chip{padding:6px 12px;font-size:calc(13px*var(--fz));border:1.5px solid var(--line);background:var(--card);border-radius:8px;font-weight:800;color:var(--ink2)}.qmodes .chip.on{background:var(--p);border-color:var(--p);color:#fff}
 .pmodes{display:flex;gap:6px;flex-wrap:wrap;margin:0 2px 6px}
 .pmodes .chip{padding:5px 11px;font-size:calc(12.5px*var(--fz));border:1.5px solid var(--line);background:#fff;border-radius:7px;font-weight:700;color:var(--ink2)}
 .pmodes .chip.on{background:var(--p);border-color:var(--p);color:#fff}
@@ -1147,7 +1148,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.5';
+const APP_VER = '7.6';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -2444,6 +2445,7 @@ function drillRow(d, id, nxt) {
   const stat = d.done ? `✓ Đạt · ${d.best}%` : d.st && d.ans ? `${d.ans}/${d.st.n} câu · đúng ${pct}%` : 'Chưa làm';
   return `<button class="drill ${d.done ? 'done' : ''} ${nxt ? 'next' : ''}" onclick="startDrill('${id}',${d.n})"><span class="no">${d.done ? '✓' : d.no}</span><span class="qic">${d.ic}</span><span class="qtx"><b>${esc(d.name)}</b><small>${esc(d.desc)}</small><small class="ds">${stat}</small></span><span class="qgo">${nxt ? 'Làm ▶' : d.done ? 'Làm lại' : '›'}</span></button>`;
 }
+let exMore = false;
 function exTab(it) {
   const st = lessonState(lessonId), ok = lessonDone(lessonId), key = 't:' + lessonId, ss = S.sess[key], qs = statOf(key);
   const c = ss ? sessCounts(ss) : qs ? { ok: qs.ok, bad: qs.bad, n: qs.n } : null, done = c ? c.ok + c.bad : 0;
@@ -2456,7 +2458,7 @@ function exTab(it) {
     ${cpInfo(lessonId)}
     <h2 class="st">Thêm <span class="muted tiny">không bắt buộc</span></h2>${taskCard(lessonId, it)}
     <h2 class="st">🧩 Luyện thêm</h2>${typeCard({ k: 'mix', t: '🎲 Trộn tất cả các bước', d: '20 câu, đủ mọi kỹ năng, có cả dạng tự gõ', i: '🎲', c: 'r', go: sc => `startPractice('mix','${sc}')` }, 'lesson')}
-    <button class="btn ghost block" onclick="practiceScope='lesson';go('practice')">Chọn dạng riêng ›</button>`;
+    <button class="btn ghost block" onclick="exMore=!exMore;render()">Chọn dạng riêng ${exMore ? '▴' : '▾'}</button>${exMore ? `<div class="mt">${customTypes('lesson')}</div>` : ''}`;
 }
 function cpInfo(id) {
   const l = L(id), c = checkpoints(l['Cấp']).find(x => x.ids.includes(id)); if (!c) return '';
@@ -2591,7 +2593,7 @@ async function importBackup(file) {
 }
 
 /* ===== English Lab · luyện tập, kiểm tra, sổ lỗi, ôn ngắt quãng ===== */
-let quiz = null, practiceScope = 'lesson', srsQ = null, srsFilter = 'all';
+let quiz = null, practiceScope = 'lesson', srsQ = null, srsFilter = 'all', advOpen = false;
 
 /* ---------- pools ---------- */
 const _lvCache = {};
@@ -2866,7 +2868,7 @@ function openSess(meta, builder, fresh) {
     s = { type: meta.type, title: meta.title, k: meta.k, scope: meta.scope, lesson: meta.lesson, items, ans: [], at: Date.now() };
     if (key) { S.sess[key] = s; pruneSess(); if (fresh) delete S.qstat[key]; save(); }
   } else s.at = Date.now();
-  quiz = { ...meta, s, items: s.items, ans: s.ans, i: 0, combo: 0, back: meta.back || page };
+  quiz = { ...meta, s, items: s.items, ans: s.ans, i: 0, combo: 0, back: meta.back || page, from: page, y: window.scrollY || 0, tab: lessonTab, lid: lessonId };
   if (resume) { go('qlist'); return; }
   go('quiz');
 }
@@ -3039,7 +3041,15 @@ function finishQuiz() {
   try { if (c.pct >= PASS) { setTimeout(() => { celebrate('big', { title: c.pct === 100 ? 'Điểm tuyệt đối!' : c.pct >= 90 ? 'Xuất sắc!' : 'Tuyệt vời!', sub: c.pct + '% câu đúng' }); sfx('win'); }, 350); } } catch (e) { }
   setTimeout(() => { try { cheerShow(cheer, { lv: lvName }); } catch (e) { } }, 500);
 }
-function quitQuiz() { TTS.stop(); const b = quiz && quiz.back || 'practice'; quiz = null; go(['quiz', 'qlist', 'result'].includes(b) ? 'practice' : b); }
+/* v7.6: thoát bài → về ĐÚNG trang, tab và vị trí cuộn lúc bắt đầu (không nhảy sang tab khác) */
+function quizExit(b0) {
+  const q = quiz; quiz = null;
+  const b = b0 && !['quiz', 'qlist', 'result'].includes(b0) ? b0 : 'practice';
+  if (q && b === q.from && b === 'lesson') { if (q.lid) lessonId = q.lid; if (q.tab) lessonTab = q.tab; }
+  go(b);
+  if (q && b === q.from && q.y) { const y = q.y; setTimeout(() => window.scrollTo(0, y), 30); setTimeout(() => window.scrollTo(0, y), 220); }
+}
+function quitQuiz() { TTS.stop(); quizExit(quiz && quiz.back); }
 /* làm lại câu sai: đổi sang dạng khác / ví dụ khác / đáp án xáo lại để không nhớ vị trí */
 const ALT_KIND = { mean: ['meanR', 'fill', 'spell'], meanR: ['mean', 'listen', 'cloze'], listen: ['mean', 'meanR'], fill: ['cloze', 'mean'], spell: ['meanR', 'cloze'], cloze: ['fill', 'spell'], phrase: ['phraseR'], phraseR: ['phrase', 'pspell'], pspell: ['phraseR'], arrange: ['translate', 'trans'], dict: ['arrange', 'type'], type: ['dict'], trans: ['arrange', 'translate'], translate: ['arrange'], stress: ['ipa'], ipa: ['stress'] };
 function variantOf(q) {
@@ -3077,20 +3087,50 @@ function starRow(n, size = 16) { return `<span class="stars">${[0, 1, 2].map(i =
 function statBar(c) { return `<div class="sbar"><s class="g" style="width:${c.ok / c.n * 100}%"></s><s class="r" style="width:${c.bad / c.n * 100}%"></s></div>`; }
 function statChips(c) { return `<div class="stat3"><span class="g">✓ Đúng ${c.ok}/${c.n}</span><span class="r">✗ Sai ${c.bad}/${c.n}</span><span class="o">○ Chưa ${c.n - c.ok - c.bad}/${c.n}</span></div>`; }
 const PGROUPS = [
-  { id: 'vocab', t: 'Từ vựng', modes: [['mean', 'Chọn đáp án'], ['spell', 'Tự gõ']] },
-  { id: 'listen', t: 'Nghe', modes: [['listen', 'Nghe chọn từ'], ['dict', 'Chép · ghép từ'], ['type', 'Chép · tự gõ']] },
-  { id: 'fill', t: 'Điền từ vào câu', modes: [['fill', 'Chọn đáp án'], ['cloze', 'Tự gõ']] },
-  { id: 'sent', t: 'Câu', modes: [['arrange', 'Sắp xếp'], ['translate', 'Chọn câu dịch'], ['trans', 'Tự gõ dịch']] },
+  { id: 'vocab', t: 'Từ vựng', modes: [['mean', 'Chọn đáp án']] },
+  { id: 'listen', t: 'Nghe chọn từ', modes: [['listen', 'Nghe chọn từ']] },
+  { id: 'dict', t: 'Nghe chép', modes: [['dict', 'Chép · ghép từ']] },
+  { id: 'fill', t: 'Điền từ vào câu', modes: [['fill', 'Chọn đáp án']] },
+  { id: 'sent', t: 'Câu', modes: [['arrange', 'Sắp xếp']] },
   { id: 'phrase', t: 'Cụm từ & câu chức năng', modes: [['phrase', 'Cụm từ']] },
   { id: 'pron', t: 'Phát âm', modes: [['pron', 'Trọng âm & IPA']] },
+];
+/* các cách trả lời cho CÙNG một câu: đổi ngay trong từng câu hỏi */
+const QMODES = [
+  { ks: ['mean', 'meanR', 'spell'], opts: [['Chọn đáp án', ['mean', 'meanR']], ['Tự gõ', ['spell']]] },
+  { ks: ['fill', 'cloze'], opts: [['Chọn đáp án', ['fill']], ['Tự gõ', ['cloze']]] },
+  { ks: ['phrase', 'phraseR', 'pspell'], opts: [['Chọn đáp án', ['phrase', 'phraseR']], ['Tự gõ', ['pspell']]] },
+  { ks: ['arrange', 'translate', 'trans'], opts: [['Sắp xếp', ['arrange']], ['Chọn câu dịch', ['translate']], ['Tự gõ dịch', ['trans']]] },
+  { ks: ['dict', 'type'], opts: [['Chép · ghép từ', ['dict']], ['Chép · tự gõ', ['type']]] },
 ];
 function setPM(g, k) { S.settings.pm = S.settings.pm || {}; S.settings.pm[g] = k; save(); render(); }
 function groupCard(g, it, scope) {
   const types = practiceTypes(), ok = g.modes.filter(([k]) => types.find(t => t.k === k).can(it));
   if (!ok.length) return '';
-  const cur = (S.settings.pm || {})[g.id], k = ok.some(m => m[0] === cur) ? cur : ok[0][0], t = { ...types.find(x => x.k === k), t: g.t };
-  const chips = ok.length > 1 ? `<div class="pmodes">${ok.map(([mk, ml]) => `<button class="chip ${mk === k ? 'on' : ''}" onclick="setPM('${g.id}','${mk}')">${ml}</button>`).join('')}</div>` : '';
-  return `<div class="pgrp">${chips}${typeCard(t, scope)}</div>`;
+  const k = ok[0][0], t = { ...types.find(x => x.k === k), t: g.t };
+  return `<div class="pgrp">${typeCard(t, scope)}</div>`;
+}
+function customTypes(scope) {
+  const pool = scopePool(scope), it = { v: pool.v, p: pool.p, g: pool.g, s: pool.s };
+  return `<p class="muted tiny" style="margin:0 2px 8px">Trong từng câu hỏi có nút đổi cách trả lời (Chọn đáp án / Tự gõ…).</p>${PGROUPS.map(g => groupCard(g, it, scope)).join('')}`;
+}
+/* nút đổi cách trả lời nằm trong từng câu (chỉ ở bài luyện tự chọn, chỉ khi chưa trả lời) */
+function qModeBar(q, a) {
+  if (!quiz || a || quiz.type !== 'practice' || !quiz.k || !q.ref) return '';
+  const grp = QMODES.find(m => m.ks.includes(q.kind)); if (!grp) return '';
+  const btns = grp.opts.map(([lbl, ks]) => {
+    const on = ks.includes(q.kind);
+    if (!on) { let ok = false; try { ok = ks.some(k => qFromSpec({ kind: k, ref: q.ref })); } catch (e) { } if (!ok) return ''; }
+    return `<button class="chip ${on ? 'on' : ''}" ${on ? '' : `onclick="setQMode('${ks.join(',')}')"`}>${lbl}</button>`;
+  }).join('');
+  return btns.split('<button').length > 2 ? `<div class="qmodes">${btns}</div>` : '';
+}
+function setQMode(ks) {
+  const q = curQ(); if (!q || quiz.ans[quiz.i]) return;
+  let n = null; for (const k of shuffle(String(ks).split(','))) { try { n = qFromSpec({ kind: k, ref: q.ref }); } catch (e) { } if (n) break; }
+  if (!n) return toast('Câu này chưa đổi được cách trả lời.');
+  if (q.srsKey) n.srsKey = q.srsKey; if (q.errKey) n.errKey = q.errKey;
+  quiz.items[quiz.i] = n; save(); render();
 }
 function typeCard(t, scope) {
   const st = statOf(pKey(t.k, scope));
@@ -3139,7 +3179,7 @@ function quizPage() {
     const ready = q.options ? q.sel != null : q.tokens && q.kind !== 'type' ? q.order.length === q.tokens.length : !!String(q.typed || '').trim();
     fb = `<div class="cksp"></div><div class="checkbar">${INPUT_KINDS.includes(q.kind) ? '' : `<button class="btn block" id="checkBtn" ${ready ? '' : 'disabled'} onclick="checkAns()">Check</button>`}<button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
   }
-  return `${top}<div class="qz ${q.prompt && !q.long ? 'short' : ''}"><div class="qhd"><span class="qkind">${esc(KIND_LABEL[q.kind] || '')}</span>${q.prompt ? audioBtns : ''}</div>${q.prompt ? `<div class="qprompt ${q.long ? 'long' : ''}">${esc(q.prompt)}</div>` : ''}${q.sub ? `<div class="qsub ${q.kind === 'mean' ? 'ipa' : ''}">${esc(q.sub)}</div>` : ''}${q.prompt ? '' : audioBtns}</div>${body}${fb}`;
+  return `${top}<div class="qz ${q.prompt && !q.long ? 'short' : ''}"><div class="qhd"><span class="qkind">${esc(KIND_LABEL[q.kind] || '')}</span>${q.prompt ? audioBtns : ''}</div>${q.prompt ? `<div class="qprompt ${q.long ? 'long' : ''}">${esc(q.prompt)}</div>` : ''}${q.sub ? `<div class="qsub ${q.kind === 'mean' ? 'ipa' : ''}">${esc(q.sub)}</div>` : ''}${q.prompt ? '' : audioBtns}</div>${qModeBar(q, a)}${body}${fb}`;
 }
 function afterQuizRender() {
   const q = curQ(); if (!q) return;
@@ -3188,7 +3228,7 @@ function dailyCard(no) {
   const s = S.sess['d:' + dayKey()], c = s ? sessCounts(s) : null, done = c ? c.ok + c.bad : 0;
   return `<button class="ptype daily" onclick="startDaily()"><div class="ptop">${no ? `<span class="no">${no}</span>` : ''}<span class="ic a">🔁</span><span class="pt"><b>Ôn hôm nay ${c ? starRow(starsOf(c.pct), 15) : ''}</b><span>15 câu, trộn mọi dạng · ưu tiên câu từng sai, thẻ đến hạn, bài cũ</span></span><span class="play2">${!c ? 'Bắt đầu' : done < c.n ? 'Làm tiếp' : 'Xem lại'}</span></div>${c && done ? statBar(c) + statChips(c) : ''}</button>`;
 }
-function quizBackList() { const b = quiz.back; quiz = null; go(b && !['quiz', 'qlist', 'result'].includes(b) ? b : 'practice'); }
+function quizBackList() { quizExit(quiz && quiz.back); }
 
 /* ---------- trang luyện tập ---------- */
 /* ---------- Ôn & Luyện (gộp): Ôn mỗi ngày 1→2→3, rồi Luyện chủ động theo 4 bước ---------- */
@@ -3216,7 +3256,7 @@ function practicePage() {
    <div class="muted small mt">${pool.v.length} từ · ${pool.p.length} cụm · ${pool.g.length} ngữ pháp · ${pool.s.length} câu</div></section>
    ${typeCard({ k: 'mix', t: '🎲 Trộn tất cả các bước', d: '20 câu, đủ mọi kỹ năng, có cả dạng tự gõ', i: '🎲', c: 'r', go: sc => `startPractice('mix','${sc}')` }, practiceScope)}
    <h2 class="st">Hoặc luyện từng bước <span class="muted tiny">dễ → khó</span></h2>${stepCards}
-   <details class="adv"><summary>Chọn từng dạng cụ thể (${types.length} dạng)</summary>${PGROUPS.map(g => groupCard(g, it, practiceScope)).join('')}</details></div>`;
+   <details class="adv" ${advOpen ? 'open' : ''} ontoggle="advOpen=this.open"><summary>Chọn từng dạng riêng</summary>${customTypes(practiceScope)}</details></div>`;
 }
 /* ---------- ôn ngắt quãng (SM-2) ---------- */
 function addCard(k, id, d) { const key = `${k}:${id}:${d}`; if (S.srs[key]) return 0; S.srs[key] = { k, id, d, ef: 2.5, iv: 0, reps: 0, due: null, lapses: 0 }; return 1; }
@@ -3823,8 +3863,9 @@ function ttsChunks(text) {
 }
 TTS.speak = function (text, opt = {}) {
   if (!this.ok) { toast('Trình duyệt này không có giọng đọc.'); return; }
-  speechSynthesis.cancel();
-  const tk = ++this.token, chunks = ttsChunks(text), gap = S.settings.gap ?? 250;
+  if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+  /* v7.5b: không nghỉ giữa câu → đọc NGUYÊN đoạn trong MỘT lần (tách từng câu làm máy Samsung/Google đổi giọng giữa chừng) */
+  const tk = ++this.token, gap = S.settings.gap ?? 250, chunks = gap ? ttsChunks(text) : [speakFix(text).replace(/\s+/g, ' ').trim()];
   const rate = Math.max(.4, (opt.rate || S.settings.rate) * (opt.slow ? 0.75 : 1));
   let i = 0, v = null;
   const next = () => {
@@ -3832,7 +3873,7 @@ TTS.speak = function (text, opt = {}) {
     if (i >= chunks.length) { if (opt.onend) opt.onend(); return; }
     const c = chunks[i++], u = new SpeechSynthesisUtterance(c);
     if (v) { u.voice = v; u.lang = String(v.lang).replace('_', '-'); } else u.lang = 'en-US';
-    u.rate = rate; u.pitch = /\?$/.test(c) ? 1.06 : /!$/.test(c) ? 1.04 : 1;
+    u.rate = rate; u.pitch = 1;   /* v7.5c: không đổi cao độ – trên Samsung cao độ > 1 làm giọng nam nghe như giọng nữ */
     const done = () => { if (tk !== this.token) return; if (i < chunks.length && gap) setTimeout(next, gap * (/[.!?…]$/.test(c) ? 1 : .4)); else next(); };
     u.onend = done; u.onerror = done; this.cur = u; speechSynthesis.speak(u);
   };
