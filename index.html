@@ -1261,7 +1261,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.9a';
+const APP_VER = '7.10';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -1294,6 +1294,9 @@ const DEFAULTS = {
   settings: { rate: 0.95, voice: '', seqLesson: true, seqLevel: true, showVi: true, showIpa: true, autoplay: true, theme: 'auto', goal: 30, newLimit: 15, reviewCap: 20, lockTest: false, questSheet: true },
 };
 let S = load();
+/* v7.10: bộ câu đã lưu từ bản cũ có thể lẫn kiến thức bài sau → xóa một lần */
+function gateMigrate() { if ((S.gateVer || 0) < 1) { S.sess = {}; S.qstat = {}; S.gateVer = 1; save(); } }
+gateMigrate();
 function load() {
   try {
     const s = JSON.parse(localStorage.getItem(STATE_KEY) || 'null');
@@ -1441,6 +1444,33 @@ function lockMsg(id) {
   const ls = levelLessons(lv), i = ls.findIndex(x => x['Mã bài'] === id), prev = ls[i - 1]['Mã bài'], cp = cpAfter(prev);
   if (lessonDone(prev) && cp && !cpPassed(cp)) return `🔒 Cần đạt ≥ ${PASS}% ${cpTitle(cp)} để mở bài này`;
   return `🔒 Cần đạt ≥ ${PASS}% bài kiểm tra ${prev} để mở bài này`;
+}
+/* ---------- ranh giới kiến thức (v7.10) ----------
+   Câu hỏi (đề, từ/câu được hỏi, đáp án đúng) chỉ dùng kiến thức từ bài đầu đến bài giới hạn.
+   Đáp án nhiễu thì không bị giới hạn. */
+let _knowLim = null, _frontC = { t: 0, v: 0 };
+function frontierIdx() {
+  if (Date.now() - _frontC.t < 800) return _frontC.v;
+  let m = DATA.order[currentLessonId()] || 0;
+  learnedLessonIds().forEach(id => { if (DATA.order[id] > m) m = DATA.order[id]; });
+  _frontC = { t: Date.now(), v: m }; return m;
+}
+const idsUpTo = i => DATA.lessons.slice(0, Math.max(0, i + 1)).map(l => l['Mã bài']);
+const knowLimit = () => _knowLim !== null ? _knowLim : frontierIdx();
+function withKnow(i, fn) { const o = _knowLim; _knowLim = i; try { return fn(); } finally { _knowLim = o; } }
+/* bài đầu tiên dạy mỗi từ (kể cả dạng biến đổi) = từ vựng + từ trong cụm học theo khối */
+function firstMap() {
+  if (DATA._first) return DATA._first;
+  const F = {}, add = (txt, i) => (String(txt || '').toLowerCase().match(/[a-z]+/g) || []).forEach(t => forms(t).forEach(f => { if (!(f in F) || i < F[f]) F[f] = i; }));
+  DATA.vocab.forEach(v => { const i = DATA.order[v['Bài học']]; if (i !== undefined) add(headword(v), i); });
+  DATA.phrases.forEach(p => { const i = DATA.order[p['Bài học']]; if (i !== undefined) add(String(p['Cụm từ'] || '').replace(/\[.*?\]/g, ''), i); });
+  return (DATA._first = F);
+}
+/* câu có chứa từ mà bài đầu tiên dạy nó nằm SAU giới hạn → không dùng làm câu hỏi (từ lạ/tên riêng không có trong từ vựng thì bỏ qua) */
+function sentOk(s) {
+  const F = firstMap(), lim = knowLimit();
+  for (const t of String(s || '').toLowerCase().match(/[a-z]+/g) || []) { const f = F[t]; if (f !== undefined && f > lim) return false; }
+  return true;
 }
 function learnedLessonIds() { return DATA.lessons.map(l => l['Mã bài']).filter(id => { const s = S.lessons[id]; return s && (s.vocab || s.text || s.grammar || s.best !== null); }); }
 
@@ -2886,7 +2916,7 @@ function exportBackup() {
 }
 async function importBackup(file) {
   if (!file) return;
-  try { const j = JSON.parse(await file.text()); if (j.app !== 'englab' || !j.state) throw 0; if (!confirm('Thay tiến độ hiện tại bằng bản sao lưu ngày ' + String(j.at).slice(0, 10) + '?')) return; S = { ...structuredClone(DEFAULTS), ...j.state, settings: { ...DEFAULTS.settings, ...(j.state.settings || {}) } }; save(); applyTheme(); render(); toast('Đã khôi phục tiến độ'); }
+  try { const j = JSON.parse(await file.text()); if (j.app !== 'englab' || !j.state) throw 0; if (!confirm('Thay tiến độ hiện tại bằng bản sao lưu ngày ' + String(j.at).slice(0, 10) + '?')) return; S = { ...structuredClone(DEFAULTS), ...j.state, settings: { ...DEFAULTS.settings, ...(j.state.settings || {}) } }; S.gateVer = 0; gateMigrate(); save(); applyTheme(); render(); toast('Đã khôi phục tiến độ'); }
   catch (e) { toast('File sao lưu không hợp lệ'); }
 }
 
@@ -3008,12 +3038,13 @@ function stressOf(v) { const m = /(\d)\s*\/\s*(\d)/.exec(v['Trọng âm'] || '')
 const KIND_LABEL = { pspell: 'Gõ cụm từ', spell: 'Dịch từ Việt → Anh', cloze: 'Điền từ (tự gõ)', trans: 'Dịch câu Việt → Anh', vtrans: 'Dịch từ Anh → Việt', strans: 'Dịch câu Anh → Việt', mean: 'Chọn nghĩa', meanR: 'Chọn từ tiếng Anh', listen: 'Nghe chọn từ', fill: 'Điền từ vào câu', phrase: 'Cụm từ', phraseR: 'Chọn cụm tiếng Anh', arrange: 'Sắp xếp câu', dict: 'Nghe chép (ghép từ)', type: 'Nghe chép (gõ)', translate: 'Chọn câu dịch đúng', stress: 'Trọng âm', ipa: 'Phiên âm IPA' };
 function makeQ(kind, x) {
   if (!x) return null;
+  if (['arrange', 'dict', 'type', 'trans', 'strans', 'translate'].includes(kind) && !sentOk(x.en)) return null;
   const opts = (ans, ds) => shuffle([ans, ...ds]);
   if (kind === 'mean') { const ds = distract(x, 'v', 'Nghĩa tiếng Việt', 3); if (ds.length < 2) return null; return { kind, ref: x['Mã'], prompt: x['Từ'], sub: S.settings.showIpa ? x['IPA (giọng Mỹ)'] : '', audio: headword(x), options: opts(x['Nghĩa tiếng Việt'], ds), answer: x['Nghĩa tiếng Việt'], explain: `${x['Từ']} (${x['Từ loại']}) = ${x['Nghĩa tiếng Việt']}` }; }
   if (kind === 'meanR' || kind === 'listen') { const ds = distract(x, 'v', 'Từ', 3); if (ds.length < 2) return null; return { kind, ref: x['Mã'], prompt: kind === 'listen' ? '' : x['Nghĩa tiếng Việt'], long: true, sub: kind === 'listen' ? 'Nghe và chọn từ bạn nghe được' : [posVi(x['Từ loại']), x['Từ loại']].filter(Boolean).join(' · '), audio: kind === 'listen' ? headword(x) : '', audioAfter: headword(x), options: opts(x['Từ'], ds), answer: x['Từ'], explain: `${x['Từ']} ${x['IPA (giọng Mỹ)'] || ''} = ${x['Nghĩa tiếng Việt']}` }; }
   if (kind === 'fill') {
     for (const n of shuffle([1, 2])) {
-      const s = x[`Ví dụ ${n} (Anh)`]; if (!s) continue;
+      const s = x[`Ví dụ ${n} (Anh)`]; if (!s || !sentOk(s)) continue;
       const m = findForm(s, headword(x)); if (!m) continue;
       const ds = distract(x, 'v', 'Từ', 3); if (ds.length < 2) return null;
       return { kind, ref: x['Mã'], prompt: s.slice(0, m.start) + '_____' + s.slice(m.end), long: true, sub: x[`Ví dụ ${n} (Việt)`], options: opts(x['Từ'], ds), answer: x['Từ'], audioAfter: s, explain: `${s} · dạng dùng: “${m.text}”` };
@@ -3026,7 +3057,7 @@ function makeQ(kind, x) {
   }
   if (kind === 'cloze') {
     for (const n of shuffle([1, 2])) {
-      const s = x[`Ví dụ ${n} (Anh)`]; if (!s) continue;
+      const s = x[`Ví dụ ${n} (Anh)`]; if (!s || !sentOk(s)) continue;
       const m = findForm(s, headword(x)); if (!m || /\s/.test(m.text)) continue;
       return { kind, ref: x['Mã'], prompt: s.slice(0, m.start) + '_____' + s.slice(m.end), long: true, sub: x[`Ví dụ ${n} (Việt)`], hint: `${m.text[0]}… (${m.text.length} chữ cái) · gốc: ${posVi(x['Từ loại'])}`, answer: m.text, alts: [m.text], audioAfter: s, explain: `${s} · từ cần điền: “${m.text}” (${x['Từ']} = ${x['Nghĩa tiếng Việt']})` };
     }
@@ -3066,7 +3097,7 @@ function makeQ(kind, x) {
   }
   if (kind === 'vtrans') {
     const vi = String(x['Nghĩa tiếng Việt'] || '').trim(), w = headword(x); if (!vi || !w) return null;
-    let ctx = ''; if (hwDup(w)) for (const n of shuffle([1, 2])) { const s = x[`Ví dụ ${n} (Anh)`]; if (s) { ctx = s; break; } }   /* từ trùng mặt chữ: kèm câu ví dụ tiếng Anh để biết nghĩa nào */
+    let ctx = ''; if (hwDup(w)) for (const n of shuffle([1, 2])) { const s = x[`Ví dụ ${n} (Anh)`]; if (s && sentOk(s)) { ctx = s; break; } }   /* từ trùng mặt chữ: kèm câu ví dụ tiếng Anh để biết nghĩa nào */
     const ps = posVi(x['Từ loại']);
     return { kind, ref: x['Mã'], prompt: x['Từ'], sub: S.settings.showIpa ? x['IPA (giọng Mỹ)'] : '', note: [ps && 'Loại từ: ' + ps, ctx && 'Ví dụ: ' + ctx].filter(Boolean).join('\n'), audio: w, audioAfter: w, answer: vi, typed: '', explain: `${x['Từ']} (${x['Từ loại']}) = ${vi}` };
   }
@@ -3091,9 +3122,13 @@ function qFromSpec(sp) { return ['arrange', 'dict', 'type', 'translate', 'trans'
 /* ---------- phạm vi ---------- */
 function cpOfLesson(id) { return checkpoints(levelOf(id)).find(c => c.ids.includes(id)) || null; }
 function scopeIds(scope) {
+  const f = frontierIdx(), cut = a => { const r = a.filter(id => DATA.order[id] <= f); return r.length ? r : [currentLessonId()]; };
+  return cut(scopeIds0(scope));
+}
+function scopeIds0(scope) {
   if (scope === 'cp') { const id = lessonId || currentLessonId(), c = cpOfLesson(id); return c ? c.ids : [id]; }
   if (scope === 'lesson') return [lessonId || currentLessonId()];
-  if (scope === 'learned') { const ids = learnedLessonIds(); return ids.length ? ids : [currentLessonId()]; }
+  if (scope === 'learned') return idsUpTo(frontierIdx());
   if (LEVELS.includes(scope)) return DATA.lessons.filter(l => l['Cấp'] === scope).map(l => l['Mã bài']);
   return DATA.lessons.map(l => l['Mã bài']);
 }
@@ -3206,7 +3241,7 @@ function openSess(meta, builder, fresh) {
   /* bộ câu cũ đã lưu: sắp lại phần chưa làm theo dễ → khó, ngắn → dài */
   if (resume) { const idx = s.items.map((_, i) => i).filter(i => !s.ans[i]); const so = orderEasy(idx.map(i => s.items[i])); idx.forEach((i, k) => { s.items[i] = so[k]; }); }
   if (!resume) {
-    let items = builder();
+    let items = withKnow(meta.lim !== undefined ? meta.lim : frontierIdx(), builder);
     if (!meta.noSort) items = orderEasy(items);
     if (!items.length) return toast(meta.type === 'test' ? 'Bài này chưa đủ dữ liệu để tạo câu hỏi.' : 'Phạm vi này chưa đủ dữ liệu cho dạng bài này.');
     s = { type: meta.type, title: meta.title, k: meta.k, scope: meta.scope, lesson: meta.lesson, items, ans: [], at: Date.now() };
@@ -3271,7 +3306,11 @@ function buildTest(kind) {
   let items = [];
   if (kind === 'lesson-vocab') return build(['mean', 'meanR'], it.v, 10, (k, x) => makeQ(k, x));
   const pool = { v: it.v, p: it.p, g: it.g, s: DATA.by[lessonId]?.s || [] };
-  const want = 20, ban = new Set(), free = a => a.filter(x => !ban.has(itemRef(x)));
+  /* ôn lũy kế: ~30% câu lấy từ các bài trước (bài ôn tập vốn đã là ôn nên không thêm) */
+  const prevIds = idsUpTo(DATA.order[lessonId] - 1), isRev = (L(lessonId) || {})['Loại bài'] === 'Ôn tập';
+  let rv = [];
+  if (prevIds.length && !isRev) rv = buildMix(poolOf(prevIds), REVIEW_TEST, 3, 1, 1).slice(0, REVIEW_TEST);
+  const want = 20 - rv.length, ban = new Set(), free = a => a.filter(x => !ban.has(itemRef(x)));
   const mu = mustItems(pool, 1); mu.forEach(q => ban.add(q.ref)); items.push(...mu);
   const mv = mu.filter(q => MUST_V.includes(q.kind)).length;
   const vN = Math.max(0, Math.min(pool.v.length, pool.p.length || pool.g.length || pool.s.length ? 10 : 20) - mv);
@@ -3282,12 +3321,13 @@ function buildTest(kind) {
   const ss = pool.s.map(r => 'S:' + r['Mã câu']);
   items.push(...build(['translate', 'arrange', 'dict', 'trans'], free(ss), Math.max(2, want - items.length), (k, r) => makeQ(k, sentRef(r))));
   if (items.length < want) items.push(...build(['mean', 'meanR', 'listen', 'fill', 'stress', 'ipa'], pool.v, want - items.length, (k, x) => { const q = makeQ(k, x); return q && !items.some(o => o.kind === q.kind && o.ref === q.ref) ? q : null; }));
-  return shuffle(items.slice(0, want));
+  return shuffle([...items.slice(0, want), ...rv]);
 }
+const REVIEW_TEST = 6, REVIEW_CP = 7;
 function startQuiz(kind, fresh) {
   const isT = kind === 'test';
   if (isT && testLocked(lessonId)) return toast('🔒 Xong các bước luyện trước rồi mới làm kiểm tra (đổi ở Tôi → Học tuần tự)');
-  openSess({ key: (isT ? 't:' : 'q:') + lessonId, type: isT ? 'test' : 'practice', title: isT ? 'Kiểm tra cuối bài ' + lessonId : 'Kiểm tra nhanh từ vựng', lesson: lessonId, back: 'lesson', quick: !isT }, () => buildTest(kind), fresh);
+  openSess({ key: (isT ? 't:' : 'q:') + lessonId, type: isT ? 'test' : 'practice', title: isT ? 'Kiểm tra cuối bài ' + lessonId : 'Kiểm tra nhanh từ vựng', lesson: lessonId, back: 'lesson', quick: !isT, lim: DATA.order[lessonId] }, () => buildTest(kind), fresh);
 }
 function poolOf(ids) {
   const v = [], p = [], g = [], s = [];
@@ -3312,9 +3352,14 @@ function startCheckpoint(cid, fresh) {
   const c = cpById(cid); if (!c) return;
   if (!levelUnlocked(c.lv)) return toast('🔒 Cấp này chưa mở');
   if (!cpReady(c)) return toast(`🔒 Đạt ≥ ${PASS}% bài kiểm tra của các bài ${c.ids[0]}–${c.ids[c.ids.length - 1]} để mở`);
-  openSess({ key: c.id, type: 'cp', title: cpTitle(c), cp: c.id, back: 'home' }, () => buildMix(poolOf(c.ids), 25, 12, 3, 3, 2), fresh);
+  openSess({ key: c.id, type: 'cp', title: cpTitle(c), cp: c.id, back: 'home', lim: DATA.order[c.ids[c.ids.length - 1]] }, () => {
+    const prev = idsUpTo(DATA.order[c.ids[0]] - 1);
+    const rv = prev.length ? buildMix(poolOf(prev), REVIEW_CP, 4, 1, 1).slice(0, REVIEW_CP) : [];
+    return shuffle([...buildMix(poolOf(c.ids), 25 - rv.length, 12, 3, 3, 2), ...rv]).slice(0, 25);
+  }, fresh);
 }
-function startDaily(fresh) {
+function startDaily(fresh) { return withKnow(frontierIdx(), () => startDaily0(fresh)); }
+function startDaily0(fresh) {
   const items = [];
   Object.values(S.errors).sort((a, b) => b.n - a.n).slice(0, 5).forEach(sp => { const q = qFromSpec(sp); if (q) items.push(q); });
   const t = today(), due = Object.values(S.srs).filter(c => c.due !== null && c.due <= t).slice(0, 30);
@@ -3349,10 +3394,11 @@ function buildLevelTest(lv) {
 function startLevelTest(lv, fresh) {
   if (!levelUnlocked(lv)) return toast('🔒 Cấp này chưa mở');
   if (!levelReady(lv)) return toast(`🔒 Đạt ≥ ${PASS}% bài kiểm tra của tất cả bài cấp ${lv} để mở`);
-  openSess({ key: 'lv:' + lv, type: 'level', title: 'Kiểm tra cấp ' + lv, lv, back: 'home' }, () => buildLevelTest(lv), fresh);
+  openSess({ key: 'lv:' + lv, type: 'level', title: 'Kiểm tra cấp ' + lv, lv, back: 'home', lim: frontierIdx() }, () => buildLevelTest(lv), fresh);
 }
 function startDictation(mode, scope) { startPractice(mode === 'easy' ? 'dict' : 'type', scope || 'lesson'); }
-function startErrors() {
+function startErrors() { return withKnow(frontierIdx(), startErrors0); }
+function startErrors0() {
   const specs = Object.values(S.errors).sort((a, b) => b.n - a.n).slice(0, 20);
   const items = specs.map(sp => { const q = qFromSpec(sp); if (q) q.errKey = sp.key; return q; }).filter(Boolean);
   if (!items.length) return toast('Sổ lỗi sai đang trống 🎉');
@@ -3449,7 +3495,7 @@ function variantOf(q) {
   for (const k of shuffle(ALT_KIND[q.kind] || [])) { const n = qFromSpec({ kind: k, ref: q.ref }); if (n) return n; }
   return qFromSpec({ kind: q.kind, ref: q.ref }) || q;
 }
-function redoWrong() { quiz.items.forEach((q, i) => { const a = quiz.ans[i]; if (a && !a.ok) { const nq = variantOf(q); if (q.srsKey) { nq.srsKey = q.srsKey; nq.retry = true; } if (q.errKey) nq.errKey = q.errKey; quiz.items[i] = nq; quiz.ans[i] = null; } }); quiz.combo = 0; statUpdate(); save(); const j = quiz.ans.findIndex((a, i) => !a && i < quiz.items.length); gotoQ(j < 0 ? nextUnanswered(-1) : j); }
+function redoWrong() { quiz.items.forEach((q, i) => { const a = quiz.ans[i]; if (a && !a.ok) { const nq = withKnow(quiz.lim !== undefined ? quiz.lim : frontierIdx(), () => variantOf(q)); if (q.srsKey) { nq.srsKey = q.srsKey; nq.retry = true; } if (q.errKey) nq.errKey = q.errKey; quiz.items[i] = nq; quiz.ans[i] = null; } }); quiz.combo = 0; statUpdate(); save(); const j = quiz.ans.findIndex((a, i) => !a && i < quiz.items.length); gotoQ(j < 0 ? nextUnanswered(-1) : j); }
 function doUnanswered() { const j = nextUnanswered(-1); if (j >= 0) gotoQ(j); }
 function pickTile(idx) { const q = curQ(); if (quiz.ans[quiz.i] || q.order.includes(idx)) return; q.order.push(idx); render(); }
 function pickOpt(o) { const q = curQ(); if (!q || quiz.ans[quiz.i]) return; q.sel = o; render(); }
@@ -3640,8 +3686,10 @@ function reviewBlock() {
    ${dailyCard(3)}`;
 }
 function practicePage() {
-  if (!lessonId) lessonId = currentLessonId();
-  const _cp = cpOfLesson(lessonId || currentLessonId()), scopes = [['lesson', `Bài ${lessonId}`], ...(_cp ? [['cp', `Cả chặng ${_cp.n} (${_cp.ids.length} bài)`]] : []), ['learned', 'Các bài đã học'], ...LEVELS.map(l => [l, 'Cấp ' + l]), ['all', 'Toàn bộ']];
+  if (!lessonId || DATA.order[lessonId] > frontierIdx()) lessonId = currentLessonId();
+  if (practiceScope === 'all') practiceScope = 'learned';
+  const _f = frontierIdx(), _cp = cpOfLesson(lessonId || currentLessonId()), _cpN = _cp ? _cp.ids.filter(id => DATA.order[id] <= _f).length : 0;
+  const scopes = [['lesson', `Bài ${lessonId}`], ...(_cp && _cpN > 1 ? [['cp', `Cả chặng ${_cp.n} (${_cpN} bài)`]] : []), ['learned', 'Từ bài đầu đến bài hiện tại (lũy kế)'], ...LEVELS.filter(l => DATA.lessons.some(x => x['Cấp'] === l && DATA.order[x['Mã bài']] <= _f)).map(l => [l, 'Chỉ cấp ' + l + ' (phần đã học)'])];
   const pool = scopePool(practiceScope), it = { v: pool.v, p: pool.p, g: pool.g, s: pool.s }, types = practiceTypes().filter(t => t.can(it));
   const stepCards = DRILL.filter(d => d.ks.some(k => types.some(t => t.k === k))).map((d, i) => typeCard({ k: 'st:' + d.n, t: d.name, d: d.desc, i: d.ic, c: '', no: i + 1, go: sc => `startPractice('st:${d.n}','${sc}')` }, practiceScope)).join('');
   return `<div class="band compact"><h1>Ôn & Luyện</h1><div class="sub">Ôn mỗi ngày · luyện chủ động theo từng bước</div></div><div class="page">
@@ -3649,7 +3697,7 @@ function practicePage() {
    <section class="card ou-tile" onclick="go('orderup')"><div class="ic">🍔</div><div><b>Order Up! · Game quán ăn</b><div class="muted small">Nghe khách order bằng tiếng Anh, làm đúng món. 8 cấp, đổi giao diện theo mùa.</div></div></section>
    <h2 class="st">🧩 Luyện chủ động <span class="muted tiny">tùy bạn chọn</span></h2>
    <section class="card"><div class="section-title">Luyện nội dung nào?</div><select class="sel" style="width:100%" onchange="practiceScope=this.value;render()">${scopes.map(([k, t]) => `<option value="${k}" ${practiceScope === k ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
-   ${['lesson', 'cp'].includes(practiceScope) ? `<div class="row mt" style="gap:6px"><select class="sel" style="flex:1" onchange="lessonId=this.value;S.lastLesson=lessonId;save();render()">${DATA.lessons.map(l => `<option value="${l['Mã bài']}" ${l['Mã bài'] === lessonId ? 'selected' : ''}>${esc(l['Mã bài'] + ' · ' + l['Chủ đề'])}</option>`).join('')}</select></div>` : ''}
+   ${['lesson', 'cp'].includes(practiceScope) ? `<div class="row mt" style="gap:6px"><select class="sel" style="flex:1" onchange="lessonId=this.value;S.lastLesson=lessonId;save();render()">${DATA.lessons.filter(l => DATA.order[l['Mã bài']] <= _f).map(l => `<option value="${l['Mã bài']}" ${l['Mã bài'] === lessonId ? 'selected' : ''}>${esc(l['Mã bài'] + ' · ' + l['Chủ đề'])}</option>`).join('')}</select></div>` : ''}
    <div class="muted small mt">${pool.v.length} từ · ${pool.p.length} cụm · ${pool.g.length} ngữ pháp · ${pool.s.length} câu</div></section>
    ${typeCard({ k: 'mix', t: '🎲 Trộn tất cả các bước', d: '20 câu, đủ mọi kỹ năng, có cả dạng tự gõ', i: '🎲', c: 'r', go: sc => `startPractice('mix','${sc}')` }, practiceScope)}
    <h2 class="st">Hoặc luyện từng bước <span class="muted tiny">dễ → khó</span></h2>${stepCards}
@@ -3712,7 +3760,8 @@ function srsHard() { const q = curQ(); if (!q || !q.srsKey || !q.srsPrev || q.ha
 const selfBtn = (q, a) => a.ok ? (a.self ? `<div class="selfnote">✅ Bạn đã xác nhận câu này đúng · không đưa vào Sổ lỗi sai</div>` : '') : !SELF_KINDS.includes(q.kind) || !String(a.val || '').trim() ? '' : `<button class="selfbtn" type="button" onclick="selfOk()">✅ Tôi đã đúng<small>Ý nghĩa giống đáp án, chỉ khác cách diễn đạt</small></button>`;
 const hardBtn = (q, a) => !(a.ok && q.srsKey && q.srsPrev) ? '' : q.hard ? `<div class="hardnote">😅 Đã đánh dấu Khó · ôn lại sau ${ivText(S.srs[q.srsKey].iv)}</div>` : `<button class="hardbtn" type="button" onclick="srsHard()">😅 Đúng nhưng còn khó nhớ → ôn sớm hơn</button>`;
 function spreadKinds(arr) { const out = [], rest = arr.slice(); while (rest.length) { const last = out.length ? out[out.length - 1].kind : ''; let i = rest.slice(0, 4).findIndex(q => q.kind !== last); if (i < 0) i = 0; out.push(rest.splice(i, 1)[0]); } return out; }
-function startSrs(filter, flip) {
+function startSrs(filter, flip) { return withKnow(frontierIdx(), () => startSrs0(filter, flip)); }
+function startSrs0(filter, flip) {
   srsFilter = filter || 'all';
   const l = srsLists(srsFilter);
   const q = [...shuffle(l.due), ...l.fresh];
@@ -3723,7 +3772,8 @@ function startSrs(filter, flip) {
   openSess({ key: null, type: 'srs', title: 'Ôn thẻ ngắt quãng', back: 'review' }, () => items, true);
 }
 /* Học nhanh 5 câu: bước khởi động nhẹ nhất để không bỏ ngày */
-function startQuick() {
+function startQuick() { return withKnow(frontierIdx(), startQuick0); }
+function startQuick0() {
   const items = [], l = srsLists('all');
   [...l.due, ...l.fresh].slice(0, 5).forEach(k => { const q = srsQuestion(k); if (q) items.push(q); });
   if (items.length < 5) Object.values(S.errors).sort((a, b) => b.n - a.n).slice(0, 5 - items.length).forEach(sp => { const q = qFromSpec(sp); if (q) items.push(q); });
@@ -4462,7 +4512,7 @@ async function bkAuto() {
 }
 async function bkRestore(k) {
   const x = BK.snaps.find(s => s.k === k); if (!x) return;
-  try { const j = JSON.parse(x.json); if (!confirm('Thay tiến độ hiện tại bằng bản tự lưu ngày ' + k + '?')) return; S = { ...structuredClone(DEFAULTS), ...j.state }; save(); toast('Đã khôi phục bản ngày ' + k); setTimeout(() => location.reload(), 600); } catch (e) { toast('Bản lưu không hợp lệ'); }
+  try { const j = JSON.parse(x.json); if (!confirm('Thay tiến độ hiện tại bằng bản tự lưu ngày ' + k + '?')) return; S = { ...structuredClone(DEFAULTS), ...j.state }; S.gateVer = 0; gateMigrate(); save(); toast('Đã khôi phục bản ngày ' + k); setTimeout(() => location.reload(), 600); } catch (e) { toast('Bản lưu không hợp lệ'); }
 }
 function bkCard() {
   const auto = S.settings.bkAuto !== false, last = S.lastBackup ? new Date(S.lastBackup).toLocaleDateString('vi-VN') : 'chưa có';
