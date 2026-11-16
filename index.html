@@ -1138,6 +1138,29 @@ html[data-dark] .call.err .enx,html[data-dark] .call.usage .enx{color:var(--ambe
 html[data-dark] .call.err .vnote li.en,html[data-dark] .call.usage .pts li.en{background:rgba(255,255,255,.08);color:var(--ink)}
 html[data-dark] .pts li.en{color:var(--ink)}
 
+/* ===== v7.11 · Tình huống đời sống ===== */
+.sit-tile{border-color:var(--amber)}
+.sit-card{display:flex;gap:12px;align-items:center;cursor:pointer}.sit-card .ic{font-size:30px}.sit-card.lock{opacity:.55}
+.sit-week{border-color:var(--amber);background:var(--amber-soft);cursor:pointer}
+.sit-chat{padding-bottom:40px}
+.sit-row{display:flex;margin:10px 0}.sit-row.you{justify-content:flex-end}
+.sit-bubble{max-width:86%;border-radius:14px;padding:10px 13px;border:1px solid var(--line);background:var(--card)}
+.sit-bubble.npc{border-top-left-radius:4px}.sit-bubble.you{border-top-right-radius:4px;background:var(--blue-soft);border-color:transparent}
+.sit-bubble.you.m{background:var(--amber-soft)}.sit-bubble.you.b{background:var(--coral-soft)}
+.sit-who{font-size:calc(12px*var(--fz));font-weight:700;color:var(--muted)}.sit-en{font-size:calc(16px*var(--fz));font-weight:600;margin-top:2px}
+.sit-vi{font-size:calc(13px*var(--fz));color:var(--muted);margin-top:3px}
+.sit-narr{text-align:center;font-style:italic;color:var(--muted);margin:12px 0;font-size:calc(14px*var(--fz))}
+.sit-say{background:transparent;border:0;font-size:18px;padding:4px 7px;cursor:pointer;color:var(--ink)}
+.sit-opt{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0;font-size:calc(15px*var(--fz));color:var(--ink);min-height:44px}
+.sit-opt.g{background:var(--green-soft);border-color:var(--green)}.sit-opt.b{background:var(--coral-soft);border-color:var(--coral)}
+.sit-fb{border-radius:10px;padding:12px 14px;margin:12px 0;border:1.5px solid var(--line)}
+.sit-fb.g{background:var(--green-soft);border-color:var(--green)}.sit-fb.m{background:var(--amber-soft);border-color:var(--amber)}.sit-fb.b{background:var(--coral-soft);border-color:var(--coral)}
+.sit-best{margin-top:6px}.sit-stars{font-size:28px;color:var(--amber);letter-spacing:3px}
+.sit-sum{text-align:left}.sit-ph{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px}
+.sit-pre{white-space:pre-wrap;font-family:inherit;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:10px;margin:8px 0 0;font-size:calc(15px*var(--fz))}
+.sit-ta{width:100%;box-sizing:border-box;margin-top:8px;border:1.5px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--card);color:var(--ink)}
+.sit-chk{display:flex;gap:8px;align-items:flex-start;margin:7px 0;font-size:calc(15px*var(--fz))}.sit-done{margin-top:8px;color:var(--green);font-weight:700}
+
 </style>
 </head>
 <body>
@@ -1261,7 +1284,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.10';
+const APP_VER = '7.11b';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -1310,6 +1333,8 @@ function bump(field, n = 1) { const k = dayKey(); const fresh = !S.days[k] && (f
   if (fresh) setTimeout(() => { try { cheerNewDay(); } catch (e) { } }, 1200);
   if ((field === 'a' || field === 'cards') && before < S.settings.goal && todayCount() >= S.settings.goal) setTimeout(() => { try { cheerShow('goal'); } catch (e) { } }, 900);
   try { questCheck(); } catch (e) { } try { extrasCheck(); } catch (e) { } }
+/* số thẻ ôn trong ngày: lật thẻ (cards) + trả lời câu hỏi đúng lần đầu trong ngày (cq). XP và mục tiêu câu/ngày không đổi (câu trả lời đã được tính ở 'a') */
+const dayCards = d => d ? (d.cards || 0) + (d.cq || 0) : 0;
 function todayCount() { const d = S.days[dayKey()]; return d ? (d.a || 0) + (d.cards || 0) : 0; }
 function streak() { let n = 0, t = today(); if (!S.days[dayKey(t)]) t--; while (S.days[dayKey(t)]) { n++; t--; } return n; }
 
@@ -2058,6 +2083,8 @@ function qEnsure() {
   }
   return S.qd;
 }
+/* số thẻ đã ôn hôm nay: chế độ lật thẻ (cards) HOẶC chế độ trả lời câu hỏi (thẻ đã ôn đúng trong srsDone) – lấy số lớn hơn */
+const srsTodayN = () => Math.max(dayCards(S.days[dayKey()]), S.srsDone && S.srsDone.day === dayKey() ? Object.keys(S.srsDone.codes || {}).length : 0);
 function qSkillN(sk) { const d = S.days[dayKey()]; return d && d.sk && d.sk[sk] ? d.sk[sk][0] : 0; }
 const dayStartMs = () => new Date(new Date().setHours(0, 0, 0, 0)).getTime();
 function nextGate() {
@@ -2071,7 +2098,7 @@ function questList() {
   if (!DATA) return [];
   const q = qEnsure(), L = q.lesson, l = DATA.lessons[DATA.order[L]], st = lessonState(L), out = [], dr = drillState(L);
   const steps = ['text', 'vocab', 'grammar'].filter(x => st[x]).length;
-  if (q.due0 > 0) { const of = Math.min(10, q.due0); out.push({ id: 'srs', main: 1, ic: '🃏', t: `Ôn ${of} thẻ ghi nhớ`, s: 'Thẻ đến hạn · xem mục “Ôn mỗi ngày”', n: Math.min(of, (S.days[q.day] || {}).cards || 0), of, unit: 'thẻ', go: 'startSrs()' }); }
+  if (q.due0 > 0) { const of = Math.min(10, q.due0); out.push({ id: 'srs', main: 1, ic: '🃏', t: `Ôn ${of} thẻ ghi nhớ`, s: 'Thẻ đến hạn · xem mục “Ôn mỗi ngày”', n: Math.min(of, srsTodayN()), of, unit: 'thẻ', go: 'startSrs()' }); }
   if (q.err0 > 0) { const of = Math.min(10, q.err0); out.push({ id: 'err', main: 1, ic: '🔧', t: `Sửa ${of} câu từng làm sai`, s: 'Sổ lỗi · đúng 2 lần là xóa khỏi sổ', n: Math.min(of, dayQ('err')), of, unit: 'câu', go: 'startErrors()' }); }
   const stl = [['text', 'Bài khóa'], ['vocab', 'Từ vựng'], ['grammar', 'Ngữ pháp']].map(([k, t]) => ({ k, t, d: !!(st[k] || lessonDone(L)) })), st1 = stl.find(x => !x.d);
   out.push({ id: 'learn', main: 1, ic: '📖', t: `Học bài ${L}`, s: l ? l['Chủ đề'] : '', n: lessonDone(L) ? 3 : steps, of: 3, unit: 'phần', steps: stl, go: `openLesson('${L}','${st1 ? st1.k : 'text'}')` });
@@ -2344,12 +2371,12 @@ function openLesson(id, tab) { if (DATA && !lessonUnlocked(id)) return toast(loc
 
 function render() {
   if (!DATA) return renderImport();
-  const navOn = { lesson: 'home', lessons: 'home', quiz: '', qlist: 'practice', srs: 'practice', orderup: 'practice', result: '' }[page] ?? page;
+  const navOn = { lesson: 'home', lessons: 'home', quiz: '', qlist: 'practice', srs: 'practice', orderup: 'practice', situations: 'practice', result: '' }[page] ?? page;
   const inQuiz = ['quiz', 'srs', 'result'].includes(page);
   $('#nav').classList.toggle('hidden', page === 'quiz' || page === 'srs' || (page === 'orderup' && OU.scr === 'play'));
   const due = srsDueCount();
   $('#nav').innerHTML = NAV.map(([k, t]) => `<button class="${navOn === k ? 'on' : ''}" onclick="go('${k}')" aria-label="${t}">${skinNavIcon(k) || IC[k]}${k === 'practice' && due ? `<span class="dot">${due > 99 ? '99+' : due}</span>` : ''}<span>${t}</span></button>`).join('');
-  const P = { today: todayPage, home: homePage, lessons: lessonsPage, lesson: lessonPage, lookup: lookupPage, practice: practicePage, review: practicePage, me: mePage, quiz: quizPage, qlist: qlistPage, srs: srsPage, orderup: orderUpPage, result: resultPage }[page] || homePage;
+  const P = { today: todayPage, home: homePage, lessons: lessonsPage, lesson: lessonPage, lookup: lookupPage, practice: practicePage, review: practicePage, me: mePage, quiz: quizPage, qlist: qlistPage, srs: srsPage, orderup: orderUpPage, situations: situationsPage, result: resultPage }[page] || homePage;
   $('#view').dataset.page = page;
   $('#view').innerHTML = P();
   decorate();
@@ -2838,7 +2865,7 @@ function lookupPage() {
   const shown = list.slice(0, lookN);
   const card = x => lookTab === 'g' ? grammarCard(x, false) : lookTab === 'p' ? phraseCard(x, false) : vocabCard(x, false);
   return `<div class="band compact"><h1>Tra cứu</h1><div class="sub">${DATA.vocab.length} từ · ${DATA.phrases.length} cụm · ${DATA.grammar.length} điểm ngữ pháp</div></div>
-  <div class="page"><div class="chips" style="margin-bottom:10px">${[['v', 'Từ vựng'], ['p', 'Cụm từ'], ['g', 'Ngữ pháp'], ['f', '★ Đánh dấu']].map(([k, t]) => `<button class="chip ${lookTab === k ? 'on' : ''}" onclick="lookTab='${k}';lookN=40;render()">${t}</button>`).join('')}</div>
+  <div class="page"><div class="chips" style="margin-bottom:10px">${[['v', 'Từ vựng'], ['p', 'Cụm từ'], ['g', 'Ngữ pháp'], ['f', '★ Đánh dấu']].map(([k, t]) => `<button class="chip ${lookTab === k ? 'on' : ''}" onclick="lookTab='${k}';lookN=40;render()">${t}</button>`).join('')}<button class="chip" onclick="sitTab='phrase';sitPhF='all';sitRun=sitW=sitL=sitC=null;go('situations')">🗣 Cụm theo tình huống</button></div>
   <input id="lq" class="search" type="search" placeholder="Tìm tiếng Anh hoặc nghĩa tiếng Việt (không dấu cũng được)…" value="${esc(lookQ)}" oninput="lookQ=this.value;lookN=40;clearTimeout(window._t);window._t=setTimeout(()=>{render();const i=$('#lq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)">
   <div class="chips" style="margin-bottom:12px"><button class="chip ${!lookLv ? 'on' : ''}" onclick="lookLv='';render()">Mọi cấp</button>${LEVELS.map(lv => `<button class="chip ${lookLv === lv ? 'on' : ''}" onclick="lookLv='${lv}';render()">${lv}</button>`).join('')}</div>
   <div class="muted small" style="margin-bottom:8px">${list.length} kết quả</div>
@@ -3695,6 +3722,7 @@ function practicePage() {
   return `<div class="band compact"><h1>Ôn & Luyện</h1><div class="sub">Ôn mỗi ngày · luyện chủ động theo từng bước</div></div><div class="page">
    ${reviewBlock()}
    <section class="card ou-tile" onclick="go('orderup')"><div class="ic">🍔</div><div><b>Order Up! · Game quán ăn</b><div class="muted small">Nghe khách order bằng tiếng Anh, làm đúng món. 8 cấp, đổi giao diện theo mùa.</div></div></section>
+   <section class="card ou-tile sit-tile" onclick="sitTab='dlg';sitRun=sitW=sitL=sitC=null;go('situations')"><div class="ic">🗣️</div><div><b>Tình huống đời sống</b><div class="muted small">Hội thoại nhánh, viết email/tin nhắn, nghe thông báo, thử thách tuần và sổ cụm câu dùng ngay.</div></div></section>
    <h2 class="st">🧩 Luyện chủ động <span class="muted tiny">tùy bạn chọn</span></h2>
    <section class="card"><div class="section-title">Luyện nội dung nào?</div><select class="sel" style="width:100%" onchange="practiceScope=this.value;render()">${scopes.map(([k, t]) => `<option value="${k}" ${practiceScope === k ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
    ${['lesson', 'cp'].includes(practiceScope) ? `<div class="row mt" style="gap:6px"><select class="sel" style="flex:1" onchange="lessonId=this.value;S.lastLesson=lessonId;save();render()">${DATA.lessons.filter(l => DATA.order[l['Mã bài']] <= _f).map(l => `<option value="${l['Mã bài']}" ${l['Mã bài'] === lessonId ? 'selected' : ''}>${esc(l['Mã bài'] + ' · ' + l['Chủ đề'])}</option>`).join('')}</select></div>` : ''}
@@ -3752,7 +3780,7 @@ function srsGrade(q, ok) {
   if (c.due === null) bump('fresh');
   q.srsPrev = { ...c };
   S.srs[q.srsKey] = { ...sm2(c, g), lk: q.kind };
-  if (g >= 3) srsDone()[c.id] = 1;
+  if (g >= 3) { if (!srsDone()[c.id]) bump('cq'); srsDone()[c.id] = 1; }
   if (!ok && !q.retry && quiz) { const nq = srsQuestion(q.srsKey, true); if (nq) quiz.items.push(nq); }
 }
 /* đúng nhưng còn khó nhớ → hạ xuống mức "Khó" (ôn lại sớm hơn) */
@@ -4055,6 +4083,141 @@ function orderUpPage() {
   <section class="card"><div class="section-title">Bắt đầu từ cấp</div><div class="ou-row2">${lv}</div><div class="mt"><b>Cấp ${OU.start} · ${OU_LV[OU.start - 1]}</b><div class="muted small">${OU_LVD[OU.start - 1]}</div></div>${st.max < 8 ? `<div class="muted tiny mt">Chơi tới cấp ${st.max + 1} trong một ca để mở khóa cấp đó. Cứ 4 khách lên 1 cấp.</div>` : ''}</section>
   <button class="btn" style="width:100%" onclick="ouStartGame()">Mở quán</button><p class="muted small" style="text-align:center">Kỷ lục: <b>${st.best}</b> xu · mỗi đơn đúng cộng vào mục tiêu và chuỗi ngày học</p>
   <details class="card"><summary><b>📒 Sổ câu đã sai</b> (${st.miss.length})</summary>${st.miss.slice(0, 20).map(w => `<div class="ou-mi">${esc(w.en)}<small>${esc(w.vi)}</small></div>`).join('') || '<div class="muted small mt">Chưa có câu nào.</div>'}</details></div></div>`;
+}
+
+const SIT_DATA = {"situations": [{"id": "nhahang", "icon": "🍽️", "title": "Nhà hàng: gọi món và thanh toán", "unlock": "A2-07", "intro": "Bạn đi ăn tối ở nhà hàng. Hãy chọn câu đáp phù hợp ở mỗi bước.", "start": "n1", "nodes": {"n1": {"who": "Waiter", "en": "Good evening. A table for how many?", "vi": "Chào buổi tối. Bàn cho mấy người ạ?", "opts": [{"en": "A table for two, please.", "vi": "Cho tôi bàn hai người.", "sc": 2, "fb": "Gọn, lịch sự và trả lời đúng câu hỏi.", "nxt": "n2"}, {"en": "Table.", "vi": "Bàn.", "sc": 0, "fb": "Quá cụt, nghe thiếu lịch sự. Hãy nói cả câu: \"A table for two, please.\"", "nxt": "n2"}, {"en": "I am hungry.", "vi": "Tôi đói.", "sc": 1, "fb": "Đúng hoàn cảnh nhưng chưa trả lời câu hỏi (mấy người?).", "nxt": "n2"}]}, "n2": {"who": "Waiter", "en": "Here is the menu. Are you ready to order?", "vi": "Đây là thực đơn. Bạn sẵn sàng gọi món chưa?", "opts": [{"en": "Yes. I'd like the chicken and rice, please.", "vi": "Rồi. Cho tôi cơm gà.", "sc": 2, "fb": "\"I'd like…\" là cách gọi món lịch sự nhất.", "nxt": "n3"}, {"en": "Give me chicken.", "vi": "Cho tôi gà.", "sc": 0, "fb": "Nghe như ra lệnh. Dùng \"I'd like…\" hoặc \"Can I have…, please?\".", "nxt": "n3"}, {"en": "Not now. Can I have five minutes?", "vi": "Chưa. Cho tôi năm phút được không?", "sc": 2, "fb": "Rất tự nhiên khi bạn chưa chọn xong.", "nxt": "n3"}]}, "n3": {"who": "Waiter", "en": "Would you like a drink?", "vi": "Bạn muốn uống gì không?", "opts": [{"en": "Water, please.", "vi": "Cho tôi nước lọc.", "sc": 2, "fb": "Ngắn gọn và có \"please\".", "nxt": "n4"}, {"en": "No drink.", "vi": "Không uống.", "sc": 0, "fb": "Hơi cộc. Nói \"No, thank you.\" hoặc \"Just water, please.\"", "nxt": "n4"}, {"en": "Yes, a cup of tea, please.", "vi": "Có, cho tôi một tách trà.", "sc": 2, "fb": "Trả lời rõ ràng, lịch sự.", "nxt": "n4"}]}, "n4": {"who": "Waiter", "en": "How is your meal?", "vi": "Bữa ăn của bạn thế nào?", "opts": [{"en": "Very good, thank you.", "vi": "Rất ngon, cảm ơn.", "sc": 2, "fb": "Tích cực và lịch sự.", "nxt": "n5"}, {"en": "OK.", "vi": "Tạm được.", "sc": 1, "fb": "Không sai nhưng hơi nhạt. Thêm \"thank you\" sẽ tốt hơn.", "nxt": "n5"}, {"en": "Not good.", "vi": "Không ngon.", "sc": 0, "fb": "Quá thẳng và không nói lý do. Nếu có vấn đề, hãy nói cụ thể: \"The soup is cold.\"", "nxt": "n5"}]}, "n5": {"who": "You", "en": "(You finish your meal. You want to pay.)", "vi": "(Bạn ăn xong và muốn thanh toán.)", "opts": [{"en": "Can I have the bill, please?", "vi": "Cho tôi xin hóa đơn.", "sc": 2, "fb": "Cách xin thanh toán chuẩn ở nhà hàng.", "nxt": "n6"}, {"en": "Money!", "vi": "Tiền!", "sc": 0, "fb": "Rất bất lịch sự.", "nxt": "n6"}, {"en": "How much is it?", "vi": "Hết bao nhiêu?", "sc": 1, "fb": "Hỏi giá được, nhưng ở nhà hàng thường xin \"the bill\".", "nxt": "n6"}]}, "n6": {"who": "Waiter", "en": "Here you are. It is twenty-five dollars.", "vi": "Của bạn đây. Tổng cộng 25 đô.", "opts": [{"en": "Can I pay by card?", "vi": "Tôi trả bằng thẻ được không?", "sc": 2, "fb": "Hỏi lịch sự về cách trả tiền.", "nxt": "n7"}, {"en": "Here you are. Thank you!", "vi": "Của bạn đây. Cảm ơn!", "sc": 2, "fb": "Trả tiền và cảm ơn, rất tự nhiên.", "nxt": "n7"}, {"en": "Too much!", "vi": "Đắt quá!", "sc": 0, "fb": "Phàn nàn trước mặt nhân viên khi đã ăn xong là thiếu lịch sự.", "nxt": "n7"}]}, "n7": {"who": "Waiter", "en": "Thank you. Have a nice evening!", "vi": "Cảm ơn bạn. Chúc bạn buổi tối vui vẻ!", "end": true}}, "phrases": [["A table for two, please.", "Cho tôi bàn hai người."], ["Can I see the menu, please?", "Cho tôi xem thực đơn."], ["I'd like the chicken and rice, please.", "Cho tôi cơm gà."], ["Can I have some water, please?", "Cho tôi xin nước."], ["Can I have five minutes?", "Cho tôi năm phút."], ["Very good, thank you.", "Rất ngon, cảm ơn."], ["Can I have the bill, please?", "Cho tôi xin hóa đơn."], ["Can I pay by card?", "Tôi trả bằng thẻ được không?"]]}, {"id": "nhathuoc", "icon": "💊", "title": "Nhà thuốc: nói về triệu chứng", "unlock": "A2-04", "intro": "Bạn bị đau đầu và đến nhà thuốc. Hãy nói rõ vấn đề và hỏi lại khi chưa hiểu.", "start": "n1", "nodes": {"n1": {"who": "Pharmacist", "en": "Hello. How can I help you?", "vi": "Xin chào. Tôi giúp gì được cho bạn?", "opts": [{"en": "I have a headache. Do you have any medicine?", "vi": "Tôi bị đau đầu. Bạn có thuốc không?", "sc": 2, "fb": "Nêu triệu chứng rõ ràng và hỏi đúng thứ cần.", "nxt": "n2"}, {"en": "Medicine for head.", "vi": "Thuốc cho đầu.", "sc": 1, "fb": "Người ta hiểu, nhưng nên nói \"I have a headache.\"", "nxt": "n2"}, {"en": "Help!", "vi": "Giúp tôi!", "sc": 0, "fb": "Quá chung và nghe như khẩn cấp. Hãy nói triệu chứng của bạn.", "nxt": "n2"}]}, "n2": {"who": "Pharmacist", "en": "How long do you have it?", "vi": "Bạn bị bao lâu rồi?", "opts": [{"en": "Yesterday morning.", "vi": "Từ sáng hôm qua.", "sc": 2, "fb": "Trả lời bằng mốc thời gian là tự nhiên và đủ ý.", "nxt": "n3"}, {"en": "For two days.", "vi": "Hai ngày rồi.", "sc": 2, "fb": "\"For\" + khoảng thời gian cũng đúng.", "nxt": "n3"}, {"en": "Yes.", "vi": "Có.", "sc": 0, "fb": "Câu hỏi là \"How long…?\" nên cần trả lời bằng thời gian, không phải Yes/No.", "nxt": "n3"}]}, "n3": {"who": "Pharmacist", "en": "Do you have any other problem?", "vi": "Bạn còn vấn đề nào khác không?", "opts": [{"en": "No, but I feel tired.", "vi": "Không, nhưng tôi thấy mệt.", "sc": 2, "fb": "Trả lời đủ ý và có thêm thông tin hữu ích.", "nxt": "n4"}, {"en": "No.", "vi": "Không.", "sc": 1, "fb": "Đúng nhưng ngắn. Nói thêm nếu bạn còn triệu chứng khác.", "nxt": "n4"}, {"en": "I am sick.", "vi": "Tôi bị ốm.", "sc": 0, "fb": "Quá chung, dược sĩ cần biết chính xác triệu chứng.", "nxt": "n4"}]}, "n4": {"who": "Pharmacist", "en": "Take this medicine after lunch and after dinner. Do you have any questions?", "vi": "Uống thuốc này sau bữa trưa và sau bữa tối. Bạn có câu hỏi nào không?", "opts": [{"en": "Thank you. Can you say that again, please?", "vi": "Cảm ơn. Bạn nhắc lại giúp tôi được không?", "sc": 2, "fb": "Với thuốc, hỏi lại cho chắc là cách an toàn nhất.", "nxt": "n5"}, {"en": "OK, thanks.", "vi": "Vâng, cảm ơn.", "sc": 1, "fb": "Ổn nếu bạn đã hiểu hết. Nếu chưa chắc, hãy hỏi lại.", "nxt": "n5"}, {"en": "Yes.", "vi": "Có.", "sc": 0, "fb": "Nói \"Yes\" rồi không hỏi gì khiến cuộc nói chuyện bị lửng.", "nxt": "n5"}]}, "n5": {"who": "Pharmacist", "en": "Please see a doctor if you are not better in three days. Get well soon!", "vi": "Hãy đi khám nếu ba ngày nữa bạn chưa đỡ. Chúc bạn mau khỏe!", "end": true}}, "phrases": [["I have a headache.", "Tôi bị đau đầu."], ["Do you have any medicine for a cold?", "Bạn có thuốc cảm không?"], ["Yesterday morning.", "Từ sáng hôm qua."], ["I feel tired.", "Tôi thấy mệt."], ["Can you say that again, please?", "Bạn nhắc lại giúp tôi được không?"], ["How often do I take it?", "Tôi uống bao lâu một lần?"], ["Thank you for your help.", "Cảm ơn bạn đã giúp."], ["I need to see a doctor.", "Tôi cần đi khám bác sĩ."]]}, {"id": "khachsan", "icon": "🏨", "title": "Khách sạn: nhận phòng", "unlock": "A2-36", "intro": "Bạn đến khách sạn đã đặt phòng. Hãy làm thủ tục nhận phòng.", "start": "n1", "nodes": {"n1": {"who": "Receptionist", "en": "Good afternoon. How can I help you?", "vi": "Chào buổi chiều. Tôi giúp gì được cho bạn?", "opts": [{"en": "Hello. I booked a room. My name is Linh.", "vi": "Xin chào. Tôi đã đặt một phòng. Tên tôi là Linh.", "sc": 2, "fb": "Nói rõ bạn đã đặt phòng và tên của bạn.", "nxt": "n2"}, {"en": "I want a room.", "vi": "Tôi muốn một phòng.", "sc": 1, "fb": "Hiểu được nhưng nghe thẳng. Nên nói \"I booked a room\" hoặc \"I'd like to check in.\"", "nxt": "n2"}, {"en": "Where is my room?", "vi": "Phòng của tôi ở đâu?", "sc": 0, "fb": "Bạn chưa nhận phòng, lễ tân chưa biết bạn là ai.", "nxt": "n2"}]}, "n2": {"who": "Receptionist", "en": "Can I see your passport, please? How many nights?", "vi": "Cho tôi xem hộ chiếu của bạn. Bạn ở mấy đêm?", "opts": [{"en": "Here you are. Three nights.", "vi": "Của bạn đây. Ba đêm.", "sc": 2, "fb": "Đưa giấy tờ và trả lời đúng câu hỏi.", "nxt": "n3"}, {"en": "Three nights. No passport.", "vi": "Ba đêm. Không có hộ chiếu.", "sc": 0, "fb": "Quá cộc và có thể gây hiểu nhầm.", "nxt": "n3"}, {"en": "Here it is.", "vi": "Đây ạ.", "sc": 1, "fb": "Chưa trả lời số đêm.", "nxt": "n3"}]}, "n3": {"who": "Receptionist", "en": "Your room is on the fifth floor. Breakfast is from seven to ten. Do you need anything else?", "vi": "Phòng của bạn ở tầng năm. Bữa sáng từ bảy đến mười giờ. Bạn cần gì nữa không?", "opts": [{"en": "What time is check-out?", "vi": "Mấy giờ phải trả phòng?", "sc": 2, "fb": "Câu hỏi hữu ích mà khách nào cũng nên hỏi.", "nxt": "n4"}, {"en": "Is there Wi-Fi in the room?", "vi": "Trong phòng có Wi-Fi không?", "sc": 2, "fb": "Rất quan trọng với người làm việc từ xa.", "nxt": "n4"}, {"en": "No.", "vi": "Không.", "sc": 1, "fb": "Không sai, nhưng bạn bỏ lỡ cơ hội hỏi thông tin cần thiết.", "nxt": "n4"}]}, "n4": {"who": "Receptionist", "en": "Check-out is at twelve, and the Wi-Fi is free. Anything else?", "vi": "Trả phòng lúc mười hai giờ và Wi-Fi miễn phí. Còn gì nữa không?", "opts": [{"en": "No, thank you. That is all.", "vi": "Không, cảm ơn. Vậy là đủ.", "sc": 2, "fb": "Lịch sự và rõ ràng.", "nxt": "n5"}, {"en": "Can I have a taxi to the airport tomorrow at six?", "vi": "Mai sáu giờ cho tôi một xe taxi ra sân bay được không?", "sc": 2, "fb": "Nhờ giúp đỡ cụ thể, có giờ rõ ràng.", "nxt": "n5"}, {"en": "OK.", "vi": "Vâng.", "sc": 1, "fb": "Chấp nhận được nhưng hơi cộc.", "nxt": "n5"}]}, "n5": {"who": "Receptionist", "en": "Great. Enjoy your stay!", "vi": "Tuyệt. Chúc bạn lưu trú vui vẻ!", "end": true}}, "phrases": [["I booked a room. My name is Linh.", "Tôi đã đặt phòng. Tên tôi là Linh."], ["I'd like to check in, please.", "Tôi muốn nhận phòng."], ["Here is my passport.", "Đây là hộ chiếu của tôi."], ["What time is check-out?", "Mấy giờ phải trả phòng?"], ["Is there Wi-Fi in the room?", "Trong phòng có Wi-Fi không?"], ["What time is breakfast?", "Bữa sáng lúc mấy giờ?"], ["Can I have a taxi to the airport?", "Cho tôi một xe ra sân bay được không?"], ["Can I have another key, please?", "Cho tôi thêm một chìa khóa."]]}, {"id": "hopOnline", "icon": "💻", "title": "Họp online: nghe không rõ, nhờ nhắc lại", "unlock": "A2-35", "intro": "Tom nói chuyện với bạn qua mạng yếu. Hãy hỏi lại lịch sự và xác nhận việc cần làm.", "start": "n1", "nodes": {"n1": {"who": "Tom", "en": "Hi Linh. Can you hear me? The line is not good.", "vi": "Chào Linh. Bạn nghe tôi không? Đường truyền không tốt.", "opts": [{"en": "Yes, but the sound is not good. Can you say that again?", "vi": "Nghe được, nhưng âm thanh không tốt. Bạn nói lại được không?", "sc": 2, "fb": "Nói rõ vấn đề và nhờ nhắc lại.", "nxt": "n2"}, {"en": "What?", "vi": "Gì cơ?", "sc": 0, "fb": "\"What?\" trong cuộc họp nghe rất thô. Dùng \"Sorry, can you say that again?\"", "nxt": "n2"}, {"en": "Sorry, I can't hear you.", "vi": "Xin lỗi, tôi không nghe thấy.", "sc": 1, "fb": "Đúng và lịch sự, nhưng nên đề nghị cách xử lý (nhờ nhắc lại).", "nxt": "n2"}]}, "n2": {"who": "Tom", "en": "I said, please send the sales report by Friday afternoon.", "vi": "Tôi nói là hãy gửi báo cáo doanh số trước chiều thứ Sáu.", "opts": [{"en": "OK, Friday afternoon. I will send it by three. Is that OK?", "vi": "Vâng, chiều thứ Sáu. Tôi sẽ gửi trước ba giờ. Như vậy được không?", "sc": 2, "fb": "Nhắc lại để xác nhận và đưa thời hạn cụ thể.", "nxt": "n3"}, {"en": "OK.", "vi": "Vâng.", "sc": 1, "fb": "Chưa xác nhận lại nội dung nên dễ hiểu nhầm.", "nxt": "n3"}, {"en": "I don't understand.", "vi": "Tôi không hiểu.", "sc": 0, "fb": "Quá chung. Hãy nói rõ phần nào bạn chưa hiểu.", "nxt": "n3"}]}, "n3": {"who": "Tom", "en": "Great. Can you check the numbers for last month?", "vi": "Tốt. Ngoài ra, bạn kiểm tra số liệu tháng trước được không?", "opts": [{"en": "Sure. Do you mean all products or just the new ones?", "vi": "Được. Ý bạn là tất cả sản phẩm hay chỉ sản phẩm mới?", "sc": 2, "fb": "Hỏi làm rõ trước khi làm là thói quen tốt khi làm việc từ xa.", "nxt": "n4"}, {"en": "Sure.", "vi": "Được.", "sc": 1, "fb": "Nếu yêu cầu chưa rõ, hãy hỏi lại.", "nxt": "n4"}, {"en": "I can't.", "vi": "Tôi không làm được.", "sc": 0, "fb": "Từ chối ngay mà không giải thích là không phù hợp. Hãy nói lý do hoặc đề nghị thời gian khác.", "nxt": "n4"}]}, "n4": {"who": "Tom", "en": "All products, please. Any questions?", "vi": "Tất cả sản phẩm nhé. Bạn có câu hỏi nào không?", "opts": [{"en": "No questions. I will send an email after the meeting with the plan.", "vi": "Không có. Sau cuộc họp tôi sẽ gửi email kèm kế hoạch.", "sc": 2, "fb": "Hứa việc cụ thể giúp mọi người yên tâm.", "nxt": "n5"}, {"en": "No.", "vi": "Không.", "sc": 1, "fb": "Chấp nhận được nhưng hơi cộc.", "nxt": "n5"}, {"en": "Maybe.", "vi": "Có thể.", "sc": 0, "fb": "Mơ hồ. Nếu còn thắc mắc hãy hỏi luôn.", "nxt": "n5"}]}, "n5": {"who": "Tom", "en": "Great. Thanks, Linh.", "vi": "Tốt quá. Cảm ơn Linh.", "end": true}}, "phrases": [["Can you say that again, please?", "Bạn nhắc lại giúp tôi được không?"], ["Sorry, the sound is not good.", "Xin lỗi, âm thanh không tốt."], ["Sorry, I can't hear you.", "Xin lỗi, tôi không nghe thấy bạn."], ["Do you mean all products?", "Ý bạn là tất cả sản phẩm?"], ["Is that OK?", "Như vậy được không?"], ["I will send it by Friday.", "Tôi sẽ gửi trước thứ Sáu."], ["I have a question.", "Tôi có một câu hỏi."], ["I will send an email after the meeting.", "Sau cuộc họp tôi sẽ gửi email."]]}, {"id": "phongvan", "icon": "🧑‍💼", "title": "Phỏng vấn làm việc từ xa", "unlock": "A2-43", "intro": "David phỏng vấn bạn cho một công việc làm từ xa. Hãy trả lời rõ ràng và tự tin.", "start": "n1", "nodes": {"n1": {"who": "David", "en": "Hello Linh. Please tell me about yourself.", "vi": "Chào Linh. Hãy giới thiệu về bạn.", "opts": [{"en": "I am Linh. I am an accountant in Hanoi. I like numbers and I want to work with data.", "vi": "Tôi là Linh. Tôi là kế toán ở Hà Nội. Tôi thích số liệu và muốn làm việc với dữ liệu.", "sc": 2, "fb": "Đủ ba ý: tên, nghề hiện tại, mong muốn liên quan công việc.", "nxt": "n2"}, {"en": "I am Linh.", "vi": "Tôi là Linh.", "sc": 0, "fb": "Quá ngắn, bạn bỏ lỡ cơ hội gây ấn tượng.", "nxt": "n2"}, {"en": "I am twenty-four and I live with my parents.", "vi": "Tôi 24 tuổi và sống với bố mẹ.", "sc": 1, "fb": "Thông tin cá nhân này ít liên quan đến công việc.", "nxt": "n2"}]}, "n2": {"who": "David", "en": "What are you good at?", "vi": "Bạn giỏi điều gì?", "opts": [{"en": "I learn quickly and I am careful with numbers.", "vi": "Tôi học nhanh và cẩn thận với số liệu.", "sc": 2, "fb": "Cụ thể và liên quan đến công việc.", "nxt": "n3"}, {"en": "I am good.", "vi": "Tôi giỏi.", "sc": 0, "fb": "Mơ hồ. Hãy nêu một điểm mạnh cụ thể.", "nxt": "n3"}, {"en": "I don't know.", "vi": "Tôi không biết.", "sc": 0, "fb": "Nên chuẩn bị trước câu này, vì gần như chắc chắn sẽ được hỏi.", "nxt": "n3"}]}, "n3": {"who": "David", "en": "Can you work from home?", "vi": "Bạn có thể làm việc tại nhà không?", "opts": [{"en": "Yes. I can work at home and I always finish my work on time.", "vi": "Có. Tôi làm việc tại nhà được và luôn xong việc đúng hạn.", "sc": 2, "fb": "Trả lời có kèm bằng chứng nhỏ.", "nxt": "n4"}, {"en": "Yes.", "vi": "Có.", "sc": 1, "fb": "Đúng nhưng ngắn. Thêm một ý để thuyết phục hơn.", "nxt": "n4"}, {"en": "Sometimes.", "vi": "Thỉnh thoảng.", "sc": 0, "fb": "Với việc làm từ xa, câu này nghe thiếu tự tin.", "nxt": "n4"}]}, "n4": {"who": "David", "en": "Do you have any questions for us?", "vi": "Bạn có câu hỏi nào cho chúng tôi không?", "opts": [{"en": "Yes. What does a normal day look like in this job?", "vi": "Có. Một ngày làm việc bình thường ở vị trí này như thế nào?", "sc": 2, "fb": "Cho thấy bạn quan tâm đến công việc.", "nxt": "n5"}, {"en": "No.", "vi": "Không.", "sc": 1, "fb": "Chấp nhận được, nhưng bỏ lỡ cơ hội thể hiện sự quan tâm.", "nxt": "n5"}, {"en": "How much money?", "vi": "Bao nhiêu tiền?", "sc": 0, "fb": "Hỏi lương quá sớm và quá thẳng. Có thể hỏi lịch sự ở vòng sau.", "nxt": "n5"}]}, "n5": {"who": "David", "en": "Thank you, Linh. We will call you next week.", "vi": "Cảm ơn Linh. Tuần sau chúng tôi sẽ gọi cho bạn.", "end": true}}, "phrases": [["Let me tell you about myself.", "Để tôi giới thiệu về bản thân."], ["I am an accountant in Hanoi.", "Tôi là kế toán ở Hà Nội."], ["I learn quickly.", "Tôi học nhanh."], ["I can work at home.", "Tôi có thể làm việc tại nhà."], ["I always finish my work on time.", "Tôi luôn xong việc đúng hạn."], ["What does a normal day look like?", "Một ngày bình thường như thế nào?"], ["Thank you for your time.", "Cảm ơn bạn đã dành thời gian."], ["I want to work with data.", "Tôi muốn làm việc với dữ liệu."]]}], "writes": [{"id": "w_hen", "icon": "📧", "title": "Email xác nhận lịch họp", "unlock": "A2-35", "scene": "Tom hỏi bạn có thể họp vào thứ Tư lúc 3 giờ chiều không. Viết email trả lời xác nhận.", "template": "Hi Tom,\n\nThank you for your email. Yes, I can meet on ____ at ____.\n\nI will send the report before the meeting.\n\nBest,\n____", "checklist": ["Có lời chào và tên người nhận", "Xác nhận rõ ngày và giờ", "Nêu việc bạn sẽ chuẩn bị", "Kết thư lịch sự và ký tên", "Mỗi câu ngắn, chỉ một ý"], "model": "Hi Tom,\n\nThank you for your email. Yes, I can meet on Wednesday at three in the afternoon.\n\nI will send the sales report before the meeting. Please tell me if you need anything else.\n\nBest,\nLinh"}, {"id": "w_doi", "icon": "💬", "title": "Tin nhắn xin đổi giờ hẹn", "unlock": "A2-22", "scene": "Bạn hẹn Emma lúc 6 giờ nhưng bị bận. Nhắn tin xin đổi sang 7 giờ.", "template": "Hi Emma, I am sorry, I can't come at ____. Can we meet at ____? Thank you!", "checklist": ["Có lời xin lỗi", "Nêu rõ giờ cũ và giờ mới", "Hỏi bằng câu lịch sự (Can we…?)", "Có lời cảm ơn"], "model": "Hi Emma, I am sorry, I can't come at six today. I am very busy. Can we meet at seven? Thank you!"}, {"id": "w_tgt", "icon": "🙋", "title": "Tự giới thiệu ngắn cho hồ sơ", "unlock": "A2-41", "scene": "Viết 4 câu tự giới thiệu để gửi kèm hồ sơ xin việc làm từ xa.", "template": "My name is ____. I am a/an ____ in ____. I have ____ years of experience in ____. I want to ____.", "checklist": ["Có tên và nghề hiện tại", "Có số năm kinh nghiệm", "Nêu điều bạn muốn làm tiếp theo", "Mỗi câu ngắn và rõ"], "model": "My name is Linh. I am an accountant in Hanoi. I have two years of experience with numbers and reports. I want to work with data."}], "listens": [{"id": "l_bay", "icon": "✈️", "title": "Thông báo ở sân bay", "unlock": "A2-45", "script": [["F", "Attention, please. Flight number two four six to Singapore is now ready."], ["F", "Please go to gate twelve."], ["F", "Passengers with children can come first."]], "qs": [{"q": "Chuyến bay đi đâu?", "opts": ["Singapore", "Bangkok", "Tokyo"], "a": 0, "why": "\"to Singapore\" – điểm đến đứng sau từ \"to\"."}, {"q": "Hành khách phải đến cổng số mấy?", "opts": ["Cổng 2", "Cổng 12", "Cổng 6"], "a": 1, "why": "\"gate twelve\" = cổng 12."}, {"q": "Ai được lên trước?", "opts": ["Người có trẻ em", "Người lớn tuổi", "Mọi người cùng lúc"], "a": 0, "why": "\"Passengers with children can come first.\""}]}, {"id": "l_thoai", "icon": "📞", "title": "Tin nhắn thoại từ khách hàng", "unlock": "A2-34", "script": [["F", "Hello, this is Anna from Blue Box. I am calling about your order."], ["F", "It is late because of the weather. It will come on Thursday."], ["F", "Please call me at five five five, one two three four."]], "qs": [{"q": "Vì sao đơn hàng bị trễ?", "opts": ["Vì thời tiết", "Vì hết hàng", "Vì sai địa chỉ"], "a": 0, "why": "\"because of the weather\"."}, {"q": "Khi nào hàng sẽ đến?", "opts": ["Thứ Năm", "Thứ Hai", "Hôm nay"], "a": 0, "why": "\"It will come on Thursday.\""}, {"q": "Anna muốn bạn làm gì?", "opts": ["Gọi lại cho cô ấy", "Gửi email", "Đến cửa hàng"], "a": 0, "why": "\"Please call me…\""}]}], "challenges": [{"id": "c_tgt", "title": "Giới thiệu bản thân 30 giây", "unlock": "A1-04", "desc": "Viết 4 câu giới thiệu bản thân bằng tiếng Anh rồi đọc to 3 lần, không nhìn giấy ở lần cuối.", "steps": ["Viết 4 câu: tên, nghề, nơi ở, một sở thích", "Đọc to 3 lần", "Lần 3: đọc không nhìn giấy"]}, {"id": "c_nk", "title": "Nhật ký 3 câu trong 5 ngày", "unlock": "A1-18", "desc": "Mỗi tối viết 3 câu tiếng Anh về ngày hôm nay (ví dụ: I worked at home. I ate rice. I was tired.).", "steps": ["Ngày 1: 3 câu", "Ngày 2: 3 câu", "Ngày 3: 3 câu", "Ngày 4: 3 câu", "Ngày 5: 3 câu và đọc lại cả 5 ngày"]}, {"id": "c_dt", "title": "Đổi điện thoại sang tiếng Anh 1 ngày", "unlock": "A1-11", "desc": "Đổi ngôn ngữ điện thoại sang tiếng Anh trong một ngày và ghi 5 từ bạn gặp.", "steps": ["Đổi ngôn ngữ điện thoại sang English", "Ghi 5 từ hoặc cụm từ bạn gặp", "Cuối ngày đổi lại và tra nghĩa 5 từ đó"]}, {"id": "c_menu", "title": "Dịch thực đơn quán quen", "unlock": "A2-07", "desc": "Chọn một quán quen, viết lại 8 món trong thực đơn bằng tiếng Anh và tập gọi 3 món theo mẫu \"I'd like …, please.\"", "steps": ["Chọn quán và 8 món", "Viết tên món bằng tiếng Anh", "Tập nói 3 câu gọi món"]}, {"id": "c_video", "title": "Xem video và tóm tắt 2 câu", "unlock": "A2-15", "desc": "Xem một video tiếng Anh ngắn (dưới 3 phút) có phụ đề tiếng Anh, rồi viết 2 câu tóm tắt.", "steps": ["Chọn video ngắn có phụ đề tiếng Anh", "Xem 2 lần", "Viết 2 câu tóm tắt"]}, {"id": "c_bc", "title": "Báo cáo tuần bằng 5 câu", "unlock": "A2-50", "desc": "Viết email báo cáo công việc tuần này cho chính bạn bằng 5 câu: đã làm gì, kết quả, khó khăn, kế hoạch tuần sau.", "steps": ["Viết 5 câu theo mẫu: đã làm, kết quả, khó khăn, kế hoạch", "Đọc lại và sửa lỗi", "Gửi cho chính bạn"]}]};
+
+/* ===== v7.11 · Tình huống đời sống: hội thoại nhánh · viết thật · nghe thật · thử thách tuần · sổ cụm câu =====
+   Nội dung ở situations_data.js (sinh từ data/situations.py, đã kiểm từ vựng theo bài mở khóa). Chỉ dùng kiến thức đã học. */
+const SIT = SIT_DATA;
+let sitTab = 'dlg', sitRun = null, sitW = null, sitL = null, sitC = null, sitPhF = 'all', sitTok = 0, sitPh = [];
+const SSt = () => (S.sit = S.sit || { dlg: {}, write: {}, listen: {}, chal: {}, fav: [] });
+const sitUnlocked = id => { const i = DATA.order[id]; return i === undefined ? false : (lessonDone(id) || frontierIdx() > i || !S.settings.seqLesson); };
+const sitGender = who => (/^(Tom|David|Waiter)$/.test(who) ? 'M' : 'F');
+const sitStars = p => p >= 90 ? 3 : p >= 70 ? 2 : 1;
+const sitStarTxt = n => '★'.repeat(n) + '☆'.repeat(3 - n);
+const sitLock = u => `🔒 Mở sau bài ${esc(u)}`;
+function sitBack() { sitTok++; TTS.stop(); if (sitRun || sitW || sitL || sitC) { sitRun = sitW = sitL = sitC = null; render(); window.scrollTo(0, 0); } else go('practice'); }
+function sitTabGo(t) { sitTok++; TTS.stop(); sitTab = t; sitRun = sitW = sitL = sitC = null; render(); }
+function sitSpeak(en, who, slow) { say(en, sitGender(who || ''), slow); }
+function sitPlayScript(lines, slow) {
+  TTS.stop(); const t = ++sitTok; let i = 0;
+  const next = () => { if (t !== sitTok || i >= lines.length) return; const [g, en] = lines[i++]; TTS.speak(en, { g, slow, onend: () => setTimeout(next, 450) }); };
+  next();
+}
+const sitPhAll = () => {
+  const seen = new Set(), out = [];
+  SIT.situations.filter(s => sitUnlocked(s.unlock)).forEach(s => {
+    const add = (en, vi) => { if (!seen.has(en)) { seen.add(en); out.push({ en, vi, sid: s.id, st: s.title }); } };
+    s.phrases.forEach(([en, vi]) => add(en, vi));
+    Object.values(s.nodes).forEach(n => (n.opts || []).filter(o => o.sc === 2).forEach(o => add(o.en, o.vi)));
+  });
+  return out;
+};
+function sitFav(i) { const p = sitPh[i]; if (!p) return; const f = SSt().fav, k = f.indexOf(p.en); k >= 0 ? f.splice(k, 1) : f.push(p.en); save(); render(); }
+function sitSay(i) { const p = sitPh[i]; if (p) say(p.en, 'F'); }
+
+/* ---- hội thoại nhánh ---- */
+const sitDef = () => SIT.situations.find(x => x.id === sitRun.id);
+function sitEnter() {
+  const n = sitDef().nodes[sitRun.node];
+  sitRun.order = n.opts ? shuffle(n.opts.map((_, i) => i)) : null;
+  if (n.who !== 'You') sitSpeak(n.en, n.who);
+  if (n.end) {
+    const pct = sitRun.max ? Math.round(100 * sitRun.score / sitRun.max) : 0, d = SSt().dlg[sitRun.id] || { best: 0, tries: 0 };
+    sitRun.pct = pct; SSt().dlg[sitRun.id] = { best: Math.max(d.best, pct), tries: d.tries + 1 }; save();
+  }
+}
+function sitStart(id) {
+  const s = SIT.situations.find(x => x.id === id); if (!sitUnlocked(s.unlock)) return toast('Mở sau khi học xong bài ' + s.unlock);
+  sitRun = { id, node: s.start, log: [], score: 0, max: 0, pend: null, order: null, pct: null }; sitEnter(); render(); window.scrollTo(0, 0);
+}
+function sitPick(k) {
+  if (!sitRun || sitRun.pend) return;
+  const n = sitDef().nodes[sitRun.node], op = n.opts[sitRun.order[k]];
+  sitRun.pend = op; sitRun.score += op.sc; sitRun.max += 2; sitRun.log.push({ n, op }); sitSpeak(op.en, 'You'); render();
+  setTimeout(() => { const f = $('#sitFb'); if (f) f.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 60);
+}
+function sitNext() { sitRun.node = sitRun.pend.nxt; sitRun.pend = null; sitEnter(); render(); setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }), 60); }
+const sitBub = (n, cls) => n.who === 'You' ? `<div class="sit-narr">${esc(n.vi)}</div>` : `<div class="sit-row"><div class="sit-bubble npc"><div class="sit-who">${esc(n.who)} <button class="sit-say" onclick="sitSpeak(${esc(JSON.stringify(n.en)).replace(/&quot;/g, '&quot;')},'${esc(n.who)}')" aria-label="Nghe">🔊</button></div><div class="sit-en">${esc(n.en)}</div><div class="sit-vi">${esc(n.vi)}</div></div></div>`;
+function sitDlgPlay() {
+  const s = sitDef(), n = s.nodes[sitRun.node], r = sitRun;
+  const chat = r.log.map(({ n: nn, op }) => `${sitBub(nn)}<div class="sit-row you"><div class="sit-bubble you ${op.sc === 2 ? 'g' : op.sc === 1 ? 'm' : 'b'}"><div class="sit-en">${esc(op.en)}</div></div></div>`).join('');
+  let cur = '';
+  if (r.pend) {
+    const op = r.pend, best = n.opts.find(o => o.sc === 2);
+    cur = `<div id="sitFb" class="sit-fb ${op.sc === 2 ? 'g' : op.sc === 1 ? 'm' : 'b'}"><b>${op.sc === 2 ? '✓ Rất tốt' : op.sc === 1 ? '≈ Chấp nhận được' : '✗ Chưa tự nhiên'}</b><div>${esc(op.fb)}</div><div class="muted small">Nghĩa câu bạn chọn: ${esc(op.vi)}</div>${op.sc < 2 && best ? `<div class="sit-best">Gợi ý: <b>${esc(best.en)}</b> <button class="sit-say" onclick="sitSpeak(${esc(JSON.stringify(best.en))},'You')">🔊</button></div>` : ''}<button class="btn" style="margin-top:10px" onclick="sitNext()">Tiếp tục →</button></div>`;
+  } else if (n.end) {
+    const st = sitStars(r.pct), best = r.log.map(l => l.n.opts.find(o => o.sc === 2)).filter(Boolean);
+    sitPh = best.map(o => ({ en: o.en, vi: o.vi })); const fav = SSt().fav;
+    cur = `${sitBub(n)}<div class="card sit-sum"><div class="sit-stars">${sitStarTxt(st)}</div><b>${r.score}/${r.max} điểm (${r.pct}%)</b><div class="muted small" style="margin:6px 0 10px">Những câu nên dùng trong tình huống này:</div>${best.map((o, i) => `<div class="sit-ph"><div><b>${esc(o.en)}</b><div class="muted small">${esc(o.vi)}</div></div><div><button class="sit-say" onclick="sitSay(${i})">🔊</button><button class="sit-say" onclick="sitFav(${i})" aria-label="Sắp dùng">${fav.includes(o.en) ? '★' : '☆'}</button></div></div>`).join('')}<div style="display:flex;gap:8px;margin-top:12px"><button class="btn" onclick="sitStart('${s.id}')">Chơi lại</button><button class="btn ghost" onclick="sitBack()">Danh sách</button></div></div>`;
+  } else {
+    cur = `${sitBub(n)}<div class="muted small" style="margin:10px 2px 6px">Bạn sẽ nói gì? (chạm để chọn)</div>${r.order.map((oi, k) => `<button class="sit-opt" onclick="sitPick(${k})">${esc(n.opts[oi].en)}</button>`).join('')}`;
+  }
+  return `<div class="band compact"><button class="back" onclick="sitBack()">← Tình huống</button><h1>${s.icon} ${esc(s.title)}</h1><div class="sub">${esc(s.intro)}</div></div><div class="page sit-chat">${chat}${cur}</div>`;
+}
+/* ---- viết thật ---- */
+function sitWOpen(id) { const w = SIT.writes.find(x => x.id === id); if (!sitUnlocked(w.unlock)) return toast('Mở sau khi học xong bài ' + w.unlock); sitW = { id, model: false }; render(); window.scrollTo(0, 0); }
+function sitWSave(id, v) { const d = SSt().write[id] = SSt().write[id] || { text: '', tick: [] }; d.text = v; save(); }
+function sitWTick(id, i) { const d = SSt().write[id] = SSt().write[id] || { text: '', tick: [] }; d.tick[i] = !d.tick[i]; const w = SIT.writes.find(x => x.id === id); if (w.checklist.every((_, k) => d.tick[k]) && d.text.trim()) { if (!d.done) toast('Hoàn thành! Đối chiếu bài mẫu để học thêm cách diễn đạt.'); d.done = true; } save(); render(); }
+function sitWModel() { sitW.model = !sitW.model; render(); }
+function sitWriteView() {
+  const w = SIT.writes.find(x => x.id === sitW.id), d = SSt().write[w.id] || { text: '', tick: [] };
+  return `<div class="band compact"><button class="back" onclick="sitBack()">← Tình huống</button><h1>${w.icon} ${esc(w.title)}</h1><div class="sub">${esc(w.scene)}</div></div><div class="page">
+  <section class="card"><div class="muted small">Khung mẫu (điền vào chỗ ____)</div><pre class="sit-pre">${esc(w.template)}</pre></section>
+  <section class="card"><b>Bài của bạn</b><textarea class="sit-ta" rows="8" placeholder="Viết bằng tiếng Anh…" oninput="sitWSave('${w.id}',this.value)">${esc(d.text)}</textarea>
+  <div class="muted small" style="margin:8px 0">Tự kiểm tra:</div>${w.checklist.map((c, i) => `<label class="sit-chk"><input type="checkbox" ${d.tick[i] ? 'checked' : ''} onchange="sitWTick('${w.id}',${i})"> ${esc(c)}</label>`).join('')}${d.done ? '<div class="sit-done">✓ Đã hoàn thành</div>' : ''}</section>
+  <section class="card"><button class="btn ${sitW.model ? 'ghost' : 'soft'}" onclick="sitWModel()">${sitW.model ? 'Ẩn bài mẫu' : 'Xem bài mẫu'}</button>${sitW.model ? `<pre class="sit-pre" style="margin-top:10px">${esc(w.model)}</pre><button class="sit-say" onclick="say(${esc(JSON.stringify(w.model.replace(/\n+/g, ' ')))},'F')">🔊 Nghe bài mẫu</button>` : ''}</section></div>`;
+}
+/* ---- nghe thật ---- */
+function sitLOpen(id) { const l = SIT.listens.find(x => x.id === id); if (!sitUnlocked(l.unlock)) return toast('Mở sau khi học xong bài ' + l.unlock); sitL = { id, ans: {}, show: false }; render(); window.scrollTo(0, 0); }
+function sitLAns(q, o) {
+  const l = SIT.listens.find(x => x.id === sitL.id); if (sitL.ans[q] !== undefined) return; sitL.ans[q] = o;
+  if (Object.keys(sitL.ans).length === l.qs.length) { const ok = l.qs.filter((x, i) => sitL.ans[i] === x.a).length, p = Math.round(100 * ok / l.qs.length), d = SSt().listen[l.id] || { best: 0 }; SSt().listen[l.id] = { best: Math.max(d.best, p) }; save(); }
+  render();
+}
+function sitListenView() {
+  const l = SIT.listens.find(x => x.id === sitL.id), done = Object.keys(sitL.ans).length === l.qs.length;
+  const ok = l.qs.filter((x, i) => sitL.ans[i] === x.a).length;
+  return `<div class="band compact"><button class="back" onclick="sitBack()">← Tình huống</button><h1>${l.icon} ${esc(l.title)}</h1><div class="sub">Nghe rồi trả lời. Bạn nghe lại bao nhiêu lần cũng được.</div></div><div class="page">
+  <section class="card" style="display:flex;gap:8px"><button class="btn" onclick="sitPlayScript(SIT.listens.find(x=>x.id==='${l.id}').script,false)">▶ Nghe</button><button class="btn soft" onclick="sitPlayScript(SIT.listens.find(x=>x.id==='${l.id}').script,true)">🐢 Nghe chậm</button></section>
+  ${l.qs.map((q, i) => `<section class="card"><b>${i + 1}. ${esc(q.q)}</b>${q.opts.map((t, k) => { const a = sitL.ans[i], cls = a === undefined ? '' : k === q.a ? 'g' : a === k ? 'b' : ''; return `<button class="sit-opt ${cls}" ${a !== undefined ? 'disabled' : ''} onclick="sitLAns(${i},${k})">${esc(t)}</button>`; }).join('')}${sitL.ans[i] !== undefined ? `<div class="muted small">${esc(q.why)}</div>` : ''}</section>`).join('')}
+  ${done ? `<section class="card sit-sum"><b>Đúng ${ok}/${l.qs.length}</b><div style="margin-top:8px"><button class="btn soft" onclick="sitL.show=!sitL.show;render()">${sitL.show ? 'Ẩn lời thoại' : 'Xem lời thoại'}</button></div>${sitL.show ? `<pre class="sit-pre" style="margin-top:8px">${esc(l.script.map(x => x[1]).join('\n'))}</pre>` : ''}</section>` : ''}</div>`;
+}
+/* ---- thử thách tuần ---- */
+const sitWeekPick = () => { const l = SIT.challenges.filter(c => sitUnlocked(c.unlock)); return l.length ? l[Math.floor(Date.now() / (7 * 864e5)) % l.length] : null; };
+function sitCOpen(id) { const c = SIT.challenges.find(x => x.id === id); if (!sitUnlocked(c.unlock)) return toast('Mở sau khi học xong bài ' + c.unlock); sitC = { id }; render(); window.scrollTo(0, 0); }
+function sitCTick(id, i) { const d = SSt().chal[id] = SSt().chal[id] || { tick: [], note: '' }; d.tick[i] = !d.tick[i]; const c = SIT.challenges.find(x => x.id === id); if (c.steps.every((_, k) => d.tick[k]) && !d.doneAt) { d.doneAt = Date.now(); toast('Hoàn thành thử thách! 🎉'); } save(); render(); }
+function sitCNote(id, v) { const d = SSt().chal[id] = SSt().chal[id] || { tick: [], note: '' }; d.note = v; save(); }
+function sitChalView() {
+  const c = SIT.challenges.find(x => x.id === sitC.id), d = SSt().chal[c.id] || { tick: [], note: '' };
+  return `<div class="band compact"><button class="back" onclick="sitBack()">← Tình huống</button><h1>🎯 ${esc(c.title)}</h1><div class="sub">${esc(c.desc)}</div></div><div class="page"><section class="card">${c.steps.map((t, i) => `<label class="sit-chk"><input type="checkbox" ${d.tick[i] ? 'checked' : ''} onchange="sitCTick('${c.id}',${i})"> ${esc(t)}</label>`).join('')}${d.doneAt ? '<div class="sit-done">✓ Đã hoàn thành</div>' : ''}</section><section class="card"><b>Ghi chú / nhật ký</b><textarea class="sit-ta" rows="6" placeholder="Viết lại điều bạn đã làm, từ mới, điều khó…" oninput="sitCNote('${c.id}',this.value)">${esc(d.note)}</textarea></section></div>`;
+}
+/* ---- trang chính ---- */
+function sitList(tab) {
+  const st = SSt();
+  if (tab === 'dlg') return SIT.situations.map(s => { const ok = sitUnlocked(s.unlock), d = st.dlg[s.id]; return `<section class="card sit-card ${ok ? '' : 'lock'}" onclick="sitStart('${s.id}')"><div class="ic">${s.icon}</div><div style="flex:1"><b>${esc(s.title)}</b><div class="muted small">${ok ? (d ? `Tốt nhất ${sitStarTxt(sitStars(d.best))} · đã chơi ${d.tries} lần` : 'Chưa chơi') : sitLock(s.unlock)}</div></div></section>`; }).join('');
+  if (tab === 'write') return SIT.writes.map(w => { const ok = sitUnlocked(w.unlock), d = st.write[w.id]; return `<section class="card sit-card ${ok ? '' : 'lock'}" onclick="sitWOpen('${w.id}')"><div class="ic">${w.icon}</div><div style="flex:1"><b>${esc(w.title)}</b><div class="muted small">${ok ? (d && d.done ? '✓ Đã hoàn thành' : esc(w.scene)) : sitLock(w.unlock)}</div></div></section>`; }).join('');
+  if (tab === 'listen') return SIT.listens.map(l => { const ok = sitUnlocked(l.unlock), d = st.listen[l.id]; return `<section class="card sit-card ${ok ? '' : 'lock'}" onclick="sitLOpen('${l.id}')"><div class="ic">${l.icon}</div><div style="flex:1"><b>${esc(l.title)}</b><div class="muted small">${ok ? (d ? `Tốt nhất ${d.best}%` : '3 câu hỏi nghe hiểu') : sitLock(l.unlock)}</div></div></section>`; }).join('');
+  if (tab === 'chal') {
+    const wk = sitWeekPick();
+    return (wk ? `<section class="card sit-week" onclick="sitCOpen('${wk.id}')"><div class="muted small">Thử thách tuần này</div><b>🎯 ${esc(wk.title)}</b><div class="muted small">${esc(wk.desc)}</div></section>` : '<section class="card muted">Học thêm vài bài để mở thử thách đầu tiên.</section>')
+      + `<div class="muted small" style="margin:10px 2px 6px">Tất cả thử thách</div>` + SIT.challenges.map(c => { const ok = sitUnlocked(c.unlock), d = st.chal[c.id]; return `<section class="card sit-card ${ok ? '' : 'lock'}" onclick="sitCOpen('${c.id}')"><div class="ic">🎯</div><div style="flex:1"><b>${esc(c.title)}</b><div class="muted small">${ok ? (d && d.doneAt ? '✓ Đã hoàn thành' : 'Chưa làm') : sitLock(c.unlock)}</div></div></section>`; }).join('');
+  }
+  /* cụm câu */
+  const all = sitPhAll(), fav = st.fav, sits = SIT.situations.filter(s => sitUnlocked(s.unlock));
+  const list = sitPhF === 'fav' ? all.filter(p => fav.includes(p.en)) : sitPhF === 'all' ? all : all.filter(p => p.sid === sitPhF);
+  sitPh = list;
+  return `<div class="chips" style="margin-bottom:10px"><button class="chip ${sitPhF === 'all' ? 'on' : ''}" onclick="sitPhF='all';render()">Tất cả</button><button class="chip ${sitPhF === 'fav' ? 'on' : ''}" onclick="sitPhF='fav';render()">★ Sắp dùng</button>${sits.map(s => `<button class="chip ${sitPhF === s.id ? 'on' : ''}" onclick="sitPhF='${s.id}';render()">${s.icon}</button>`).join('')}</div>`
+    + (list.length ? list.map((p, i) => `<section class="card sit-ph"><div><b>${esc(p.en)}</b><div class="muted small">${esc(p.vi)}</div></div><div><button class="sit-say" onclick="sitSay(${i})">🔊</button><button class="sit-say" onclick="sitFav(${i})" aria-label="Sắp dùng">${fav.includes(p.en) ? '★' : '☆'}</button></div></section>`).join('') : '<section class="card muted">Chưa có cụm nào ở mục này.</section>');
+}
+function situationsPage() {
+  if (sitRun) return sitDlgPlay();
+  if (sitW) return sitWriteView();
+  if (sitL) return sitListenView();
+  if (sitC) return sitChalView();
+  const tabs = [['dlg', 'Hội thoại'], ['write', 'Viết'], ['listen', 'Nghe'], ['chal', 'Thử thách'], ['phrase', 'Cụm câu']];
+  return `<div class="band compact"><button class="back" onclick="sitBack()">← Luyện tập</button><h1>Tình huống đời sống</h1><div class="sub">Thực hành tiếng Anh cho những lúc cần dùng thật. Mỗi mục mở ra khi bạn học xong bài tương ứng.</div></div><div class="page"><div class="chips" style="margin-bottom:12px">${tabs.map(([k, t]) => `<button class="chip ${sitTab === k ? 'on' : ''}" onclick="sitTabGo('${k}')">${t}</button>`).join('')}</div>${sitList(sitTab)}</div>`;
 }
 
 /* ===== English Lab · khóa truy cập (v6.0) =====
@@ -4386,7 +4549,7 @@ document.addEventListener('click', e => { const s = e.target.closest && e.target
 /* ---------- thử thách tuần ---------- */
 const weekStart = () => { const t = today(); return t - ((t + 3) % 7); };
 const weekKey = () => dayKey(weekStart());
-function weekSum(f) { let n = 0, a = 0; for (let t = weekStart(); t <= today(); t++) { const d = S.days[dayKey(t)]; if (!d) continue; n += d[f] || 0; if ((d.a || 0) + (d.cards || 0) > 0) a++; } return f === '#days' ? a : n; }
+function weekSum(f) { let n = 0, a = 0; for (let t = weekStart(); t <= today(); t++) { const d = S.days[dayKey(t)]; if (!d) continue; n += f === 'cards' ? dayCards(d) : (d[f] || 0); if ((d.a || 0) + (d.cards || 0) > 0) a++; } return f === '#days' ? a : n; }
 const WK_POOL = [
   { id: 'days5', t: 'Học ít nhất 5 ngày trong tuần', of: 5, unit: 'ngày', n: () => weekSum('#days') },
   { id: 'ok120', t: 'Trả lời đúng 120 câu trong tuần', of: 120, unit: 'câu đúng', n: () => weekSum('ok') },
@@ -4400,7 +4563,7 @@ function weeklyInfo() {
 function weeklyQuest() { const w = weeklyInfo(); return { id: 'wk', weekly: 1, ic: '🏆', t: 'Thử thách tuần: ' + w.t, s: 'Thưởng +50 XP · ' + w.left, n: w.n, of: w.of, unit: w.unit, done: w.done, go: "go('practice')" }; }
 
 /* ---------- huy hiệu ---------- */
-const sumDays = f => Object.values(S.days).reduce((a, d) => a + (d[f] || 0), 0);
+const sumDays = f => Object.values(S.days).reduce((a, d) => a + (f === 'cards' ? dayCards(d) : (d[f] || 0)), 0);
 const lessonsPassed = () => Object.values(S.lessons || {}).filter(l => l && l.best !== null && l.best >= PASS).length;
 const BADGES = [
   ['first', '🌱', 'Bước đầu', 'Trả lời câu hỏi đầu tiên', () => sumDays('a') >= 1],
