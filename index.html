@@ -1161,6 +1161,48 @@ html[data-dark] .pts li.en{color:var(--ink)}
 .sit-ta{width:100%;box-sizing:border-box;margin-top:8px;border:1.5px solid var(--line);border-radius:8px;padding:10px;font:inherit;background:var(--card);color:var(--ink)}
 .sit-chk{display:flex;gap:8px;align-items:flex-start;margin:7px 0;font-size:calc(15px*var(--fz))}.sit-done{margin-top:8px;color:var(--green);font-weight:700}
 
+/* ===== v7.12 · Lỗi hay mắc có cấu trúc ===== */
+.errbox{margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--card);border:1.5px solid var(--coral)}
+.errbox .eh{display:block;font-size:calc(12.5px*var(--fz));color:var(--coral);margin-bottom:6px}
+.errbox .mx,.errbox .mo{display:flex;gap:8px;align-items:flex-start;padding:7px 9px;border-radius:7px;margin:4px 0;font-size:calc(14px*var(--fz));font-weight:700;line-height:1.45}
+.errbox .mx{background:var(--coral-soft);color:#7A1C20}.errbox .mo{background:var(--green-soft);color:#14532D}
+.errbox .mk{flex:none;font-weight:900}
+.call .mn{margin-top:4px;font-weight:600}.call.pron{background:#EEF1FF;color:#1C2F6E}.call.pron>b:first-child{color:#3A62C9}
+.later{display:inline-block;margin-left:4px;padding:1px 7px;border-radius:999px;background:rgba(0,0,0,.08);font-size:calc(11px*var(--fz));font-weight:800;white-space:nowrap;vertical-align:middle}
+html[data-dark] .errbox .mx,html[data-dark] .errbox .mo,html[data-dark] .call.pron{color:var(--ink)}
+html[data-dark] .call.pron{background:var(--ps)}
+
+/* ===== v7.13 · Lỗi hay mắc: mỗi khung một vai trò ===== */
+.eb{margin-top:12px;padding:12px 13px;border-radius:16px;border:2px solid var(--line);font-size:calc(14.5px*var(--fz));line-height:1.5}
+.eb .eh{display:flex;align-items:center;gap:8px;font-weight:900;font-size:calc(15px*var(--fz));margin-bottom:8px}
+.eb .eh i{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:14px;color:#fff;font-weight:900}
+.eb .why{margin-top:7px;font-weight:700}.eb .why:first-of-type{margin-top:0}
+.eb .say{margin-top:6px;background:#fff;border-radius:12px;padding:9px 12px;font-weight:800;font-size:calc(16px*var(--fz));overflow-wrap:anywhere}
+.eb .say s{text-decoration-thickness:2px;text-decoration-color:var(--coral)}
+.eb.xbad{background:var(--coral-soft);border-color:#F4A99B;color:#5B1A15}.eb .eh.xbad{color:#B3261E}.eb .eh.xbad i{background:var(--coral)}.eb.xbad .say{color:#B3261E}
+.eb.xbad .say+.why{margin-top:8px}
+.eb.xgood{background:var(--green-soft);border-color:#9ED8B2;color:#14532D}.eb .eh.xgood{color:#14532D}.eb .eh.xgood i{background:var(--green)}
+.eb .orow{display:grid;grid-template-columns:84px 1fr;gap:10px;align-items:center;margin-top:8px}.eb .orow.one{display:block}
+.eb .lab{background:#fff;border-radius:10px;padding:6px 4px;text-align:center;font-size:calc(12.5px*var(--fz));font-weight:800;line-height:1.25}.eb .lab i{display:block;font-style:normal;font-size:19px}
+.eb .orow .en{font-weight:900;font-size:calc(16px*var(--fz));overflow-wrap:anywhere}.eb .orow.one .en{background:#fff;border-radius:12px;padding:9px 12px}
+.eb.xnote{background:#F6F1E7;border-color:var(--line);color:var(--ink)}.eb .eh.xnote{color:var(--ink2)}.eb .eh.xnote i{background:#8A7B63}
+.eb.xpron{background:#EEF1FF;border-color:#C9D3FA;color:#1C2F6E}.eb .eh.xpron{color:#1C2F6E}.eb .eh.xpron i{background:#5A78D8}
+.eb.xus{background:#E8EEFF;border-color:#B8C8F5;color:#1C2F6E}.eb .eh.xus{color:#1C2F6E}.eb .eh.xus i{background:#3A62C9;font-size:13px}.eb.xus .say{color:#1C2F6E;font-weight:900}
+.eb.xtip{background:var(--amber-soft);border-color:#F2CD8B;color:#5A3A00}.eb .eh.xtip{color:#8A4B00}.eb .eh.xtip i{background:var(--amber)}
+html[data-dark] .eb{color:var(--ink)}html[data-dark] .eb .say,html[data-dark] .eb .lab,html[data-dark] .eb .orow.one .en{background:rgba(255,255,255,.08);color:var(--ink)}
+html[data-dark] .eb.xbad{background:rgba(240,100,74,.14);border-color:rgba(240,100,74,.45)}html[data-dark] .eb.xgood{background:rgba(70,200,130,.14);border-color:rgba(70,200,130,.4)}
+html[data-dark] .eb.xnote,html[data-dark] .eb.xpron,html[data-dark] .eb.xus,html[data-dark] .eb.xtip{background:var(--ps);border-color:var(--line)}
+html[data-dark] .eb .eh{color:var(--ink)!important}
+
+.eb .pair{margin-top:8px}.eb .pair:first-of-type{margin-top:0}.eb .pair .why{margin:6px 0 0}
+.eb .okp{margin-top:6px;background:var(--green-soft);border:1.5px solid #9ED8B2;color:#14532D;border-radius:12px;padding:8px 12px;font-weight:900;font-size:calc(16px*var(--fz));overflow-wrap:anywhere;display:flex;gap:8px;align-items:flex-start}
+.eb .okp i{flex:none;width:20px;height:20px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-style:normal;font-size:11px;margin-top:2px}
+html[data-dark] .eb .okp{background:rgba(70,200,130,.16);color:var(--ink)}
+.ez{margin:7px 0 0;font-size:calc(14.5px*var(--fz));line-height:1.55;font-weight:600;color:var(--ink2)}.ez:first-child{margin-top:0}.ez b{font-weight:900;color:var(--ink)}
+.eg{margin:6px 0 0 8px;padding:7px 11px;border-radius:9px;background:var(--ps);color:var(--pd);font-weight:800;font-size:calc(14.5px*var(--fz));overflow-wrap:anywhere}.eg b{font-weight:900}
+.call.usage .ez{color:#5A3A00}.call.usage .ez b{color:#5A3A00}.call.usage .eg{background:rgba(255,255,255,.75);color:#7A4A00}
+html[data-dark] .call.usage .ez,html[data-dark] .call.usage .ez b{color:var(--ink)}html[data-dark] .call.usage .eg{background:rgba(255,255,255,.08);color:var(--ink)}
+
 </style>
 </head>
 <body>
@@ -1284,7 +1326,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.11b';
+const APP_VER = '7.13';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -2358,6 +2400,53 @@ function tfMistakeHtml(text) {
   return pr + nt;
 }
 
+/* ===== v7.13 · "Lỗi hay mắc" thiết kế lại cho bé 13 tuổi: mỗi khung một vai trò, màu riêng =====
+   Dòng trong ô Excel bắt đầu bằng nhãn: ✗ câu sai · ❓ vì sao sai · ✓ cách đúng ("🤝 Lúc gặp nhau → Good morning!") · 📌 cần nhớ · 🔊 phát âm · 🇺🇸 người Mỹ còn nói · 💡 mẹo nhớ · hậu tố ⏳ = chip "sẽ học sau" */
+function tfMistakeNew(text) {
+  const L = String(text || '').split('\n').map(s => s.trim()).filter(Boolean).map(s => {
+    const m = /^(✗|✓|💡|🔊|📌|❓|🇺🇸)\s*(.*)$/.exec(s); let k = m ? m[1] : '📌', t = m ? m[2] : s, later = '';
+    const w = /\s*⏳\s*([A-B]\d-\d+)?\s*$/.exec(t); if (w) { later = w[1] ? 'sẽ học ở ' + w[1] : 'sẽ học sau'; t = t.slice(0, w.index); }
+    return { k, t, later };
+  });
+  const chip = l => l.later ? ` <span class="later">${esc(l.later)}</span>` : '';
+  const hd = (cls, ic, title) => `<div class="eh ${cls}"><i>${ic}</i>${title}</div>`;
+  const box = (cls, ic, title, body) => `<div class="eb ${cls}">${hd(cls, ic, title)}${body}</div>`;
+  const pick = ks => L.filter(l => ks.includes(l.k));
+  let out = '';
+  const bad = pick(['✗', '❓']), nx = bad.filter(l => l.k === '✗').length;
+  const sayX = l => `<div class="say">${tfHasVi(l.t) ? esc(l.t) : `<s>${esc(l.t)}</s>`}${chip(l)}</div>`, why = l => `<div class="why">${esc(l.t)}${chip(l)}</div>`;
+  const pairMode = nx > 1 && L.some(l => l.k === '✓');
+  if (pairMode) { /* nhiều cặp sai → đúng: mỗi cặp một cụm, ✓ đứng ngay dưới ✗ */
+    const pairs = []; let cur = null;
+    for (const l of L) {
+      if (l.k === '✗') { if (!cur || cur.ok.length || cur.why.length) { cur = { x: [], why: [], ok: [] }; pairs.push(cur); } cur.x.push(l); }
+      else if (l.k === '❓' && cur) cur.why.push(l); else if (l.k === '✓' && cur) cur.ok.push(l);
+    }
+    out += box('xbad', '✕', 'Sai → Đúng', pairs.map(p => `<div class="pair">${p.x.map(sayX).join('')}${p.why.map(why).join('')}${p.ok.map(l => `<div class="okp"><i>✓</i><span>${esc(l.t.indexOf(' → ') > 0 ? l.t.slice(l.t.indexOf(' → ') + 3) : l.t)}${chip(l)}</span></div>`).join('')}</div>`).join(''));
+  } else if (bad.some(l => l.k === '✗')) out += box('xbad', '✕', 'Hay bị nhầm', bad.map(l => l.k === '❓' ? why(l) : sayX(l)).join(''));
+  const ok = pairMode ? [] : pick(['✓']);
+  if (ok.length) out += box('xgood', '✓', 'Nói thế nào mới đúng?', ok.map(l => {
+    const a = l.t.indexOf(' → ');
+    if (a > 0) { const lab = l.t.slice(0, a).trim(), em = /^(\S+)\s+(.*)$/.exec(lab); const ic = em && !/[A-Za-zÀ-ỹ0-9]/.test(em[1]) ? em[1] : '', tx = ic ? em[2] : lab;
+      return `<div class="orow"><div class="lab">${ic ? `<i>${esc(ic)}</i>` : ''}${esc(tx)}</div><div class="en">${esc(l.t.slice(a + 3))}${chip(l)}</div></div>`; }
+    return `<div class="orow one"><div class="en">${esc(l.t)}${chip(l)}</div></div>`;
+  }).join(''));
+  const nt = pick(['📌']); if (nt.length) out += box('xnote', '📌', 'Cần nhớ', nt.map(l => `<div class="why">${esc(l.t)}${chip(l)}</div>`).join(''));
+  const pr = pick(['🔊']); if (pr.length) out += box('xpron', '🔊', 'Phát âm', pr.map(l => `<div class="why">${esc(l.t)}${chip(l)}</div>`).join(''));
+  const us = pick(['🇺🇸']); if (us.length) out += box('xus', '🇺🇸', 'Người Mỹ còn hay nói', us.map(l => `<div class="say">${esc(l.t)}${chip(l)}</div>`).join(''));
+  const tp = pick(['💡']); if (tp.length) out += box('xtip', '💡', 'Mẹo nhớ', tp.map(l => `<div class="why">${esc(l.t)}${chip(l)}</div>`).join(''));
+  return out;
+}
+
+/* v7.13 · văn bản "dễ hiểu": mỗi dòng một ý; **chữ đậm**; dòng bắt đầu "» " = câu tiếng Anh nổi bật */
+function tfEasyHtml(text) {
+  const b = x => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  return String(text || '').split('\n').map(s => s.trim()).filter(Boolean).map(s => {
+    const parts = s.split(/\s*»\s*/); const first = parts.shift();
+    return (first ? `<p class="ez">${b(first)}</p>` : '') + parts.filter(Boolean).map(x => `<div class="eg">${b(x)}</div>`).join('');
+  }).join('');
+}
+
 /* ===== English Lab · các trang ===== */
 let page = 'home', lessonId = '', lessonTab = 'text', lookTab = 'v', lookQ = '', lookLv = '', lookN = 40, lessonsQ = '';
 let textMode = { vi: null, mask: false, playing: -1, all: false };
@@ -2728,13 +2817,13 @@ function vocabCard(v, full = true, n) {
     <div class="vact">${sndBtn(w || v['Từ'])}<button class="star ${fav ? 'on' : ''}" aria-label="Đánh dấu" onclick="event.stopPropagation();toggleFav('${v['Mã']}')">★</button></div></div>
     <div class="mean">${esc(v['Nghĩa tiếng Việt'])}</div>
     ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${kv.length ? `<div class="kvg">${kv.map(([k, t]) => `<div class="kvr"><span class="kl">${k}</span><span class="kd">${esc(t)}</span></div>`).join('')}</div>` : ''}
-    ${v['Lỗi người Việt hay mắc'] ? `<div class="call err"><b>⚠ Lỗi hay mắc</b>${tfMistakeHtml(v['Lỗi người Việt hay mắc'])}</div>` : ''}${v['Ghi chú Anh–Mỹ'] ? `<div class="call us"><b>🇺🇸 Anh – Mỹ</b>${esc(v['Ghi chú Anh–Mỹ'])}</div>` : ''}` : ''}</article>`;
+    ${v['Lỗi hay mắc (cấu trúc)'] ? tfMistakeNew(v['Lỗi hay mắc (cấu trúc)']) : v['Lỗi người Việt hay mắc'] ? `<div class="call err"><b>⚠ Lỗi hay mắc</b>${tfMistakeHtml(v['Lỗi người Việt hay mắc'])}</div>` : ''}${v['Ghi chú Anh–Mỹ'] ? `<div class="call us"><b>🇺🇸 Anh – Mỹ</b>${esc(v['Ghi chú Anh–Mỹ'])}</div>` : ''}` : ''}</article>`;
 }
 function phraseCard(p, full = true, n) {
   const ex = exRows(p, [1, 2], '');
   return `<article class="vc ph" id="w-${esc(p['Mã'])}"><div class="vh">${n ? `<div class="vn">💬</div>` : ''}<div class="vw"><div class="w1"><b class="phr">${esc(p['Cụm từ'])}</b><span class="pos">${esc(p['Loại'] || 'Cụm từ')}</span></div></div><div class="vact">${sndBtn(p['Cụm từ'])}</div></div>
    <div class="mean">${esc(p['Nghĩa'])}</div>
-   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng'] ? `<div class="call usage"><b>💡 Cách dùng</b>${tfIdeasHtml(p['Ghi chú dùng'], 'tfu')}</div>` : ''}` : ''}</article>`;
+   ${full ? `${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}${p['Ghi chú dùng (dễ hiểu)'] ? `<div class="call usage"><b>💡 Cách dùng</b>${tfEasyHtml(p['Ghi chú dùng (dễ hiểu)'])}</div>` : p['Ghi chú dùng'] ? `<div class="call usage"><b>💡 Cách dùng</b>${tfIdeasHtml(p['Ghi chú dùng'], 'tfu')}</div>` : ''}` : ''}</article>`;
 }
 function toggleFav(code) { const i = S.fav.indexOf(code); i >= 0 ? S.fav.splice(i, 1) : S.fav.push(code); save(); render(); }
 function vocabTab(it) {
@@ -2785,10 +2874,10 @@ function grammarCard(g, open) {
   const ex = exRows(g, [1, 2, 3], '');
   return `<details class="gc" ${open ? 'open' : ''}><summary><div class="gh"><span class="gcode">${esc(String(g['Mã']).split('-').pop())}</span><span class="lv ${esc(g['Cấp'])}">${esc(g['Cấp'])}</span><span class="gcar">▾</span></div><h3>${esc(main)}</h3>${sub ? `<div class="gsub">${esc(sub)}</div>` : ''}</summary>
    <div class="gbody">${g['Công thức'] ? `<div class="sl">📐 Công thức</div><div class="ftab">${formulaRows(g['Công thức'])}</div>` : ''}
-   ${g['Giải thích ngắn'] ? `<div class="sl">💡 Giải thích</div>${tfIdeasHtml(g['Giải thích ngắn'], 'gx')}` : ''}
+   ${g['Giải thích dễ hiểu'] ? `<div class="sl">💡 Giải thích dễ hiểu</div>${tfEasyHtml(g['Giải thích dễ hiểu'])}` : g['Giải thích ngắn'] ? `<div class="sl">💡 Giải thích</div>${tfIdeasHtml(g['Giải thích ngắn'], 'gx')}` : ''}
    ${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}
    ${g['Dùng khi nào trong công việc'] ? `<div class="call work"><b>💼 Dùng trong công việc</b>${esc(g['Dùng khi nào trong công việc'])}</div>` : ''}
-   ${g['Lỗi thường gặp'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${mistakeBlock(g, mp)}` : ''}
+   ${g['Lỗi thường gặp (cấu trúc)'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${tfMistakeNew(g['Lỗi thường gặp (cấu trúc)'])}` : g['Lỗi thường gặp'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${mistakeBlock(g, mp)}` : ''}
    ${g['Nguồn'] ? `<div class="src">Nguồn: ${esc(g['Nguồn'])}</div>` : ''}</div></details>`;
 }
 function grammarTab(it) {
