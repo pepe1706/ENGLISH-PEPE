@@ -1326,7 +1326,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.13';
+const APP_VER = '7.14';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -2140,14 +2140,14 @@ function questList() {
   if (!DATA) return [];
   const q = qEnsure(), L = q.lesson, l = DATA.lessons[DATA.order[L]], st = lessonState(L), out = [], dr = drillState(L);
   const steps = ['text', 'vocab', 'grammar'].filter(x => st[x]).length;
-  if (q.due0 > 0) { const of = Math.min(10, q.due0); out.push({ id: 'srs', main: 1, ic: '🃏', t: `Ôn ${of} thẻ ghi nhớ`, s: 'Thẻ đến hạn · xem mục “Ôn mỗi ngày”', n: Math.min(of, srsTodayN()), of, unit: 'thẻ', go: 'startSrs()' }); }
+  if (q.due0 > 0) { const of = Math.min(10, q.due0); out.push({ id: 'srs', main: 1, ic: '🃏', t: `Ôn ít nhất ${of} thẻ ghi nhớ`, s: 'Làm ở đâu cũng được (mục “Ôn mỗi ngày” hoặc bấm vào đây) · mỗi từ đúng tính 1 thẻ', n: Math.min(of, srsTodayN()), of, unit: 'thẻ', go: 'startSrs()' }); }
   if (q.err0 > 0) { const of = Math.min(10, q.err0); out.push({ id: 'err', main: 1, ic: '🔧', t: `Sửa ${of} câu từng làm sai`, s: 'Sổ lỗi · đúng 2 lần là xóa khỏi sổ', n: Math.min(of, dayQ('err')), of, unit: 'câu', go: 'startErrors()' }); }
   const stl = [['text', 'Bài khóa'], ['vocab', 'Từ vựng'], ['grammar', 'Ngữ pháp']].map(([k, t]) => ({ k, t, d: !!(st[k] || lessonDone(L)) })), st1 = stl.find(x => !x.d);
   out.push({ id: 'learn', main: 1, ic: '📖', t: `Học bài ${L}`, s: l ? l['Chủ đề'] : '', n: lessonDone(L) ? 3 : steps, of: 3, unit: 'phần', steps: stl, go: `openLesson('${L}','${st1 ? st1.k : 'text'}')` });
   if (dr.steps.length) out.push({ id: 'drill', main: 1, ic: '🧩', t: dr.next ? `Luyện bài ${L} · bước ${dr.next.no}: ${dr.next.name}` : `Luyện bài ${L} xong 🎉`, s: `${dr.done}/${dr.steps.length} bước · làm lần lượt từ bước 1, mỗi bước đạt ≥ ${DRILL_PASS}%`, n: dr.done, of: dr.steps.length, unit: 'bước', go: dr.next ? `startDrill('${L}',${dr.next.n})` : `openLesson('${L}','ex')` });
   out.push({ id: 'test', main: 1, ic: '📝', t: `Làm bài kiểm tra bài ${L}`, s: (testLocked(L) ? '🔒 Xong các bước luyện để mở · ' : '') + `Đạt từ ${PASS}% để qua bài`, n: lessonDone(L) ? 1 : 0, of: 1, go: `openLesson('${L}','ex')` });
   const ds = S.sess['d:' + q.day], dc = ds ? sessCounts(ds) : null;
-  out.push({ id: 'daily', bonus: 1, ic: '🔁', t: 'Ôn hôm nay', s: 'Bộ 15 câu trộn mọi dạng, ~10 phút', n: dc ? Math.min(dc.ok + dc.bad, dc.n) : 0, of: dc ? dc.n : 15, unit: 'câu', done: !!(dc && dc.ok + dc.bad >= dc.n), go: 'startDaily()' });
+  out.push({ id: 'daily', bonus: 1, ic: '🔁', t: 'Ôn hôm nay', s: 'Bộ 15 câu trộn mọi dạng, ~10 phút · hoặc trả lời 15 câu bất kỳ trong ngày', n: Math.min(dc ? dc.n : 15, Math.max(dc ? dc.ok + dc.bad : 0, (S.days[q.day] || {}).a || 0)), of: dc ? dc.n : 15, unit: 'câu', go: 'startDaily()' });
   const sk = SKILL_NAME[q.extra];
   if (sk) out.push({ id: 'skill', bonus: 1, ic: sk[0], t: `Luyện ${sk[1].toLowerCase()}`, s: 'Làm 8 câu bất kỳ dạng này', n: Math.min(8, qSkillN(q.extra)), of: 8, unit: 'câu', go: `lessonId='${L}';startPractice('${sk[2]}','lesson')` });
   const g = S.settings.goal; out.push({ id: 'goal', bonus: 1, ic: '🎯', t: `Đạt mục tiêu ${g} câu`, s: 'Tính cả câu luyện tập và thẻ ôn', n: Math.min(g, todayCount()), of: g, unit: 'câu', go: "go('practice')" });
@@ -3540,7 +3540,7 @@ function answer(val) {
   try { sfx(ok ? 'ok' : 'bad'); } catch (e) { }
   try { quiz.praise = cheerAnswer(ok, q.kind, true); } catch (e) { quiz.praise = null; }
   quiz.combo = ok ? (quiz.combo || 0) + 1 : 0;
-  bump('a'); if (ok) bump('ok'); bumpSkill(q.kind, ok); if (quiz.type === 'errors') bumpQ('err');
+  bump('a'); if (ok) bump('ok'); bumpSkill(q.kind, ok); if (quiz.type === 'errors' || (ok && S.errors[key])) { bumpQ('err'); try { questCheck(); } catch (e) { } }
   S.seenQ = S.seenQ || {}; S.seenQ[q.ref] = (S.seenQ[q.ref] || 0) + 1; if (Object.keys(S.seenQ).length > 4000) S.seenQ = {};
   if (q.srsKey) srsGrade(q, ok); else if (!ok) { if (self) rec.sb = srsSnap(q.ref); srsBoost(q.ref); }
   if (!ok) { const e = S.errors[key] || { key, kind: q.kind, ref: q.ref, n: 0, streak: 0 }; e.n++; e.streak = 0; e.at = Date.now(); S.errors[key] = e; }
