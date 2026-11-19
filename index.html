@@ -1210,6 +1210,22 @@ html[data-dark] .call.usage .ez,html[data-dark] .call.usage .ez b{color:var(--in
 .qz .qaud.big .spd{height:42px;border-radius:21px}.qz .qaud.big .spd button{width:42px;height:42px}
 .qz .qaud.big .spd b{min-width:48px;font-size:calc(15px*var(--fz))}
 
+/* ===== v7.19 · dịch Việt → Anh là dạng chính: gợi ý 2 bước, "Vì sao chưa đúng?", ghi chú viết khác nhưng đúng */
+.mainx .ptype{border:2px solid var(--p);box-shadow:0 3px 0 var(--pd)}
+.hframe{margin:2px 16px 6px;padding:8px 12px;border-radius:12px;background:var(--ps);color:var(--pd);font-weight:800;font-size:calc(16px*var(--fz));letter-spacing:.06em;line-height:1.6;text-align:center;overflow-wrap:anywhere}
+.feedback .why{background:#fff;border-radius:12px;padding:8px 12px;margin-bottom:8px;border-left:4px solid #F0A43A;display:flex;flex-direction:column;gap:4px}
+.feedback .why .wt{font-size:calc(13px*var(--fz));font-weight:900;color:#9A5B00}
+.feedback .why .wm{font-weight:800;color:var(--ink)}
+.feedback .why .wtip{font-size:calc(13px*var(--fz));color:var(--ink2);background:#FFF6E5;border-radius:8px;padding:5px 8px}
+.feedback .okalt{background:#fff;border-radius:12px;padding:7px 12px;margin-bottom:6px;color:#176B3A;font-weight:700}
+.feedback .altok{margin-top:6px;display:flex;flex-direction:column;gap:2px}
+.feedback .altok small{font-size:calc(11px*var(--fz));font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.feedback .altok span{font-weight:800;color:var(--ink)}
+html[data-dark] .feedback .why,html[data-dark] .feedback .okalt{background:#22262B}
+html[data-dark] .feedback .why .wtip{background:#33291A}
+html[data-dark] .hframe{background:#203528;color:#9BE3B8}
+.feedback .fdet{max-height:34vh}
+
 </style>
 </head>
 <body>
@@ -1333,7 +1349,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.18';
+const APP_VER = '7.19';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -3114,10 +3130,107 @@ function expandTok(w) {
   if ((m = /^(.+)'ll$/.exec(w))) return [m[1], 'will'];
   return [w];
 }
-function expandSent(s) {
-  const t = normSent(s).split(' ').filter(Boolean).flatMap(expandTok), o = [];
-  for (let i = 0; i < t.length; i++) { if (t[i] === 'can' && t[i + 1] === 'not') { o.push('cannot'); i++; } else o.push(t[i]); }
+/* ===== v7.19 · chấm linh hoạt: số (15 = fifteen = mười lăm), số điện thoại viết liền/cách, từ cùng nghĩa (hi = hello) ===== */
+/* dãy số viết cách nhau bằng dấu cách / gạch / chấm: gộp lại khi là số điện thoại (≥ 6 chữ số) hoặc tách nghìn (1 000, 2.500) */
+function numPre(s) {
+  return String(s || '').replace(/\d+(?:[ \t .\-–]+\d+)+/g, m => { const g = m.split(/[^\d]+/), d = g.join(''); return d.length >= 6 || g.slice(1).every(x => x.length === 3) && /^[\d  .]+$/.test(m) ? d : m; })
+    .replace(/(\d),(?=\d{3}(?!\d))/g, '$1');
+}
+const EN_U = { zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19 };
+const EN_T = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
+const EN_O = { first: 1, second: 2, third: 3, fifth: 5, eighth: 8, ninth: 9, twelfth: 12 };
+const isEnNum = w => EN_U[w] != null || EN_T[w] != null || w === 'hundred' || w === 'thousand';
+function enOrd(w) {
+  let m; if (EN_O[w]) return EN_O[w];
+  if ((m = /^(.+)ieth$/.exec(w)) && EN_T[m[1] + 'y']) return EN_T[m[1] + 'y'];
+  if ((m = /^(.+)th$/.exec(w)) && EN_U[m[1]] != null && EN_U[m[1]] > 3) return EN_U[m[1]];
+  return null;
+}
+/* đọc một cụm số chữ tiếng Anh bắt đầu từ t[i]: twenty one, a hundred and five, two thousand … */
+function enNum(t, i) {
+  let j = i, total = 0, cur = 0, last = '', any = false;
+  if (t[j] === 'a' && (t[j + 1] === 'hundred' || t[j + 1] === 'thousand')) { cur = 1; last = 'U'; any = true; j++; }
+  else if (t[j] === 'hundred') { cur = 100; last = 'H'; any = true; j++; }
+  for (; j < t.length; j++) {
+    const w = t[j];
+    if (EN_U[w] != null) { const v = EN_U[w]; if (last === 'U' || (last === 'T' && (v >= 10 || v === 0))) break; cur += v; last = 'U'; any = true; }
+    else if (EN_T[w] != null) { if (last === 'U' || last === 'T') break; cur += EN_T[w]; last = 'T'; any = true; }
+    else if (w === 'hundred' && any && last === 'U' && cur > 0 && cur < 10) { cur *= 100; last = 'H'; }
+    else if (w === 'thousand' && any && cur > 0 && last !== 'K') { total += cur * 1000; cur = 0; last = 'K'; }
+    else if (w === 'and' && last === 'H' && (EN_U[t[j + 1]] != null || EN_T[t[j + 1]] != null)) continue;
+    else break;
+  }
+  return any ? { v: total + cur, n: j - i } : null;
+}
+/* từ / cụm cùng nghĩa: viết kiểu nào trong nhóm cũng được chấm đúng (mỗi dạng chỉ đổi sang đúng dạng tương ứng, không che lỗi ngữ pháp) */
+const SYN_G = [
+  ['hello', 'hi'], ['goodbye', 'bye', 'good bye', 'bye bye', 'bye-bye'], ['thank you very much', 'thanks a lot', 'thank you so much', 'thanks so much', 'thanks very much'], ['thank you', 'thanks'],
+  ['mom', 'mother', 'mum', 'mommy'], ['moms', 'mothers', 'mums'], ['dad', 'father', 'daddy'], ['dads', 'fathers'],
+  ['ok', 'okay'], ['alright', 'all right'], ['tv', 'television'], ['movie', 'film'], ['movies', 'films'], ['kid', 'child'], ['kids', 'children'], ['maybe', 'perhaps'],
+  ['start', 'begin'], ['starts', 'begins'], ['started', 'began', 'begun'], ['starting', 'beginning'],
+  ['big', 'large'], ['bigger', 'larger'], ['biggest', 'largest'], ['photo', 'picture'], ['photos', 'pictures'],
+  ['phone', 'cell phone', 'cellphone', 'mobile phone', 'telephone'], ['phones', 'cell phones', 'cellphones', 'mobile phones', 'telephones'],
+  ['bathroom', 'restroom'], ['email', 'e-mail'], ['emails', 'e-mails'], ['yes', 'yeah'], ['toward', 'towards'], ['a lot of', 'lots of'],
+  ...['breakfast', 'lunch', 'dinner'].flatMap(m => [['eat ' + m, 'have ' + m], ['eats ' + m, 'has ' + m], ['ate ' + m, 'had ' + m], ['eating ' + m, 'having ' + m]]),
+  /* chính tả Anh – Anh cũng được (app dạy giọng Mỹ) */
+  ...[['color', 'colour'], ['favorite', 'favourite'], ['neighbor', 'neighbour'], ['flavor', 'flavour'], ['behavior', 'behaviour'], ['center', 'centre'], ['theater', 'theatre'], ['meter', 'metre'], ['liter', 'litre'], ['program', 'programme'], ['traveler', 'traveller']].flatMap(([a, b]) => [[a, b], [a + 's', b + 's']]),
+  ['gray', 'grey'], ['traveling', 'travelling'], ['traveled', 'travelled'], ['canceled', 'cancelled'], ['canceling', 'cancelling'],
+  ...['organiz', 'realiz', 'apologiz', 'recogniz'].flatMap(r => [[r + 'e', r.slice(0, -1) + 'se'], [r + 'es', r.slice(0, -1) + 'ses'], [r + 'ed', r.slice(0, -1) + 'sed'], [r + 'ing', r.slice(0, -1) + 'sing']]),
+];
+const SYN = SYN_G.flatMap(g => g.map(p => ({ p: p.split(' '), c: g[0] }))).sort((a, b) => b.p.length - a.p.length);
+/* tách câu thành từ "chuẩn" để so: viết tắt → đầy đủ, số chữ → số, từ cùng nghĩa → một dạng; d = chữ hiển thị */
+const SEG = /[,;:!?…()"“”]+|\.(?=\s|$)/;   /* dấu câu ngăn cách hai số: "fifteen, twenty" ≠ "fifteen twenty" */
+function canonSent(s) { return numPre(s).split(SEG).flatMap(canonSeg); }
+function canonSeg(s) {
+  let t = normSent(s).split(' ').filter(Boolean);
+  t = t.flatMap(w => w.includes('-') && w.split('-').every(p => isEnNum(p)) ? w.split('-') : [w]).flatMap(w => expandTok(w).map(k => ({ k, d: k })));
+  const o = [];
+  for (let i = 0; i < t.length; i++) {
+    const w = t[i].k;
+    if (w === 'can' && t[i + 1] && t[i + 1].k === 'not') { o.push({ k: 'cannot', d: 'cannot' }); i++; continue; }
+    const ks = t.slice(i).map(x => x.k), n = enNum(ks, 0);
+    if (n) { o.push({ k: String(n.v), d: t.slice(i, i + n.n).map(x => x.d).join(' ') }); i += n.n - 1; continue; }
+    let m;
+    if ((m = /^(\d+)(?:st|nd|rd|th)$/.exec(w))) { o.push({ k: +m[1] + 'th', d: w }); continue; }
+    const od = enOrd(w); if (od) { o.push({ k: od + 'th', d: w }); continue; }
+    const sy = SYN.find(e => e.p.every((p, j) => t[i + j] && tokEq(p, t[i + j].k)));
+    if (sy) { o.push({ k: sy.c, d: t.slice(i, i + sy.p.length).map(x => x.d).join(' ') }); i += sy.p.length - 1; continue; }
+    o.push(t[i]);
+  }
   return o;
+}
+function expandSent(s) { return canonSent(s).map(x => x.k); }
+/* ---- tiếng Việt: mười lăm = 15, hai mươi mốt = 21, một trăm linh năm = 105 … ---- */
+const VU = { 'một': 1, 'hai': 2, 'ba': 3, 'bốn': 4, 'năm': 5, 'sáu': 6, 'bảy': 7, 'bẩy': 7, 'tám': 8, 'chín': 9 };
+const VU10 = w => ({ 'mốt': 1, 'tư': 4, 'lăm': 5, 'nhăm': 5 })[w] ?? (w === 'năm' ? undefined : VU[w]);   /* sau mười/mươi: lăm, mốt, tư; "mười năm" = 10 năm (không phải 15) */
+function viNum(t, i) {
+  let j = i, total = 0, any = false;
+  const block = () => {
+    const s = j; let h = -1, r = -1;
+    if (VU[t[j]] != null && t[j + 1] === 'trăm') { h = VU[t[j]] * 100; j += 2; }
+    else if (t[j] === 'trăm' && j === i) { h = 100; j++; }
+    if (h >= 0 && ['linh', 'lẻ', 'không'].includes(t[j]) && VU[t[j + 1]] != null) { r = VU[t[j + 1]]; j += 2; }
+    else if (t[j] === 'mười') { j++; const u = VU10(t[j]); r = 10 + (u != null ? (j++, u) : 0); }
+    else if (VU[t[j]] != null && t[j + 1] === 'mươi') { const tn = VU[t[j]] * 10; j += 2; const u = VU10(t[j]); r = tn + (u != null ? (j++, u) : 0); }
+    else if (VU[t[j]] != null && !(h < 0 && t[j + 1] === 'trăm')) { r = VU[t[j]]; j++; }
+    if (h < 0 && r < 0) { j = s; return -1; }
+    return Math.max(h, 0) + Math.max(r, 0);
+  };
+  for (;;) {
+    const b = block(); if (b < 0) break; any = true;
+    if (t[j] === 'triệu') { total += b * 1e6; j++; continue; }
+    if (t[j] === 'nghìn' || t[j] === 'ngàn') { total += b * 1e3; j++; continue; }
+    total += b; break;
+  }
+  return any ? { v: total, n: j - i } : null;
+}
+function viNumConv(s) {
+  const t = s.split(' ').filter(Boolean), o = [];
+  for (let i = 0; i < t.length; i++) {
+    if (t[i] === 'tư' && ['thứ', 'phần'].includes(t[i - 1])) { o.push('4'); continue; }
+    const n = viNum(t, i); if (n) { o.push(String(n.v)); i += n.n - 1; } else o.push(t[i]);
+  }
+  return o.join(' ');
 }
 const WILD = { 'is*': ['is', 'has'], 'would*': ['would', 'had'] };
 const tokEq = (a, b) => a === b || (WILD[a] || []).includes(b) || (WILD[b] || []).includes(a);
@@ -3141,7 +3254,7 @@ const INPUT_KINDS = ['type', 'trans', 'spell', 'cloze', 'pspell', 'vtrans', 'str
 const SELF_KINDS = ['vtrans', 'strans'];
 /* dấu thanh kiểu cũ/mới (hòa/hoà, quý/qúy) coi như nhau */
 const TONE_FIX = { 'oà': 'òa', 'oá': 'óa', 'oả': 'ỏa', 'oã': 'õa', 'oạ': 'ọa', 'oè': 'òe', 'oé': 'óe', 'oẻ': 'ỏe', 'oẽ': 'õe', 'oẹ': 'ọe', 'uý': 'úy', 'uỳ': 'ùy', 'uỷ': 'ủy', 'uỹ': 'ũy', 'uỵ': 'ụy' };
-const viNorm = s => String(s || '').normalize('NFC').toLowerCase().replace(/oà|oá|oả|oã|oạ|oè|oé|oẻ|oẽ|oẹ|uý|uỳ|uỷ|uỹ|uỵ/g, m => TONE_FIX[m]).replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim();
+const viNorm = s => numPre(s).normalize('NFC').toLowerCase().replace(/oà|oá|oả|oã|oạ|oè|oé|oẻ|oẽ|oẹ|uý|uỳ|uỷ|uỹ|uỵ/g, m => TONE_FIX[m]).split(SEG).map(p => viNumConv(p.replace(/[^\p{L}\p{N}\s-]/gu, ' ').replace(/\s+/g, ' ').trim())).filter(Boolean).join(' ');
 const VI_PRE = /^(?:sự|việc|cái|con|chiếc|người)\s+(?=\S)/;
 const noParen = s => String(s || '').replace(/\([^)]*\)/g, ' ');
 /* các cách viết được chấp nhận của một nghĩa: cả chuỗi, bỏ phần ngoặc, từng nghĩa tách bởi ; , / …, bỏ sự/việc/cái/con đứng đầu */
@@ -3232,7 +3345,7 @@ function makeQ(kind, x) {
   }
   if (kind === 'trans') {
     const tk = tokens(x.en); if (tk.length < 3 || tk.length > maxTok('trans', x.row && x.row['Bài học'])) return null;
-    return { kind, ref: x.ref, prompt: x.vi, long: true, sub: 'Gõ câu tiếng Anh có nghĩa như trên', hintWords: shuffle(tk.map(w => w.replace(/[.,!?;:"]/g, '').toLowerCase()).filter(Boolean)), en: x.en, vi: x.vi, g: x.g, answer: x.en, audioAfter: x.en, typed: '', explain: x.en };
+    return { kind, ref: x.ref, prompt: x.vi, long: true, sub: 'Gõ câu tiếng Anh có nghĩa như trên · I’m\u00a0=\u00a0I\u00a0am, 12\u00a0=\u00a0twelve đều được', alts: x.alts || [], hintWords: shuffle(tk.map(w => w.replace(/[.,!?;:"]/g, '').toLowerCase()).filter(Boolean)), en: x.en, vi: x.vi, g: x.g, answer: x.en, audioAfter: x.en, typed: '', explain: x.en };
   }
   if (kind === 'vtrans') {
     const vi = String(x['Nghĩa tiếng Việt'] || '').trim(), w = headword(x); if (!vi || !w) return null;
@@ -3250,11 +3363,13 @@ function makeQ(kind, x) {
   }
   return null;
 }
+/* v7.19 · cột Excel "Cách dịch khác" (BaiKhoa) / "Ví dụ n (Anh, cách khác)" (NguPhap): các câu tiếng Anh khác cũng đúng, cách nhau bằng | */
+const altList = v => String(v || '').split(/\s*\|\s*|\n+/).map(x => x.trim()).filter(Boolean);
 /* tham chiếu câu: 'S:<mã câu>' hoặc 'G:<mã NP>:<n>' */
 function sentRef(ref) {
-  if (ref.startsWith('S:')) { const r = DATA.lines.find(l => l['Mã câu'] === ref.slice(2)); return r ? { ref, en: r['Câu tiếng Anh'], vi: r['Nghĩa tiếng Việt'], g: DATA.gender[r['Người nói']] || 'F', row: r, siblings: (DATA.by[r['Bài học']] || { s: [] }).s.filter(y => y !== r) } : null; }
+  if (ref.startsWith('S:')) { const r = DATA.lines.find(l => l['Mã câu'] === ref.slice(2)); return r ? { ref, en: r['Câu tiếng Anh'], vi: r['Nghĩa tiếng Việt'], alts: altList(r['Cách dịch khác']), g: DATA.gender[r['Người nói']] || 'F', row: r, siblings: (DATA.by[r['Bài học']] || { s: [] }).s.filter(y => y !== r) } : null; }
   const [, c, n] = ref.split(':'); const g = DATA.code[c]?.x; if (!g || !g[`Ví dụ ${n} (Anh)`]) return null;
-  return { ref, en: g[`Ví dụ ${n} (Anh)`], vi: g[`Ví dụ ${n} (Việt)`], g: 'D', row: { 'Bài học': g['Bài học'], 'Câu tiếng Anh': g[`Ví dụ ${n} (Anh)`] }, siblings: [] };
+  return { ref, en: g[`Ví dụ ${n} (Anh)`], vi: g[`Ví dụ ${n} (Việt)`], alts: altList(g[`Ví dụ ${n} (Anh, cách khác)`]), g: 'D', row: { 'Bài học': g['Bài học'], 'Câu tiếng Anh': g[`Ví dụ ${n} (Anh)`] }, siblings: [] };
 }
 function qFromSpec(sp) { return ['arrange', 'dict', 'type', 'translate', 'trans', 'strans'].includes(sp.kind) ? makeQ(sp.kind, sentRef(sp.ref)) : makeQ(sp.kind, DATA.code[sp.ref]?.x); }
 
@@ -3403,19 +3518,22 @@ function mustItems(pool, per) {
   }
   return out;
 }
+/* v7.19 · thêm câu dịch Việt → Anh tự gõ (dạng chính) vào bài kiểm tra / ôn trộn */
+function moreTrans(pool, n, ban) { return n > 0 ? build(['trans'], sentencesOf(pool, true).filter(r => !ban.has(r)), n, (k, r) => makeQ(k, sentRef(r))) : []; }
 /* cắt bớt câu cho vừa số lượng nhưng giữ lại ít nhất 1 câu của mỗi dạng bắt buộc đang có */
 function capKeep(arr, cap) {
   if (arr.length <= cap) return arr;
   const keep = new Set(); MUST_KINDS.forEach(k => { const q = arr.find(x => x.kind === k); if (q) keep.add(q); });
-  return shuffle([...keep, ...arr.filter(q => !keep.has(q)).slice(0, Math.max(0, cap - keep.size))]);
+  return shuffle([...keep, ...arr.filter(q => !keep.has(q)).slice(0, Math.max(0, cap - keep.size))]);   /* thứ tự arr = thứ tự ưu tiên giữ lại */
 }
 function buildGroup(k, scope) {
   const pool = scopePool(scope);
   if (k === 'mix') return buildMix(pool, 20, 9, 3, 3, 1);
   const n = +String(k).slice(3), it = { v: pool.v, p: pool.p, g: pool.g, s: pool.s }, ks = DRILL[n - 1].ks;
-  const ts = practiceTypes().filter(t => ks.includes(t.k) && t.can(it)), per = Math.ceil(16 / Math.max(1, ts.length)), out = [];
-  ts.forEach(t => out.push(...buildPractice(t.k, scope).slice(0, per)));
-  return capKeep(shuffle(out), 16);
+  const ts = practiceTypes().filter(t => ks.includes(t.k) && t.can(it)), wt = t => t.k === 'trans' ? 2 : 1, per = Math.ceil(16 / Math.max(1, ts.reduce((a, t) => a + wt(t), 0))), out = [];
+  ts.forEach(t => out.push(...buildPractice(t.k, scope).slice(0, per * wt(t))));
+  /* dịch câu Việt → Anh (tự gõ) là dạng chính: giữ trước khi cắt bớt */
+  return capKeep([...out.filter(q => q.kind === 'trans'), ...shuffle(out.filter(q => q.kind !== 'trans'))], 16);
 }
 function buildPractice(k, scope) {
   const pool = scopePool(scope), N = 15;
@@ -3427,7 +3545,7 @@ function buildPractice(k, scope) {
   if (k === 'spell') return vq(['spell']);
   if (k === 'vtrans') return vq(['vtrans']);
   if (k === 'cloze') return vq(['cloze']);
-  if (k === 'trans' || k === 'strans') return build([k], sentencesOf(pool, true), 8, (kk, r) => makeQ(kk, sentRef(r)));
+  if (k === 'trans' || k === 'strans') return build([k], sentencesOf(pool, true), k === 'trans' ? 10 : 8, (kk, r) => makeQ(kk, sentRef(r)));
   if (k === 'phrase') return build(['phrase', 'phraseR'], pool.p, N, (kk, x) => makeQ(kk, x));
   if (['arrange', 'dict', 'type', 'translate'].includes(k)) return build([k], sentencesOf(pool, k === 'arrange'), k === 'type' ? 8 : 10, (kk, r) => makeQ(kk, sentRef(r)));
   return [];
@@ -3439,7 +3557,8 @@ function buildMixed(k, scope) {
   const pool = scopePool(scope), sent = ['arrange', 'dict'].includes(k);
   const items = sent ? sentencesOf(pool, k === 'arrange') : k === 'phrase' ? pool.p : pool.v;
   const N = sent ? 10 : 15, toQ = (kk, x) => sent ? makeQ(kk, sentRef(x)) : makeQ(kk, x);
-  const opts = shuffle(grp.opts.map(o => o[1])), out = [], left = fresher(items);
+  /* v7.19: nhóm Câu → một nửa là tự gõ dịch Việt → Anh (dạng chính), nửa còn lại xen kẽ sắp xếp / chọn câu dịch */
+  const o0 = shuffle(grp.opts.map(o => o[1])), tr = o0.find(o => o.includes('trans')), opts = tr ? o0.filter(o => o !== tr).flatMap(o => [tr, o]) : o0, out = [], left = fresher(items);
   const mk = (ks, it) => { for (const kk of shuffle(ks)) { let q = null; try { q = toQ(kk, it); } catch (e) { } if (q) return q; } return null; };
   /* mỗi lượt lấy cách kế tiếp; tìm mục đầu tiên (ít gặp nhất) làm được bằng cách đó, không có thì dùng cách khác */
   for (let slot = 0; out.length < N && left.length; slot++) {
@@ -3472,6 +3591,7 @@ function buildTest(kind) {
   if (prevIds.length && !isRev) rv = buildMix(poolOf(prevIds), REVIEW_TEST, 3, 1, 1).slice(0, REVIEW_TEST);
   const want = 20 - rv.length, ban = new Set(), free = a => a.filter(x => !ban.has(itemRef(x)));
   const mu = mustItems(pool, 1); mu.forEach(q => ban.add(q.ref)); items.push(...mu);
+  moreTrans(pool, 3, ban).forEach(q => { ban.add(q.ref); items.push(q); });
   const mv = mu.filter(q => MUST_V.includes(q.kind)).length;
   const vN = Math.max(0, Math.min(pool.v.length, pool.p.length || pool.g.length || pool.s.length ? 10 : 20) - mv);
   items.push(...build(['mean', 'meanR', 'listen', 'fill', 'spell', 'cloze', 'stress'], free(pool.v), vN, (k, x) => makeQ(k, x)));
@@ -3498,6 +3618,7 @@ function poolOf(ids) {
 function buildMix(pool, N, nv, np, ng, must) {
   const items = [], ban = new Set(); let mv = 0;
   if (must) { const mu = mustItems(pool, must); mu.forEach(q => { ban.add(q.ref); if (MUST_V.includes(q.kind)) mv++; }); items.push(...mu); }
+  moreTrans(pool, Math.round(N * 0.15), ban).forEach(q => { ban.add(q.ref); items.push(q); });
   const free = a => ban.size ? a.filter(x => !ban.has(itemRef(x))) : a;
   const push = (kinds, src, n, toQ) => items.push(...build(kinds, free(src), n, (k, x) => { const q = toQ(k, x); return q && !items.some(o => o.kind === q.kind && o.ref === q.ref) ? q : null; }));
   push(['mean', 'meanR', 'listen', 'fill', 'spell', 'cloze', 'stress'], pool.v, Math.max(0, nv - mv), makeQ);
@@ -3541,6 +3662,7 @@ function autoCards(ids) { let n = 0; ids.forEach(id => { const it = lessonItems(
 function buildLevelTest(lv) {
   const pool = scopePool(lv), items = [], ban = new Set(), free = a => a.filter(x => !ban.has(itemRef(x)));
   const mu = mustItems(pool, 3); mu.forEach(q => ban.add(q.ref)); items.push(...mu);
+  moreTrans(pool, 5, ban).forEach(q => { ban.add(q.ref); items.push(q); });
   const mv = mu.filter(q => MUST_V.includes(q.kind)).length;
   const push = (kinds, src, n, toQ) => items.push(...build(kinds, free(src), n, (k, x) => { const q = toQ(k, x); return q && !items.some(o => o.kind === q.kind && o.ref === q.ref) ? q : null; }));
   push(['mean', 'meanR', 'listen', 'fill', 'stress'], pool.v, Math.max(0, 20 - mv), makeQ);
@@ -3571,13 +3693,17 @@ function curQ() { return quiz && quiz.items[quiz.i]; }
 function answer(val) {
   const q = curQ(); if (!q || quiz.ans[quiz.i]) return;
   let ok;
-  if (q.kind === 'type' || q.kind === 'trans' || q.kind === 'pspell') ok = sentEq(val, q.answer);
+  if (q.kind === 'trans') ok = [q.answer, ...(q.alts || [])].some(r => sentEq(val, r));
+  else if (q.kind === 'type' || q.kind === 'pspell') ok = sentEq(val, q.answer);
   else if (q.kind === 'spell' || q.kind === 'cloze') ok = (q.alts || [q.answer]).some(a => normW(a) === normW(val) || sentEq(a, val));
   else if (q.kind === 'arrange' || q.kind === 'dict') ok = normSent(q.order.map(i => q.tokens[i].t).join(' ')) === normSent(q.answer);
   else if (q.kind === 'vtrans') ok = viWordOk(val, q.answer);
   else if (q.kind === 'strans') ok = viSentOk(val, q.answer);
   else ok = val === q.answer;
   const key = q.kind + '|' + q.ref, self = SELF_KINDS.includes(q.kind), rec = quiz.ans[quiz.i] = { ok, val };
+  /* đúng nhưng viết khác đáp án mẫu (viết tắt, số, từ cùng nghĩa, cách dịch khác) → ghi chú cho người học */
+  if (ok && ['trans', 'type', 'pspell', 'spell', 'cloze'].includes(q.kind) && normSent(val) !== normSent(q.answer)) rec.diff = /\d/.test(val) && !/\d/.test(q.answer) ? 'num' : 'alt';
+  if (q.hintOn) rec.hint = q.hintOn;
   /* dịch Anh → Việt: nhớ trạng thái trước khi ghi sai, để nút "Tôi đã đúng" hoàn lại đầy đủ */
   if (self && !ok) { rec.pe = S.errors[key] ? { ...S.errors[key] } : null; rec.pc = quiz.combo || 0; }
   try { cheerHide(); } catch (e) { }
@@ -3669,16 +3795,104 @@ function unpickTile(pos) { const q = curQ(); if (quiz.ans[quiz.i]) return; q.ord
 
 /* ---------- so khớp chép chính tả ---------- */
 function diffWords(target, typed) {
-  const a = expandSent(target), b = expandSent(typed);
+  const A = canonSent(target), B = canonSent(typed), a = A.map(x => x.k), b = B.map(x => x.k);
   const m = a.length, n = b.length, d = [...Array(m + 1)].map(() => new Array(n + 1).fill(0)), cl = w => w.replace('*', '');
   for (let i = m - 1; i >= 0; i--) for (let j = n - 1; j >= 0; j--) d[i][j] = tokEq(a[i], b[j]) ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
   let i = 0, j = 0, out = [];
   while (i < m || j < n) {
-    if (i < m && j < n && tokEq(a[i], b[j])) { out.push(`<span class="ok">${esc(cl(a[i]))}</span>`); i++; j++; }
-    else if (j < n && (i >= m || d[i][j + 1] >= d[i + 1][j])) { out.push(`<span class="dno">${esc(cl(b[j]))}</span>`); j++; }
-    else { out.push(`<span class="miss">[${esc(cl(a[i]))}]</span>`); i++; }
+    if (i < m && j < n && tokEq(a[i], b[j])) { out.push(`<span class="ok">${esc(cl(B[j].d))}</span>`); i++; j++; }
+    else if (j < n && (i >= m || d[i][j + 1] >= d[i + 1][j])) { out.push(`<span class="dno">${esc(cl(B[j].d))}</span>`); j++; }
+    else { out.push(`<span class="miss">[${esc(cl(A[i].d))}]</span>`); i++; }
   }
   return out.join(' ');
+}
+/* ---------- v7.19 · "Vì sao chưa đúng?": chỉ ra lỗi bằng lời dễ hiểu (cho bạn nhỏ 13 tuổi) ---------- */
+const W_BE = new Set(['am', 'is', 'are', 'was', 'were', 'be', 'been']), W_ART = new Set(['a', 'an', 'the']), W_DO = new Set(['do', 'does', 'did']);
+const W_PREP = new Set(['in', 'on', 'at', 'to', 'for', 'of', 'with', 'from', 'by', 'about', 'into', 'under', 'over', 'between', 'after', 'before', 'during', 'near', 'behind']);
+const W_PRON = new Set(['i', 'you', 'he', 'she', 'it', 'we', 'they', 'me', 'him', 'her', 'us', 'them', 'my', 'your', 'his', 'its', 'our', 'their', 'mine', 'yours', 'hers', 'ours', 'theirs']);
+const WHY_TIP = {
+  s: 'Ở hiện tại, sau <b>he / she / it</b> (hoặc 1 người, 1 vật) động từ thêm <b>-s/-es</b>: she work<b>s</b>, it go<b>es</b>. Nhiều cái thì danh từ thêm -s: two book<b>s</b>.',
+  s2: 'Sau <b>I / you / we / they</b>, và sau <b>can / will / do / does / did / to</b>, động từ giữ nguyên: I work, she can swim, does he like…',
+  past: 'Chuyện <b>đã xảy ra</b> (yesterday, last week, ago…) → động từ chia quá khứ: work → work<b>ed</b>, go → <b>went</b>.',
+  past2: 'Không nói về quá khứ, hoặc sau <b>did / didn’t / to</b> thì động từ giữ nguyên: Did you <b>go</b>? (không viết Did you went?).',
+  be: 'Tiếng Việt hay bỏ chữ “là / thì / đang”, nhưng tiếng Anh vẫn cần: <b>I am</b> · <b>he / she / it is</b> · <b>we / you / they are</b> (quá khứ: was / were).',
+  beX: 'Với động từ thường (work, like, go…) không thêm am / is / are: <b>I work</b> (không viết I am work). Chỉ dùng am / is / are + V-ing khi nói “đang”: I am working.',
+  art: 'Danh từ đếm được, <b>1 cái</b> → cần <b>a / an</b>: a book, an apple. Dùng <b>the</b> khi cả hai người đều biết đó là cái nào.',
+  artX: 'Không dùng a / an với danh từ số nhiều (books) hay không đếm được (water, music); thường không dùng the trước tên riêng, tên bữa ăn (have lunch).',
+  an: '<b>an</b> đứng trước âm nguyên âm (an apple, an hour); <b>a</b> đứng trước âm phụ âm (a book, a uniform).',
+  prep: 'Mẹo: <b>at</b> + giờ, chỗ cụ thể (at 7, at school) · <b>on</b> + thứ, ngày (on Monday) · <b>in</b> + tháng, năm, buổi, nơi rộng (in May, in the morning, in Hanoi).',
+  pron: 'Làm chủ ngữ (đứng trước động từ): <b>I, he, she, we, they</b>. Đứng sau động từ / giới từ: <b>me, him, her, us, them</b>. Chỉ “của ai”: <b>my, his, her, our, their</b>.',
+  do: 'Câu hỏi và câu phủ định với động từ thường cần <b>do / does / did</b>: Do you like…? She doesn’t like… · does đi với he / she / it, did dùng cho quá khứ.',
+  order: 'Câu tiếng Anh thường xếp: <b>Ai → làm gì → cái gì → ở đâu → khi nào</b>. Câu hỏi: đưa từ hỏi (What, Where…) và am / is / are / do / does lên trước chủ ngữ. Tính từ đứng <b>trước</b> danh từ: a red car.',
+};
+const sPlus = (a, b) => a === b + 's' || a === b + 'es' || (/ies$/.test(a) && b === a.slice(0, -3) + 'y');
+const W_IRR = { go: 'went', have: 'had', has: 'had', do: 'did', does: 'did', come: 'came', see: 'saw', eat: 'ate', get: 'got', make: 'made', take: 'took', buy: 'bought', think: 'thought', say: 'said', know: 'knew', give: 'gave', write: 'wrote', meet: 'met', leave: 'left', feel: 'felt', find: 'found', tell: 'told', sleep: 'slept', drink: 'drank', run: 'ran', sit: 'sat', speak: 'spoke', send: 'sent', spend: 'spent', bring: 'brought', teach: 'taught', swim: 'swam', wear: 'wore', sing: 'sang', drive: 'drove', ride: 'rode', fly: 'flew', forget: 'forgot', lose: 'lost', pay: 'paid', become: 'became', break: 'broke', choose: 'chose', fall: 'fell', grow: 'grew', hear: 'heard', keep: 'kept', sell: 'sold', stand: 'stood', understand: 'understood', win: 'won', wake: 'woke', catch: 'caught', build: 'built' };
+const W_IRR_S = Object.fromEntries(Object.entries(W_IRR).filter(([k]) => !['has', 'does'].includes(k)).map(([k, v]) => [k + (/(s|sh|ch|o|x)$/.test(k) ? 'es' : 's'), v]));
+const edPlus = (a, b) => a === b + 'ed' || a === b + 'd' || (/ied$/.test(a) && b === a.slice(0, -3) + 'y') || a === b + b.slice(-1) + 'ed' || W_IRR[b] === a || W_IRR_S[b] === a;
+/* lỗi gõ: khác 1 chữ (từ dài: 2 chữ), hoặc đảo chỗ 2 chữ cạnh nhau (freind → friend) */
+const typoOf = (m, e) => { if (lev(m, e) <= (m.length >= 7 ? 2 : 1)) return true; if (m.length !== e.length) return false; const d = [...m].map((c, i) => c !== e[i] ? i : -1).filter(i => i >= 0); return d.length === 2 && d[1] === d[0] + 1 && m[d[0]] === e[d[1]] && m[d[1]] === e[d[0]]; };
+function whyWrong(ref, val) {
+  const A = canonSent(ref).map(x => ({ k: x.k.replace('*', ''), d: x.d.replace('*', '') })), B = canonSent(val).map(x => ({ k: x.k.replace('*', ''), d: x.d.replace('*', '') }));
+  if (!B.length) return { msgs: ['Bạn chưa gõ gì. Đọc câu mẫu, nói to 2 lần rồi lần sau tự gõ lại nhé 💪'], tips: [] };
+  const miss = [...A], extra = [];
+  B.forEach(b => { const i = miss.findIndex(a => a.k === b.k); if (i >= 0) miss.splice(i, 1); else extra.push(b); });
+  const msgs = [], tips = new Set(), q = s => `“${esc(s)}”`;
+  if (!miss.length && !extra.length) { msgs.push('🔀 Đúng hết các từ rồi, chỉ <b>sai thứ tự</b>.'); tips.add('order'); return { msgs, tips: [...tips] }; }
+  for (let i = 0; i < miss.length; i++) {
+    const m = miss[i], mk = m.k;
+    const j = extra.findIndex(e => {
+      const ek = e.k; let r = '';
+      if (sPlus(mk, ek)) r = 's'; else if (sPlus(ek, mk)) r = 's2';
+      else if (edPlus(mk, ek)) r = 'past'; else if (edPlus(ek, mk)) r = 'past2';
+      else if (W_BE.has(mk) && W_BE.has(ek)) r = 'beS';
+      else if (W_DO.has(mk) && W_DO.has(ek)) r = 'doS';
+      else if (W_ART.has(mk) && W_ART.has(ek)) r = 'artS';
+      else if (W_PREP.has(mk) && W_PREP.has(ek)) r = 'prepS';
+      else if (W_PRON.has(mk) && W_PRON.has(ek)) r = 'pronS';
+      else if (mk.length >= 3 && /[a-z]/.test(mk) && typoOf(mk, ek)) r = 'typo';
+      if (r) e.r = r; return !!r;
+    });
+    if (j < 0) continue;
+    const e = extra.splice(j, 1)[0]; miss.splice(i--, 1);
+    const pair = `${q(e.d)} → ${q(m.d)}`;
+    ({
+      s: () => { msgs.push('➕ Thiếu đuôi -s: ' + pair); tips.add('s'); },
+      s2: () => { msgs.push('➖ Thừa đuôi -s: ' + pair); tips.add('s2'); },
+      past: () => { msgs.push('⏪ Chưa chia quá khứ: ' + pair); tips.add('past'); },
+      past2: () => { msgs.push('⏩ Không cần chia quá khứ: ' + pair); tips.add('past2'); },
+      beS: () => { msgs.push('🔁 Chia sai “to be”: ' + pair); tips.add('be'); },
+      doS: () => { msgs.push('🔁 Dùng ' + q(m.d) + ' chứ không phải ' + q(e.d)); tips.add('do'); },
+      artS: () => { msgs.push('📎 Dùng ' + q(m.d) + ' chứ không phải ' + q(e.d)); tips.add(['a', 'an'].includes(mk) && ['a', 'an'].includes(e.k) ? 'an' : 'art'); },
+      prepS: () => { msgs.push('📍 Sai giới từ: ' + pair); if (['in', 'on', 'at'].includes(mk) && ['in', 'on', 'at'].includes(e.k)) tips.add('prep'); },
+      pronS: () => { msgs.push('👤 Sai đại từ: ' + pair); tips.add('pron'); },
+      typo: () => msgs.push('✏️ Sai chính tả: ' + pair),
+    })[e.r]();
+  }
+  const gm = [], ge = [];
+  miss.forEach(m => { if (W_BE.has(m.k)) { msgs.push('🧩 Thiếu ' + q(m.d)); tips.add('be'); } else if (W_ART.has(m.k)) { msgs.push('📎 Thiếu ' + q(m.d)); tips.add('art'); } else if (W_DO.has(m.k)) { msgs.push('❓ Thiếu ' + q(m.d)); tips.add('do'); } else gm.push(m); });
+  extra.forEach(e => { if (W_BE.has(e.k)) { msgs.push('✂️ Thừa ' + q(e.d)); tips.add('beX'); } else if (W_ART.has(e.k)) { msgs.push('✂️ Thừa ' + q(e.d)); tips.add('artX'); } else ge.push(e); });
+  if (gm.length === 1 && ge.length === 1) msgs.push(`🔁 Dùng ${q(gm[0].d)} thay cho ${q(ge[0].d)}`);
+  else { if (gm.length) msgs.push('🔎 Còn thiếu: ' + gm.map(m => q(m.d)).join(', ')); if (ge.length) msgs.push('✂️ Thừa: ' + ge.map(e => q(e.d)).join(', ')); }
+  return { msgs: msgs.slice(0, 5), tips: [...tips].slice(0, 3) };
+}
+function whyBox(ref, val) {
+  const w = whyWrong(ref, val); if (!w.msgs.length) return '';
+  return `<div class="why"><b class="wt">🧐 Vì sao chưa đúng?</b>${w.msgs.map(m => `<div class="wm">${m}</div>`).join('')}${w.tips.map(t => `<div class="wtip">💡 ${WHY_TIP[t]}</div>`).join('')}</div>`;
+}
+/* chọn câu mẫu gần với câu bạn gõ nhất (khi có nhiều cách dịch) */
+function bestRef(q, val) {
+  const refs = [q.answer, ...(q.alts || [])].filter(Boolean); if (refs.length < 2) return q.answer;
+  const b = expandSent(val), sc = r => { const a = expandSent(r), d = [...Array(a.length + 1)].map(() => new Array(b.length + 1).fill(0)); for (let i = a.length - 1; i >= 0; i--) for (let j = b.length - 1; j >= 0; j--) d[i][j] = tokEq(a[i], b[j]) ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]); return d[0][0] * 2 / (a.length + b.length || 1); };
+  return refs.map(r => [sc(r), r]).sort((x, y) => y[0] - x[0])[0][1];
+}
+/* gợi ý 2 bước cho câu tự gõ: khung câu (chữ cái đầu) → các từ cần dùng */
+const frameOf = en => tokens(en).map(w => w.replace(/[A-Za-z]+/g, p => p[0] + '_'.repeat(p.length - 1))).join('  ');
+function transHint(q) {
+  const lv = q.hintOn || 0;
+  const frame = lv >= 1 ? `<div class="hframe" aria-label="Khung câu">${esc(frameOf(q.en))}</div>` : '';
+  const words = lv >= 2 ? q.hintWords.map(w => `<span>${esc(w)}</span>`).join('') : '';
+  const btn = lv === 0 ? `<button class="chip" onclick="curQ().hintOn=1;render()">💡 Gợi ý 1: khung câu</button>` : lv === 1 ? `<button class="chip" onclick="curQ().hintOn=2;render()">💡 Gợi ý 2: các từ cần dùng</button>` : '';
+  return `${frame}<div class="hintw">${words}${btn}</div>`;
 }
 
 /* ---------- khối giao diện dùng chung ---------- */
@@ -3686,6 +3900,7 @@ function starRow(n, size = 16) { return `<span class="stars">${[0, 1, 2].map(i =
 function statBar(c) { return `<div class="sbar"><s class="g" style="width:${c.ok / c.n * 100}%"></s><s class="r" style="width:${c.bad / c.n * 100}%"></s></div>`; }
 function statChips(c) { return `<div class="stat3"><span class="g">✓ Đúng ${c.ok}/${c.n}</span><span class="r">✗ Sai ${c.bad}/${c.n}</span><span class="o">○ Chưa ${c.n - c.ok - c.bad}/${c.n}</span></div>`; }
 const PGROUPS = [
+  { id: 'trans', t: '⭐ Dịch câu Việt → Anh (tự gõ)', modes: [['trans', 'Tự gõ dịch']], solo: true, d: 'Dạng chính · đọc tiếng Việt, tự gõ câu tiếng Anh · gợi ý 2 bước · nhận nhiều cách viết đúng' },
   { id: 'vocab', t: 'Từ vựng', modes: [['mean', 'Chọn đáp án']] },
   { id: 'listen', t: 'Nghe chọn từ', modes: [['listen', 'Nghe chọn từ']] },
   { id: 'dict', t: 'Nghe chép', modes: [['dict', 'Chép · ghép từ']] },
@@ -3709,13 +3924,13 @@ function setPM(g, k) { S.settings.pm = S.settings.pm || {}; S.settings.pm[g] = k
 function groupCard(g, it, scope) {
   const types = practiceTypes(), ok = g.modes.filter(([k]) => types.find(t => t.k === k).can(it));
   if (!ok.length) return '';
-  const k = ok[0][0], grp = QMODES.find(m => m.ks.includes(k));
-  const t = grp ? { ...types.find(x => x.k === k), k: 'gx:' + k, t: g.t, d: MIX_D[k] || 'Xen kẽ nhiều cách trả lời, dễ → khó', go: sc => `startPractice('gx:${k}','${sc}')` } : { ...types.find(x => x.k === k), t: g.t };
+  const k = ok[0][0], grp = g.solo ? null : QMODES.find(m => m.ks.includes(k));
+  const t = grp ? { ...types.find(x => x.k === k), k: 'gx:' + k, t: g.t, d: MIX_D[k] || 'Xen kẽ nhiều cách trả lời, dễ → khó', go: sc => `startPractice('gx:${k}','${sc}')` } : { ...types.find(x => x.k === k), t: g.t, ...(g.d ? { d: g.d } : {}) };
   return `<div class="pgrp">${typeCard(t, scope)}</div>`;
 }
 function customTypes(scope) {
   const pool = scopePool(scope), it = { v: pool.v, p: pool.p, g: pool.g, s: pool.s };
-  return `<p class="muted tiny" style="margin:0 2px 8px">Mỗi dạng tự xen kẽ các cách trả lời (chọn đáp án, ghép từ, tự gõ) để luyện đủ mọi cách.</p>${PGROUPS.map(g => groupCard(g, it, scope)).join('')}`;
+  return `<p class="muted tiny" style="margin:0 2px 8px">Mỗi dạng tự xen kẽ các cách trả lời (chọn đáp án, ghép từ, tự gõ) để luyện đủ mọi cách.</p>${PGROUPS.filter(g => !g.solo).map(g => groupCard(g, it, scope)).join('')}`;
 }
 /* nút đổi cách trả lời nằm trong từng câu (chỉ ở bài luyện tự chọn, chỉ khi chưa trả lời) */
 function qModeBar(q, a) {
@@ -3763,7 +3978,7 @@ function quizPage() {
       ${!a ? typedBtn(q) : ''}`;
   } else if (q.kind === 'type' || q.kind === 'trans' || q.kind === 'strans') {
     body = `<textarea id="typed" class="typebox" placeholder="${q.kind === 'trans' ? 'Gõ câu tiếng Anh…' : q.kind === 'strans' ? 'Gõ nghĩa tiếng Việt của câu…' : 'Gõ câu bạn nghe được…'}" autocomplete="off" autocapitalize="sentences" spellcheck="false" ${a ? 'disabled' : ''}>${esc(a ? a.val : q.typed)}</textarea>
-      ${!a && q.kind === 'trans' && q.hintWords ? `<div class="hintw">${q.hintOn ? q.hintWords.map(w => `<span>${esc(w)}</span>`).join('') : `<button class="chip" onclick="curQ().hintOn=1;render()">💡 Gợi ý: xem các từ cần dùng</button>`}</div>` : ''}
+      ${!a && q.kind === 'trans' && q.hintWords ? transHint(q) : ''}
       ${!a ? typedBtn(q) : ''}`;
   } else {
     const L = 'ABCDEFGH';
@@ -3772,7 +3987,10 @@ function quizPage() {
   let fb = '';
   if (a) {
     let detail = esc(q.explain || '');
-    if (['type', 'trans', 'dict', 'arrange'].includes(q.kind)) detail = (a.ok ? '' : `<div class="diff" style="margin-bottom:4px">${diffWords(q.answer, q.kind === 'type' || q.kind === 'trans' ? a.val : q.order.map(i => q.tokens[i].t).join(' '))}</div>`) + `<b>${esc(q.en)}</b><br>${esc(q.vi)}`;
+    const refA = q.kind === 'trans' && !a.ok ? bestRef(q, a.val) : q.answer;
+    if (['type', 'trans', 'dict', 'arrange'].includes(q.kind)) detail = (a.ok ? '' : `<div class="diff" style="margin-bottom:4px">${diffWords(refA, q.kind === 'type' || q.kind === 'trans' ? a.val : q.order.map(i => q.tokens[i].t).join(' '))}</div>`) + `<b>${esc(refA)}</b><br>${esc(q.vi)}` + (q.kind === 'trans' && q.alts && q.alts.length ? `<div class="altok"><small>Cũng đúng</small>${[q.answer, ...q.alts].filter(x => x !== refA).map(x => `<span>${esc(x)}</span>`).join('')}</div>` : '');
+    if (!a.ok && ['trans', 'type', 'pspell', 'spell', 'cloze'].includes(q.kind) && String(a.val || '').trim()) detail = whyBox(refA, a.val) + detail;
+    if (a.ok && a.diff) detail = `<div class="okalt">${a.diff === 'num' && (q.kind === 'spell' || q.kind === 'cloze') ? `✅ Viết số <b>${esc(a.val.trim())}</b> là đúng. Nhớ thêm cách viết bằng chữ: <b>${esc(q.answer)}</b>` : `✅ Bạn viết khác câu mẫu một chút (viết tắt, số, từ cùng nghĩa…) nhưng <b>vẫn đúng</b>. Câu mẫu ở dưới.`}</div>` + detail;
     if (q.kind === 'strans') detail = (a.ok ? '' : `<div class="diff" style="margin-bottom:4px">${diffWords(q.answer, a.val)}</div>`) + `<div class="refvi"><small>Đáp án tham khảo</small><b>${esc(q.vi)}</b></div><div class="muted small" style="margin-top:2px">${esc(q.en)}</div>`;
     const left = c.none, pr = quiz.praise, mas = a.ok ? DECO.panda(44, 'fbm') : DECO.hedgehog(46, 'fbm');
     const praise = pr && pr.en ? `<button class="fpr" type="button" data-en="${esc(pr.en)}" onclick="cheerSpeak(event)" aria-label="Nghe câu tiếng Anh"><span>${esc(pr.en)}</span><span class="sn">🔊</span></button>` : '';
@@ -3863,6 +4081,7 @@ function practicePage() {
    <section class="card"><div class="section-title">Luyện nội dung nào?</div><select class="sel" style="width:100%" onchange="practiceScope=this.value;render()">${scopes.map(([k, t]) => `<option value="${k}" ${practiceScope === k ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
    ${['lesson', 'cp'].includes(practiceScope) ? `<div class="row mt" style="gap:6px"><select class="sel" style="flex:1" onchange="lessonId=this.value;S.lastLesson=lessonId;save();render()">${DATA.lessons.filter(l => DATA.order[l['Mã bài']] <= _f).map(l => `<option value="${l['Mã bài']}" ${l['Mã bài'] === lessonId ? 'selected' : ''}>${esc(l['Mã bài'] + ' · ' + l['Chủ đề'])}</option>`).join('')}</select></div>` : ''}
    <div class="muted small mt">${pool.v.length} từ · ${pool.p.length} cụm · ${pool.g.length} ngữ pháp · ${pool.s.length} câu</div></section>
+   <div class="mainx">${groupCard(PGROUPS[0], it, practiceScope)}</div>
    ${typeCard({ k: 'mix', t: '🎲 Trộn tất cả các bước', d: '20 câu, đủ mọi kỹ năng, có cả dạng tự gõ', i: '🎲', c: 'r', go: sc => `startPractice('mix','${sc}')` }, practiceScope)}
    <h2 class="st">Hoặc luyện từng bước <span class="muted tiny">dễ → khó</span></h2>${stepCards}
    <details class="adv" ${advOpen ? 'open' : ''} ontoggle="advOpen=this.open"><summary>Chọn từng dạng riêng</summary>${customTypes(practiceScope)}</details></div>`;
@@ -3912,7 +4131,7 @@ function srsQuestion(key, retry) {
 }
 function srsGrade(q, ok) {
   const c = S.srs[q.srsKey]; if (!c) return;
-  const typed = INPUT_KINDS.includes(q.kind), g = ok ? (q.retry ? 3 : typed ? 5 : 4) : 0;
+  const typed = INPUT_KINDS.includes(q.kind), g = ok ? (q.retry ? 3 : typed && !q.hintOn ? 5 : 4) : 0;
   if (c.due === null) bump('fresh');
   q.srsPrev = { ...c };
   S.srs[q.srsKey] = { ...sm2(c, g), lk: q.kind };
