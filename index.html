@@ -1202,6 +1202,13 @@ html[data-dark] .eb .okp{background:rgba(70,200,130,.16);color:var(--ink)}
 .eg{margin:6px 0 0 8px;padding:7px 11px;border-radius:9px;background:var(--ps);color:var(--pd);font-weight:800;font-size:calc(14.5px*var(--fz));overflow-wrap:anywhere}.eg b{font-weight:900}
 .call.usage .ez{color:#5A3A00}.call.usage .ez b{color:#5A3A00}.call.usage .eg{background:rgba(255,255,255,.75);color:#7A4A00}
 html[data-dark] .call.usage .ez,html[data-dark] .call.usage .ez b{color:var(--ink)}html[data-dark] .call.usage .eg{background:rgba(255,255,255,.08);color:var(--ink)}
+/* v7.17: chỉnh tốc độ nghe ngay trong câu hỏi (− 0.8× +) */
+.qz .qaud .spd{display:inline-flex;align-items:center;height:34px;border-radius:17px;background:var(--ps);box-shadow:0 2px 0 rgba(0,0,0,.08);overflow:hidden}
+.qz .qaud .spd button{width:34px;height:34px;border:0;background:transparent;color:var(--pd);font-size:calc(20px*var(--fz));font-weight:800;line-height:1;padding:0;cursor:pointer}
+.qz .qaud .spd button:disabled{opacity:.3}
+.qz .qaud .spd b{min-width:42px;text-align:center;color:var(--pd);font-size:calc(13px*var(--fz));font-weight:800}
+.qz .qaud.big .spd{height:42px;border-radius:21px}.qz .qaud.big .spd button{width:42px;height:42px}
+.qz .qaud.big .spd b{min-width:48px;font-size:calc(15px*var(--fz))}
 
 </style>
 </head>
@@ -1326,7 +1333,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.15';
+const APP_VER = '7.18';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -1627,7 +1634,19 @@ if (TTS.ok) { TTS.load(); speechSynthesis.onvoiceschanged = () => { TTS.load(); 
 /* ---------- từ loại tiếng Việt ---------- */
 const POS_VI = { 'n.': 'danh từ', 'v.': 'động từ', 'adj.': 'tính từ', 'adv.': 'trạng từ', 'pron.': 'đại từ', 'prep.': 'giới từ', 'number': 'số từ', 'det.': 'từ hạn định', 'conj.': 'liên từ', 'exclam.': 'thán từ', 'exclamation': 'thán từ', 'modal v.': 'động từ khuyết thiếu', 'art.': 'mạo từ' };
 function posVi(p) { return String(p || '').split(',').map(x => x.trim()).filter(Boolean).map(x => POS_VI[x] || x).join(', '); }
-const say = (t, g, slow) => TTS.speak(t, { g, slow });
+const say = (t, g, slow, rate) => TTS.speak(t, { g, slow, rate });
+/* v7.17: tốc độ nghe trong bài luyện, chỉnh bằng nút − / + ngay trong câu hỏi (mặc định = tốc độ đọc chung) */
+const QRATE_MIN = 0.5, QRATE_MAX = 1.3;
+const qRate = () => +(S.settings.lrate || S.settings.rate || 1);
+const qSay = (t, g) => say(t, g, false, qRate());
+function qRateStep(d, t, g) {
+  const r = Math.round(Math.min(QRATE_MAX, Math.max(QRATE_MIN, qRate() + d * 0.1)) * 10) / 10;
+  S.settings.lrate = r; save();
+  document.querySelectorAll('.spd b').forEach(e => e.textContent = r + '×');
+  document.querySelectorAll('.spd .dn').forEach(e => e.disabled = r <= QRATE_MIN);
+  document.querySelectorAll('.spd .up').forEach(e => e.disabled = r >= QRATE_MAX);
+  if (t) say(t, g, false, r);
+}
 const sndBtn = (text, g = 'D', cls = '') => `<button class="snd ${cls}" aria-label="Nghe" onclick="event.stopPropagation();say(${ja(text)},'${g}')">${IC.sound}</button>`;
 
 /* ---------- toast, modal ---------- */
@@ -2405,7 +2424,7 @@ function tfMistakeHtml(text) {
 function tfMistakeNew(text) {
   const L = String(text || '').split('\n').map(s => s.trim()).filter(Boolean).map(s => {
     const m = /^(✗|✓|💡|🔊|📌|❓|🇺🇸)\s*(.*)$/.exec(s); let k = m ? m[1] : '📌', t = m ? m[2] : s, later = '';
-    const w = /\s*⏳\s*([A-B]\d-\d+)?\s*$/.exec(t); if (w) { later = w[1] ? 'sẽ học ở ' + w[1] : 'sẽ học sau'; t = t.slice(0, w.index); }
+    const w = /\s*⏳\s*([A-B]\d(?:-\d+)?)?\s*$/.exec(t); if (w) { later = w[1] ? 'sẽ học ở ' + w[1] : 'sẽ học sau'; t = t.slice(0, w.index); }
     return { k, t, later };
   });
   const chip = l => l.later ? ` <span class="later">${esc(l.later)}</span>` : '';
@@ -2442,8 +2461,12 @@ function tfMistakeNew(text) {
 function tfEasyHtml(text) {
   const b = x => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
   return String(text || '').split('\n').map(s => s.trim()).filter(Boolean).map(s => {
-    const parts = s.split(/\s*»\s*/); const first = parts.shift();
-    return (first ? `<p class="ez">${b(first)}</p>` : '') + parts.filter(Boolean).map(x => `<div class="eg">${b(x)}</div>`).join('');
+    // v7.16: hậu tố ' ⏳' / ' ⏳B1-05' cuối dòng → chip 'sẽ học sau' (như ô lỗi), không hiện ⏳ thô
+    let ch = ''; const w = /\s*⏳\s*([A-B]\d(?:-\d+)?)?\s*$/.exec(s);
+    if (w) { ch = ` <span class="later">${esc(w[1] ? 'sẽ học ở ' + w[1] : 'sẽ học sau')}</span>`; s = s.slice(0, w.index); }
+    const parts = s.split(/\s*»\s*/).filter((x, i) => i === 0 || x); const first = parts.shift();
+    const segs = (first ? [['p', 'ez', first]] : []).concat(parts.map(x => ['div', 'eg', x]));
+    return segs.map(([t, c, x], i) => `<${t} class="${c}">${b(x)}${i === segs.length - 1 ? ch : ''}</${t}>`).join('');
   }).join('');
 }
 
@@ -3409,12 +3432,33 @@ function buildPractice(k, scope) {
   if (['arrange', 'dict', 'type', 'translate'].includes(k)) return build([k], sentencesOf(pool, k === 'arrange'), k === 'type' ? 8 : 10, (kk, r) => makeQ(kk, sentRef(r)));
   return [];
 }
+/* v7.17: một dạng có nhiều cách trả lời (chọn / ghép / tự gõ) → app tự CHIA ĐỀU các cách trong một bộ câu
+   (người học không tự chọn cách nữa, để luyện đủ mọi cách và không chỉ nhớ đáp án); orderEasy xếp dễ → khó */
+function buildMixed(k, scope) {
+  const grp = QMODES.find(m => m.ks.includes(k)); if (!grp) return buildPractice(k, scope);
+  const pool = scopePool(scope), sent = ['arrange', 'dict'].includes(k);
+  const items = sent ? sentencesOf(pool, k === 'arrange') : k === 'phrase' ? pool.p : pool.v;
+  const N = sent ? 10 : 15, toQ = (kk, x) => sent ? makeQ(kk, sentRef(x)) : makeQ(kk, x);
+  const opts = shuffle(grp.opts.map(o => o[1])), out = [], left = fresher(items);
+  const mk = (ks, it) => { for (const kk of shuffle(ks)) { let q = null; try { q = toQ(kk, it); } catch (e) { } if (q) return q; } return null; };
+  /* mỗi lượt lấy cách kế tiếp; tìm mục đầu tiên (ít gặp nhất) làm được bằng cách đó, không có thì dùng cách khác */
+  for (let slot = 0; out.length < N && left.length; slot++) {
+    const first = opts[slot % opts.length]; let got = null;
+    for (const ks of [first, ...opts.filter(o => o !== first)]) {
+      for (let j = 0; j < left.length && !got; j++) { const q = mk(ks, left[j]); if (q) { got = q; left.splice(j, 1); } }
+      if (got) break;
+    }
+    if (!got) break; out.push(got);
+  }
+  return out;
+}
 function startPractice(k, scope, fresh) {
   practiceScope = scope;
   if (k === 'mix' || String(k).startsWith('st:')) {
     const title = k === 'mix' ? 'Trộn tất cả các dạng' : 'Bước ' + k.slice(3) + ' · ' + DRILL[+k.slice(3) - 1].name;
     return openSess({ key: pKey(k, scope), type: 'practice', title, k, scope }, () => buildGroup(k, scope), fresh);
   }
+  if (String(k).startsWith('gx:')) { const g = PGROUPS.find(x => x.modes[0][0] === k.slice(3)); return openSess({ key: pKey(k, scope), type: 'practice', title: g ? g.t : 'Luyện tập', k, scope }, () => buildMixed(k.slice(3), scope), fresh); }
   openSess({ key: pKey(k, scope), type: 'practice', title: practiceTypes().find(t => t.k === k).t, k, scope }, () => buildPractice(k, scope), fresh);
 }
 function buildTest(kind) {
@@ -3547,7 +3591,7 @@ function answer(val) {
   else if (S.errors[key]) { S.errors[key].streak++; if (S.errors[key].streak >= 2 || quiz.type === 'errors') delete S.errors[key]; }
   if (quiz.s) quiz.s.at = Date.now();
   statUpdate(); save(); render();
-  if (q.audioAfter && (ok || ['listen', 'dict', 'type', 'trans', 'spell', 'cloze', 'pspell'].includes(q.kind))) setTimeout(() => say(q.audioAfter, q.g), 150);
+  if (q.audioAfter && (ok || ['listen', 'dict', 'type', 'trans', 'spell', 'cloze', 'pspell'].includes(q.kind))) setTimeout(() => qSay(q.audioAfter, q.g), 150);
 }
 /* Nút "Tôi đã đúng" (dịch Anh → Việt): người học thấy ý nghĩa giống đáp án dù khác chữ → câu này tính là ĐÚNG hoàn toàn,
    gỡ lần sai vừa ghi (sổ lỗi sai, thẻ ôn sớm, thống kê) nên sẽ không bị đưa vào luyện lại câu sai */
@@ -3660,19 +3704,22 @@ const QMODES = [
   { ks: ['arrange', 'translate', 'trans'], opts: [['Sắp xếp', ['arrange']], ['Chọn câu dịch', ['translate']], ['Tự gõ dịch', ['trans']]] },
   { ks: ['dict', 'type'], opts: [['Chép · ghép từ', ['dict']], ['Chép · tự gõ', ['type']]] },
 ];
+const MIX_D = { mean: 'Xen kẽ chọn nghĩa và tự gõ từ, dễ → khó', fill: 'Xen kẽ chọn từ và tự gõ từ vào chỗ trống', phrase: 'Xen kẽ chọn đáp án và tự gõ cụm từ', arrange: 'Xen kẽ chọn câu dịch, sắp xếp câu, tự gõ dịch', dict: 'Xen kẽ ghép từ và tự gõ lại câu nghe được' };
 function setPM(g, k) { S.settings.pm = S.settings.pm || {}; S.settings.pm[g] = k; save(); render(); }
 function groupCard(g, it, scope) {
   const types = practiceTypes(), ok = g.modes.filter(([k]) => types.find(t => t.k === k).can(it));
   if (!ok.length) return '';
-  const k = ok[0][0], t = { ...types.find(x => x.k === k), t: g.t };
+  const k = ok[0][0], grp = QMODES.find(m => m.ks.includes(k));
+  const t = grp ? { ...types.find(x => x.k === k), k: 'gx:' + k, t: g.t, d: MIX_D[k] || 'Xen kẽ nhiều cách trả lời, dễ → khó', go: sc => `startPractice('gx:${k}','${sc}')` } : { ...types.find(x => x.k === k), t: g.t };
   return `<div class="pgrp">${typeCard(t, scope)}</div>`;
 }
 function customTypes(scope) {
   const pool = scopePool(scope), it = { v: pool.v, p: pool.p, g: pool.g, s: pool.s };
-  return `<p class="muted tiny" style="margin:0 2px 8px">Trong từng câu hỏi có nút đổi cách trả lời (Chọn đáp án / Tự gõ…).</p>${PGROUPS.map(g => groupCard(g, it, scope)).join('')}`;
+  return `<p class="muted tiny" style="margin:0 2px 8px">Mỗi dạng tự xen kẽ các cách trả lời (chọn đáp án, ghép từ, tự gõ) để luyện đủ mọi cách.</p>${PGROUPS.map(g => groupCard(g, it, scope)).join('')}`;
 }
 /* nút đổi cách trả lời nằm trong từng câu (chỉ ở bài luyện tự chọn, chỉ khi chưa trả lời) */
 function qModeBar(q, a) {
+  return '';  /* v7.17: bỏ nút tự chọn cách trả lời – app xen kẽ các cách trong bộ câu (buildMixed) */
   if (!quiz || a || quiz.type !== 'practice' || !quiz.k || !q.ref) return '';
   const grp = QMODES.find(m => m.ks.includes(q.kind)); if (!grp) return '';
   const btns = grp.opts.map(([lbl, ks]) => {
@@ -3705,7 +3752,7 @@ function quizPage() {
   const q = curQ(), a = quiz.ans[quiz.i], n = quiz.items.length, c = sessCounts(quiz.s);
   const strip = `<div class="strip" id="qstrip">${quiz.items.map((_, i) => { const x = quiz.ans[i]; return `<button class="${x ? (x.ok ? 'g' : 'r') : ''} ${i === quiz.i ? 'cur' : ''}" onclick="gotoQ(${i})" aria-label="Câu ${i + 1}">${i + 1}</button>`; }).join('')}</div>`;
   const top = `<div class="qtop"><button class="back" onclick="quitQuiz()" aria-label="Thoát">✕</button><div class="bar"><i style="width:${(c.ok + c.bad) / n * 100}%"></i></div>${(quiz.combo || 0) >= 2 ? `<span class="combo">🔥 x${quiz.combo}</span>` : `<span class="qn"><b>${quiz.i + 1}</b>/${n}</span>`}<button class="lbtn" onclick="go('qlist')">☰ Danh sách</button></div>${strip}`;
-  const audioBtns = q.audio ? `<div class="qaud ${q.prompt ? '' : 'big'}"><button class="play" onclick="say(${ja(q.audio)},'${q.g || 'D'}')" aria-label="Nghe">${IC.sound}</button><button class="play slow" onclick="say(${ja(q.audio)},'${q.g || 'D'}',true)" aria-label="Nghe chậm">0.7×</button></div>` : '';
+  const audioBtns = q.audio ? (() => { const r = qRate(), A = ja(q.audio), G = `'${q.g || 'D'}'`; return `<div class="qaud ${q.prompt ? '' : 'big'}"><button class="play" onclick="qSay(${A},${G})" aria-label="Nghe">${IC.sound}</button><span class="spd" role="group" aria-label="Tốc độ nghe"><button class="dn" onclick="qRateStep(-1,${A},${G})" aria-label="Nghe chậm hơn" ${r <= QRATE_MIN ? 'disabled' : ''}>−</button><b>${r}×</b><button class="up" onclick="qRateStep(1,${A},${G})" aria-label="Nghe nhanh hơn" ${r >= QRATE_MAX ? 'disabled' : ''}>+</button></span></div>`; })() : '';
   let body = '';
   if (q.kind === 'arrange' || q.kind === 'dict') {
     body = `<div class="answer-zone" aria-label="Câu bạn ghép">${q.order.map((ti, p) => `<button class="tile" onclick="unpickTile(${p})">${esc(q.tokens[ti].t)}</button>`).join('') || '<span class="muted small" style="padding:8px">Chạm các từ bên dưới theo đúng thứ tự…</span>'}</div>
@@ -3730,7 +3777,7 @@ function quizPage() {
     const left = c.none, pr = quiz.praise, mas = a.ok ? DECO.panda(44, 'fbm') : DECO.hedgehog(46, 'fbm');
     const praise = pr && pr.en ? `<button class="fpr" type="button" data-en="${esc(pr.en)}" onclick="cheerSpeak(event)" aria-label="Nghe câu tiếng Anh"><span>${esc(pr.en)}</span><span class="sn">🔊</span></button>` : '';
     const ans = !a.ok && !['type', 'trans', 'dict', 'arrange', 'strans'].includes(q.kind) ? `<div class="fans"><small>${q.kind === 'vtrans' ? 'Đáp án tham khảo' : 'Đáp án'}</small><b>${esc(q.answer)}</b>${a.val && (q.kind === 'spell' || q.kind === 'cloze' || q.kind === 'vtrans') ? `<span class="you">bạn gõ: <s>${esc(a.val)}</s></span>` : ''}</div>` : '';
-    fb = `<div class="fbsp" id="fbsp"></div><div class="feedback ${a.ok ? 'good' : 'bad'}" id="fbpanel" role="status"><div class="fhead"><span class="fm">${mas}</span><div class="ft"><div class="fh"><span>${a.ok ? 'Chính xác!' : 'Chưa đúng'}</span>${a.ok ? '<span class="xp">+10 XP</span>' : ''}</div>${praise}</div>${q.audioAfter ? `<button class="snd" onclick="say(${ja(q.audioAfter)},'${q.g || 'D'}')" aria-label="Nghe lại">${IC.sound}</button>` : ''}</div>
+    fb = `<div class="fbsp" id="fbsp"></div><div class="feedback ${a.ok ? 'good' : 'bad'}" id="fbpanel" role="status"><div class="fhead"><span class="fm">${mas}</span><div class="ft"><div class="fh"><span>${a.ok ? 'Chính xác!' : 'Chưa đúng'}</span>${a.ok ? '<span class="xp">+10 XP</span>' : ''}</div>${praise}</div>${q.audioAfter ? `<button class="snd" onclick="qSay(${ja(q.audioAfter)},'${q.g || 'D'}')" aria-label="Nghe lại">${IC.sound}</button>` : ''}</div>
       ${ans}${detail ? `<div class="fdet">${detail}</div>` : ''}
       ${selfBtn(q, a)}${hardBtn(q, a)}<button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
   } else {
@@ -3742,7 +3789,7 @@ function quizPage() {
 function afterQuizRender() {
   const q = curQ(); if (!q) return;
   const cur = $('#qstrip .cur'); if (cur) { const st = $('#qstrip'); st.scrollLeft = cur.offsetLeft - st.clientWidth / 2 + cur.clientWidth / 2; }
-  if (q.audio && !quiz.played && !quiz.ans[quiz.i]) { quiz.played = true; setTimeout(() => say(q.audio, q.g), 250); }
+  if (q.audio && !quiz.played && !quiz.ans[quiz.i]) { quiz.played = true; setTimeout(() => qSay(q.audio, q.g), 250); }
   if (INPUT_KINDS.includes(q.kind) && !quiz.ans[quiz.i]) { const t = $('#typed'); if (t) { t.focus(); t.oninput = () => { q.typed = t.value; const cb = $('#checkBtn'); if (cb) { const has = !!t.value.trim(); cb.textContent = has ? 'Check' : q.kind === 'type' ? 'Không nghe được – xem đáp án' : 'Không biết – xem đáp án'; cb.classList.toggle('ghost', !has); } }; t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey && t.value.trim()) { e.preventDefault(); checkAns(); } }; } }
   if (quiz.ans[quiz.i]) { const b = $('#nextBtn'); if (b) b.focus({ preventScroll: true }); const f = $('#fbpanel'), sp = $('#fbsp'); if (f && sp) sp.style.height = (f.offsetHeight + 16) + 'px'; }
 }
@@ -4816,7 +4863,7 @@ function rateRows() {
   return `<div class="set"><span>Tốc độ đọc<br><span class="muted tiny">máy Android đọc dưới 0.6× có thể hơi méo tiếng</span></span><select class="sel" onchange="setRate(this.value)">${RATE_OPTS.map(([k, t]) => `<option value="${k}" ${k === r ? 'selected' : ''}>${k}× · ${t}</option>`).join('')}${RATE_OPTS.some(o => o[0] === r) ? '' : `<option selected>${r}×</option>`}</select></div>
    <div class="set"><span>Gợi ý nhanh<br><span class="muted tiny">chọn theo mức bạn thấy nghe vừa tai</span></span><span class="row" style="gap:6px;flex-wrap:wrap;justify-content:flex-end">${[[.6, 'Chậm'], [.7, 'A1'], [.8, 'A2'], [.9, 'B1']].map(([k, t]) => `<button class="chip ${r === k ? 'on' : ''}" onclick="setRate(${k})">${t}</button>`).join('')}</span></div>
    <div class="set"><span>Nghỉ giữa các câu<br><span class="muted tiny">giúp đọc nhiều câu nghe tự nhiên, dễ theo dõi</span></span><select class="sel" onchange="setGap(this.value)">${[[0, 'Không nghỉ'], [250, 'Ngắn'], [500, 'Vừa'], [900, 'Dài']].map(([k, t]) => `<option value="${k}" ${(st.gap ?? 250) === k ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
-   <p class="muted tiny" style="margin:2px 0 6px">💡 Mới học nên chọn <b>${sug}×</b> cho trình độ ${lv}; khi quen thì tăng dần lên 0.95×–1×. Nút “nghe chậm” trên từng câu luôn đọc chậm hơn thêm 25%.</p>`;
+   <p class="muted tiny" style="margin:2px 0 6px">💡 Mới học nên chọn <b>${sug}×</b> cho trình độ ${lv}; khi quen thì tăng dần lên 0.95×–1×. Trong bài luyện có nghe, chỉnh nhanh/chậm ngay trong câu bằng nút − / + (app nhớ tốc độ đó cho các câu sau).</p>`;
 }
 
 /* ===== v6.2 · hạt rơi mờ trên mọi màn hình (lá; v6.4: tuyết / cánh hoa / trái tim theo giao diện). Chỉ trang trí, không chặn chạm ===== */
