@@ -115,6 +115,7 @@ select.sel{border:1.5px solid var(--line);background:var(--card);border-radius:7
 .toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
 .line{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:11px 12px;border-radius:9px;background:var(--card);border:1px solid var(--line);margin-bottom:8px;cursor:pointer}
 .line.playing{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+.line.think{background:var(--amber-soft);border-style:dashed}
 .av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:calc(13px*var(--fz));color:#fff;background:#7A859F}
 .line .who{font-size:calc(11.5px*var(--fz));font-weight:700;color:var(--muted);margin-bottom:1px}
 .line .en{font-size:calc(16px*var(--fz));line-height:1.45}
@@ -301,6 +302,7 @@ b,strong{font-weight:800}
 .toolbar .btn{min-height:40px}
 .line{border:1.5px solid var(--line);border-radius:12px;box-shadow:0 1px 0 #F1E8D7}
 .line.playing{border:2px solid var(--amber);background:#FFF8E6;box-shadow:0 1px 0 #F3D98F}
+.line.think{background:var(--amber-soft);border-style:dashed}
 .line .en{font-size:calc(17px*var(--fz));font-weight:700;color:var(--ink)}
 .line .vi{color:var(--ink2);font-weight:600}
 .hl{border-bottom:2.5px solid var(--coral);font-weight:800}
@@ -751,7 +753,7 @@ h2.st{margin-top:14px}
 .feedback .flink{border:0;background:none;padding:4px 0 0;font:inherit;font-size:calc(13px*var(--fz));font-weight:800;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 /* lá rơi mờ */
 #leaves{position:fixed;inset:0;z-index:100001;overflow:hidden;pointer-events:none;contain:strict}
-#leaves .lf{position:absolute;top:-40px;display:block;opacity:.34;will-change:transform;animation:lfFall linear infinite}
+#leaves .lf{position:absolute;top:-40px;display:block;opacity:.24;will-change:transform;animation:lfFall linear infinite}
 #leaves .lf b{display:block;width:100%;height:100%;background:var(--c,#8CCB93);border-radius:0 100% 0 100%;will-change:transform;animation:lfSway ease-in-out infinite alternate;position:relative}
 #leaves .lf b::after{content:'';position:absolute;left:12%;top:48%;width:76%;height:1.5px;background:rgba(255,255,255,.55);transform:rotate(-45deg);transform-origin:left center}
 @keyframes lfFall{from{transform:translate3d(0,-6vh,0)}to{transform:translate3d(0,112vh,0)}}
@@ -796,8 +798,8 @@ html[data-skin] .nd2.cur .disc{color:#fff;border-color:#fff}
 html[data-skin] .nd2.lock .disc{color:#9AA6B8;border-color:#C9D2DE}
 html[data-skin] .nd2 .disc::after{border-color:var(--pd);opacity:.4}
 /* hạt rơi theo chủ đề */
-#leaves.k-snow .lf,#leaves.k-heart .lf{opacity:.5}
-#leaves.k-petal .lf{opacity:.55}
+#leaves.k-snow .lf,#leaves.k-heart .lf{opacity:.36}
+#leaves.k-petal .lf{opacity:.4}
 #leaves:not(.k-leaf) .lf b::after{display:none}
 #leaves.k-snow .lf b,#leaves.k-heart .lf b{background:none;border-radius:0;color:var(--c);font-size:inherit;line-height:1;display:grid;place-items:center}
 #leaves.k-snow .lf b::before{content:'\2744\FE0E'}
@@ -831,7 +833,7 @@ html[data-dark] .nav button{color:var(--muted)}
 html[data-dark] .nav button.on{color:var(--pd);background:var(--ps)}
 html[data-dark]{color-scheme:dark}
 /* hạt rơi: sao, bong bóng */
-#leaves.k-star .lf{opacity:.6}#leaves.k-bubble .lf{opacity:.6}
+#leaves.k-star .lf{opacity:.44}#leaves.k-bubble .lf{opacity:.44}
 #leaves.k-star .lf b{background:none;border-radius:0;color:var(--c);font-size:inherit;line-height:1;display:grid;place-items:center;animation-name:lfTwk}
 #leaves.k-star .lf b::before{content:'\2726\FE0E'}
 #leaves.k-bubble .lf b{background:rgba(255,255,255,.35);border:2px solid var(--c);border-radius:50%;animation-name:lfSwayH}
@@ -1433,6 +1435,14 @@ body.dash-on #cheer,body.dash-on #leaves{display:none!important}
 .mapdoc.lock{filter:grayscale(1);opacity:.6;border-color:#9AA3B5}.mapdoc.done::after{content:'✓';position:absolute;right:-7px;bottom:-7px;background:#22995A;color:#fff;border-radius:50%;width:16px;height:16px;font-size:11px;line-height:16px;text-align:center}
 .mapdoc.new{animation:docPulse 1.4s ease-in-out infinite}@keyframes docPulse{50%{transform:scale(1.15);box-shadow:0 0 0 6px #1F7A8C44}}
 
+/* v7.28 – dạng văn bản B1–B2 */
+.dtx.job{border-color:#2E8B57}.dtx.job .dhead{color:#2E8B57}
+.dtx.diary{background:repeating-linear-gradient(var(--card),var(--card) 27px,rgba(31,122,140,.12) 28px);border-color:#9C7BC0}.dtx.diary .dph{color:#7A55A8}
+.dtx.report{border-color:#3A6EA5}.dtx.report .dph{border-left:4px solid #3A6EA5;padding-left:6px}
+.dtx.recipe{border-color:#E8A23A}.dtx.recipe .dph{color:#B9741A}
+.dtx.review .dhead{font-family:Georgia,serif}.dtx.review .dtag::after{content:' · ⭐⭐⭐⭐'}
+.dtx.guide{border-color:#1F7A8C;border-style:double;border-width:4px}.dtx.guide .dph{background:rgba(31,122,140,.1);border-radius:8px;padding:2px 8px}
+
 </style>
 </head>
 <body>
@@ -1556,7 +1566,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.27';
+const APP_VER = '7.29.1';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -8059,7 +8069,10 @@ const teenNew = () => teenEps().filter(e => teenOpenOk(e) && !teenSt().done[e.id
 function teenBiBi(s = 64) {
   return `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-label="BiBi"><circle cx="17" cy="14" r="8" fill="#3B2A2A"/><circle cx="47" cy="14" r="8" fill="#3B2A2A"/><circle cx="32" cy="34" r="20" fill="#3B2A2A"/><ellipse cx="32" cy="37" rx="16" ry="15" fill="#FFD9B8"/><path d="M16 30c4-10 28-10 32 0-6-4-12-5-16-4-5-1-11 0-16 4z" fill="#3B2A2A"/><path d="M12 36a20 20 0 0 1 40 0" fill="none" stroke="#E86FA8" stroke-width="4"/><rect x="8" y="33" width="8" height="12" rx="4" fill="#E86FA8"/><rect x="48" y="33" width="8" height="12" rx="4" fill="#E86FA8"/><circle cx="26" cy="38" r="2.4" fill="#2B2B2B"/><circle cx="38" cy="38" r="2.4" fill="#2B2B2B"/><circle cx="23" cy="44" r="2.6" fill="#FF9DB5" opacity=".7"/><circle cx="41" cy="44" r="2.6" fill="#FF9DB5" opacity=".7"/><path d="M28 45q4 4 8 0" fill="none" stroke="#B5523B" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
+const TEEN_GIFT = { B1: 12, B2: 15 }, TEEN_QK = { feel: '💭 Cảm xúc / ý nghĩ nhân vật', ctx: '🗣 Nghĩa của câu nói trong truyện' };
+const teenWho = w => String(w || '').replace(/\s*💭/, '');
 function teenAv(who) {
+  who = teenWho(who);
   if (who === 'BiBi') return `<div class="av" style="background:#FFE3F0;padding:0;overflow:hidden" title="BiBi">${teenBiBi(36)}</div>`;
   return speakerAv(who);
 }
@@ -8076,14 +8089,14 @@ function teenWord(code) { const v = DATA.vocab.find(x => x['Mã'] === code); if 
 function teenLine(i) {
   const e = teenEps().find(x => x.id === TEEN.ep), l = e && e.lines[i]; if (!l) { TEEN.all = false; return; }
   document.querySelectorAll('.line.playing').forEach(x => x.classList.remove('playing')); const el = $('#tl' + i); if (el) { el.classList.add('playing'); if (TEEN.all) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
-  TTS.speak(l.en, { g: DATA.gender[l.who] || 'F', slow: !!TEEN.slow, onend: () => { if (TEEN.all && page === 'teen') setTimeout(() => TEEN.all && teenLine(i + 1), 350); else document.querySelectorAll('.line.playing').forEach(x => x.classList.remove('playing')); } });
+  TTS.speak(l.en, { g: DATA.gender[teenWho(l.who)] || 'F', slow: !!TEEN.slow, onend: () => { if (TEEN.all && page === 'teen') setTimeout(() => TEEN.all && teenLine(i + 1), 350); else document.querySelectorAll('.line.playing').forEach(x => x.classList.remove('playing')); } });
 }
 function teenAnswer(qi, oi) {
   const e = teenEps().find(x => x.id === TEEN.ep); if (!e || TEEN.ans[qi] !== undefined) return;
   TEEN.ans[qi] = oi; const ok = oi === e.qs[qi].a; try { sfx(ok ? 'ok' : 'bad'); } catch (er) { } bump('a'); if (ok) bump('ok');
   if (Object.keys(TEEN.ans).length === e.qs.length) {
     const n = e.qs.filter((q, i) => TEEN.ans[i] === q.a).length, t = teenSt(), old = t.done[e.id];
-    if (!old) { const st = dashSt(); const gift = 10 + n * 5; st.stars += gift; TEEN.gift = gift; try { celebrate('small'); sfx('win'); } catch (er) { } } else TEEN.gift = 0;
+    if (!old) { const st = dashSt(); const gift = (TEEN_GIFT[e.lv] || 10) + n * 5; st.stars += gift; TEEN.gift = gift; try { celebrate('small'); sfx('win'); } catch (er) { } } else TEEN.gift = 0;
     t.done[e.id] = { best: Math.max(n, old ? old.best : 0), of: e.qs.length, at: Date.now() };
     try { questCheck(); extrasCheck(); } catch (er) { }
   }
@@ -8095,8 +8108,8 @@ function teenPage() {
   const e = eps.find(x => x.id === TEEN.ep);
   if (e && teenOpenOk(e)) {
     const showVi = TEEN.vi ?? S.settings.showVi, ws = teenWords(e), all = Object.keys(TEEN.ans).length === e.qs.length, n = e.qs.filter((q, i) => TEEN.ans[i] === q.a).length;
-    const lines = e.lines.map((l, i) => `<div class="line" id="tl${i}" onclick="TEEN.all=false;teenLine(${i})">${teenAv(l.who)}<div><div class="who">${esc(l.who)}</div><div class="en">${esc(l.en)}</div>${showVi ? `<div class="vi">${esc(l.vi)}</div>` : ''}</div></div>`).join('');
-    const qs = e.qs.map((q, qi) => { const a = TEEN.ans[qi]; return `<div class="teen-q"><div><b>${qi + 1}.</b> ${esc(q.q)}</div>${q.k === 'tf' ? '<div class="muted tiny">Câu này đúng hay sai?</div>' : ''}
+    const lines = e.lines.map((l, i) => { const th = /💭/.test(l.who); return `<div class="line${th ? ' think' : ''}" id="tl${i}" onclick="TEEN.all=false;teenLine(${i})">${teenAv(l.who)}<div><div class="who">${th ? esc(teenWho(l.who)) + ' 💭 <span class="muted tiny">kể / nghĩ</span>' : esc(l.who)}</div><div class="en"${th ? ' style="font-style:italic"' : ''}>${esc(l.en)}</div>${showVi ? `<div class="vi">${esc(l.vi)}</div>` : ''}</div></div>`; }).join('');
+    const qs = e.qs.map((q, qi) => { const a = TEEN.ans[qi]; return `<div class="teen-q"><div><b>${qi + 1}.</b> ${esc(q.q)}</div>${q.k === 'tf' ? '<div class="muted tiny">Câu này đúng hay sai?</div>' : TEEN_QK[q.k] ? `<div class="muted tiny">${TEEN_QK[q.k]}</div>` : ''}
       ${q.o.map((o, oi) => `<button class="o ${a === undefined ? '' : oi === q.a ? 'ok' : oi === a ? 'bad' : ''}" onclick="teenAnswer(${qi},${oi})">${a !== undefined && oi === q.a ? '✓ ' : a === oi ? '✗ ' : ''}${esc(o)}</button>`).join('')}
       ${a !== undefined ? `<div class="why">💡 ${esc(q.why)}</div>` : ''}</div>`; }).join('');
     return `${head(`Tập ${+e.id.slice(1)} · ${esc(e.vi)}`)}<div class="page">
@@ -8112,18 +8125,20 @@ function teenPage() {
   TEEN.ep = null;
   const done = eps.filter(x => t.done[x.id]).length;
   return `${head('Truyện của BiBi · mở dần theo bài')}<div class="page">
-   <section class="card teen-hero">${teenBiBi(84)}<div><b>Chào, mình là BiBi!</b><div class="small">13 tuổi, ở tầng trên nhà chị Linh. Mê game và… đồ ăn 🍗. Mỗi tập chỉ dùng từ bạn đã học.</div><div class="muted tiny mt">Đã đọc ${done}/${eps.length} tập</div></div></section>
-   ${eps.map(x => { const ok = teenOpenOk(x), d = t.done[x.id]; return `<button class="teen-ep ${ok ? (d ? '' : 'new') : 'lock'}" onclick="${ok ? `teenOpen('${x.id}')` : `toast('Học xong bài ${x.unlock} để mở tập này')`}"><span class="ic">${ok ? x.icon : '🔒'}</span><span><b>Tập ${+x.id.slice(1)} · ${esc(x.title)}</b><small>${esc(x.vi)} · ${ok ? (d ? `đã đọc · đúng ${d.best}/${d.of}` : 'mới mở – đọc ngay!') : 'mở sau bài ' + esc(x.unlock)}</small></span>${d ? '<span class="ok">✓</span>' : ''}</button>`; }).join('')}</div>`;
+   <section class="card teen-hero">${teenBiBi(84)}<div><b>Chào, mình là BiBi!</b><div class="small">13–14 tuổi, ở tầng trên nhà chị Linh. Mê game và… đồ ăn 🍗. Mỗi tập chỉ dùng từ bạn đã học.</div><div class="muted tiny mt">Đã đọc ${done}/${eps.length} tập</div></div></section>
+   ${eps.map((x, xi) => { const ok = teenOpenOk(x), d = t.done[x.id]; const hd = (xi === 0 || String(eps[xi - 1].lv).slice(0, 1) !== String(x.lv).slice(0, 1) && x.lv !== 'A2') ? `<div class="section-title mt">${x.lv === 'B1' || x.lv === 'B2' ? '📗 Đợt 2 · B1–B2 (BiBi lớp 9)' : '📘 Đợt 1 · A1–A2'}</div>` : ''; return hd + `<button class="teen-ep ${ok ? (d ? '' : 'new') : 'lock'}" onclick="${ok ? `teenOpen('${x.id}')` : `toast('Học xong bài ${x.unlock} để mở tập này')`}"><span class="ic">${ok ? x.icon : '🔒'}</span><span><b>Tập ${+x.id.slice(1)} · ${esc(x.title)}</b><small>${esc(x.vi)} · ${ok ? (d ? `đã đọc · đúng ${d.best}/${d.of}` : 'mới mở – đọc ngay!') : 'mở sau bài ' + esc(x.unlock)}</small></span>${d ? '<span class="ok">✓</span>' : ''}</button>`; }).join('')}</div>`;
 }
 
 /* ===== Đọc hiểu trên bản đồ (v7.27) – nội dung ở sheet 'DocHieu' của Excel, mở dần theo bài =====
    - Mỗi bài đọc là một văn bản thật (tin nhắn, email, thông báo, quảng cáo, bài báo…) chỉ dùng từ & ngữ pháp đã học.
    - Sai: tô vàng câu chứa đáp án + giải thích; lỗi vào Sổ lỗi loại "Hiểu nghĩa câu" (kind 'rdq', ref 'D:Rxx:i').
    - Làm lại từ Sổ lỗi: câu hỏi 'rdq' trong khung quiz (XK.rdq) hiện lại bài đọc + đúng câu hỏi đó.
-   - S.doc.done[id] = {best, of, at}. Lần đầu làm xong: +5 ⭐ và +3 ⭐ mỗi câu đúng (vào ⭐ Word Dash). */
+   - S.doc.done[id] = {best, of, at}. Lần đầu làm xong: +5 ⭐ (B1 +8, B2 +10) và +3 ⭐ mỗi câu đúng (vào ⭐ Word Dash).
+   - v7.28: B1–B2; dạng câu hỏi main (ý chính) · ref (tham chiếu) · inf (suy luận) · purp (mục đích/thái độ); key 'Đn' = cả đoạn n. */
 const DOC = { id: null, ans: {}, all: false, lv: null };
-const DOC_KIND = { msg: ['💬', 'Tin nhắn'], note: ['📝', 'Giấy nhắn'], notice: ['📢', 'Thông báo'], mail: ['✉️', 'Email'], ad: ['🏷️', 'Quảng cáo'], menu: ['🍽️', 'Thực đơn'], news: ['📰', 'Bài báo'], post: ['🌐', 'Bài viết trên mạng'] };
-const DOC_QK = { mc: 'Chọn đáp án đúng', tf: 'Câu này đúng hay sai?', tfn: 'Đúng · Sai · hay bài không nói đến?', det: 'Tìm chi tiết trong bài' };
+const DOC_KIND = { msg: ['💬', 'Tin nhắn'], note: ['📝', 'Giấy nhắn'], notice: ['📢', 'Thông báo'], mail: ['✉️', 'Email'], ad: ['🏷️', 'Quảng cáo'], menu: ['🍽️', 'Thực đơn'], news: ['📰', 'Bài báo'], post: ['🌐', 'Bài viết trên mạng'], job: ['💼', 'Tin tuyển dụng'], diary: ['📔', 'Nhật ký'], report: ['📊', 'Báo cáo'], recipe: ['🍳', 'Công thức nấu ăn'], review: ['🎬', 'Bài nhận xét'], guide: ['🗺️', 'Tờ hướng dẫn'] };
+const DOC_QK = { mc: 'Chọn đáp án đúng', tf: 'Câu này đúng hay sai?', tfn: 'Đúng · Sai · hay bài không nói đến?', det: 'Tìm chi tiết trong bài', main: '🎯 Ý chính', ref: '🔗 Từ này chỉ ai / cái gì?', inf: '💭 Suy luận – bài không nói thẳng', purp: '🗣 Mục đích / thái độ người viết' };
+const DOC_GIFT = { B1: 8, B2: 10 };
 function docParse(rows) {
   const out = [], by = {};
   rows.forEach(r => {
@@ -8131,7 +8146,7 @@ function docParse(rows) {
     let d = by[id];
     if (!d) { d = by[id] = { id, lv: r['Cấp'], unlock: r['Mở sau bài'], kind: r['Dạng văn bản'] || 'notice', icon: r['Biểu tượng'] || '📰', title: r['Tiêu đề (Anh)'], vi: r['Tiêu đề (Việt)'], paras: [], ss: [], qs: [] }; out.push(d); }
     if (r['Loại dòng'] === 'hỏi') {
-      d.qs.push({ k: r['Dạng câu hỏi'] || 'mc', q: r['Tiếng Anh'], o: String(r['Lựa chọn (cách nhau |)'] || '').split('|').map(x => x.trim()).filter(Boolean), a: (+r['Đáp án (từ 1)'] || 1) - 1, key: +r['Câu chứa đáp án (STT, 0 = không có)'] || 0, why: r['Giải thích'] || '' });
+      d.qs.push({ k: r['Dạng câu hỏi'] || 'mc', q: r['Tiếng Anh'], o: String(r['Lựa chọn (cách nhau |)'] || '').split('|').map(x => x.trim()).filter(Boolean), a: (+r['Đáp án (từ 1)'] || 1) - 1, ...docKey(r['Câu chứa đáp án (STT, 0 = không có)']), why: r['Giải thích'] || '' });
     } else {
       const pi = (+r['Đoạn'] || 1) - 1; while (d.paras.length <= pi) d.paras.push({ head: '', ss: [] });
       const p = d.paras[pi]; if (r['Đầu đoạn']) p.head = r['Đầu đoạn'];
@@ -8141,6 +8156,10 @@ function docParse(rows) {
   });
   return out;
 }
+function docKey(v) { const m = /^Đ(\d+)$/.exec(String(v || '').trim()); return m ? { key: 0, keyP: +m[1] } : { key: +v || 0, keyP: 0 }; }
+/* các câu cần tô vàng khi trả lời sai: câu chứa đáp án hoặc cả đoạn */
+const docKeyNs = (d, q) => q.key ? [q.key] : q.keyP && d.paras[q.keyP - 1] ? d.paras[q.keyP - 1].ss.map(s => s.n) : [];
+const docNoKeyMsg = q => q.k === 'main' || q.k === 'purp' ? 'đọc lại ' + (q.keyP ? 'đoạn tô vàng' : 'cả bài') + ' để thấy ý chung' : 'bài không nhắc đến điều này';
 const docSt = () => { const t = S.doc = S.doc || {}; t.done = t.done || {}; return t; };
 const docAll = () => (DATA && DATA.doc) || [];
 const docOpenOk = d => lessonDone(d.unlock);
@@ -8178,19 +8197,19 @@ function docAnswer(qi, oi) {
   else if (S.errors[key]) { S.errors[key].streak++; if (S.errors[key].streak >= 2) delete S.errors[key]; }
   if (Object.keys(DOC.ans).length === d.qs.length) {
     const n = d.qs.filter((x, i) => DOC.ans[i] === x.a).length, t = docSt(), old = t.done[d.id];
-    if (!old) { const gift = 5 + n * 3; dashSt().stars += gift; DOC.gift = gift; try { celebrate('small'); sfx('win'); } catch (er) { } } else DOC.gift = 0;
+    if (!old) { const gift = (DOC_GIFT[d.lv] || 5) + n * 3; dashSt().stars += gift; DOC.gift = gift; try { celebrate('small'); sfx('win'); } catch (er) { } } else DOC.gift = 0;
     t.done[d.id] = { best: Math.max(n, old ? old.best : 0), of: d.qs.length, at: Date.now() };
     try { questCheck(); extrasCheck(); } catch (er) { }
   }
   try { statUpdate(); } catch (er) { }
   save(); render();
-  if (!ok && q.key) setTimeout(() => { const el = $('#ds' + q.key); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 120);
+  const kn = docKeyNs(d, q)[0]; if (!ok && kn) setTimeout(() => { const el = $('#ds' + kn); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' }); }, 120);
 }
 function docQHtml(d, qi, a, click) {
   const q = d.qs[qi], o = docOpts(q);
   return `<div class="teen-q doc-q"><div><b>${qi + 1}.</b> ${esc(q.q)}</div><div class="muted tiny">${DOC_QK[q.k] || ''}</div>
    ${o.map((x, oi) => `<button class="o ${a === undefined ? '' : oi === q.a ? 'ok' : oi === a ? 'bad' : ''}" onclick="${click}(${qi},${oi})">${a !== undefined && oi === q.a ? '✓ ' : a === oi ? '✗ ' : ''}${esc(x)}</button>`).join('')}
-   ${a !== undefined ? `<div class="why">${a === q.a ? '✅' : '🧐'} ${esc(q.why)}${a !== q.a ? (q.key ? ` <span class="dkey">→ câu tô vàng trong bài</span>` : ' <span class="dkey">→ bài không nhắc đến điều này</span>') : ''}</div>` : ''}</div>`;
+   ${a !== undefined ? `<div class="why">${a === q.a ? '✅' : '🧐'} ${esc(q.why)}${a !== q.a ? (q.key ? ` <span class="dkey">→ câu tô vàng trong bài</span>` : ` <span class="dkey">→ ${docNoKeyMsg(q)}</span>`) : ''}</div>` : ''}</div>`;
 }
 function docPage() {
   const all = docAll(), t = docSt(), head = sub => `<div class="band compact"><button class="back" onclick="${DOC.id ? 'DOC.id=null;TTS.stop();render()' : "go('practice')"}">← ${DOC.id ? 'Danh sách' : 'Ôn & Luyện'}</button><h1>📰 Đọc hiểu</h1><div class="sub">${sub}</div></div>`;
@@ -8198,7 +8217,7 @@ function docPage() {
   const d = docGet(DOC.id);
   if (d && docOpenOk(d)) {
     const done = Object.keys(DOC.ans).length === d.qs.length, n = d.qs.filter((q, i) => DOC.ans[i] === q.a).length;
-    const hl = new Set(d.qs.filter((q, i) => DOC.ans[i] !== undefined && DOC.ans[i] !== q.a && q.key).map(q => q.key));
+    const hl = new Set(d.qs.filter((q, i) => DOC.ans[i] !== undefined && DOC.ans[i] !== q.a).flatMap(q => docKeyNs(d, q)));
     const showVi = done && !!DOC.vi, words = d.ss.reduce((s, x) => s + (x.en.match(/\S+/g) || []).length, 0);
     return `${head(`${esc(d.vi)} · ${d.lv} · ${words} từ`)}<div class="page">
      <section class="card"><div class="section-title">${d.icon} ${esc(d.title)}</div><div class="muted small">${esc(d.vi)} · mở sau bài ${esc(d.unlock)} · chạm một câu để nghe</div>
@@ -8213,7 +8232,7 @@ function docPage() {
   const lvs = [...new Set(all.map(x => x.lv))], cur = DOC.lv && lvs.includes(DOC.lv) ? DOC.lv : (lvs.find(l => all.some(x => x.lv === l && docOpenOk(x) && !t.done[x.id])) || lvs[0]);
   const list = all.filter(x => x.lv === cur), nd = all.filter(x => t.done[x.id]).length;
   return `${head('Văn bản thật, chỉ dùng từ đã học · mở dần theo bài')}<div class="page">
-   <section class="card"><div class="small">Tin nhắn, email, thông báo, quảng cáo, bài báo ngắn… gắn với chủ đề bài học. Không chặn đường học – làm lúc nào cũng được. Lần đầu làm xong được ⭐ dùng ở Word Dash.</div><div class="muted tiny mt">Đã làm ${nd}/${all.length} bài</div>
+   <section class="card"><div class="small">Tin nhắn, email, thông báo, quảng cáo, bài báo, nhật ký, bài nhận xét… gắn với chủ đề bài học. Không chặn đường học – làm lúc nào cũng được. Lần đầu làm xong được ⭐ dùng ở Word Dash.</div><div class="muted tiny mt">Đã làm ${nd}/${all.length} bài</div>
     <div class="chips mt">${lvs.map(l => `<button class="chip ${l === cur ? 'on' : ''}" onclick="DOC.lv='${l}';render()">${l}</button>`).join('')}</div></section>
    ${list.map(x => { const ok = docOpenOk(x), dn = t.done[x.id], k = DOC_KIND[x.kind] || DOC_KIND.notice; return `<button class="teen-ep doc-ep ${ok ? (dn ? '' : 'new') : 'lock'}" onclick="${ok ? `docOpen('${x.id}')` : `toast('Học xong bài ${x.unlock} để mở bài đọc này')`}"><span class="ic">${ok ? x.icon : '🔒'}</span><span><b>${esc(x.title)}</b><small>${k[1]} · ${esc(x.vi)} · ${ok ? (dn ? `đã làm · đúng ${dn.best}/${dn.of}` : 'mới mở – đọc ngay!') : 'mở sau bài ' + esc(x.unlock)}</small></span>${dn ? '<span class="ok">✓</span>' : ''}</button>`; }).join('')}</div>`;
 }
@@ -8225,7 +8244,7 @@ function docNextBtn(d) {
 function docTile() {
   const all = docAll(); if (!all.length) return '';
   const nw = docNew();
-  return `<section class="card game-corner"><button class="gc" style="width:100%;display:flex;align-items:center;gap:10px;text-align:left" onclick="DOC.id=null;go('doc')"><span class="ic" style="font-size:34px;flex:none">📰</span><span><b>Đọc hiểu</b><small style="display:block">Tin nhắn, email, thông báo… ngắn · ${all.filter(docOpenOk).length}/${all.length} bài đã mở${nw ? ` · <b style="color:#1F7A8C">${nw} bài mới!</b>` : ''}</small></span></button></section>`;
+  return `<section class="card game-corner"><button class="gc" style="width:100%;display:flex;align-items:center;gap:10px;text-align:left" onclick="DOC.id=null;go('doc')"><span class="ic" style="font-size:34px;flex:none">📰</span><span><b>Đọc hiểu</b><small style="display:block">Tin nhắn, email, bài báo… A1–B2 · ${all.filter(docOpenOk).length}/${all.length} bài đã mở${nw ? ` · <b style="color:#1F7A8C">${nw} bài mới!</b>` : ''}</small></span></button></section>`;
 }
 /* huy hiệu trên bản đồ phiêu lưu (pages.js gọi) */
 function docMapBadge(id, p, W) {
@@ -8243,13 +8262,13 @@ function docQ(ref) {
 }
 function rdqBody(q, a) {
   const d = docGet(q.did); if (!d) return '';
-  const dq = d.qs[q.qi], hl = new Set(a && !a.ok && dq.key ? [dq.key] : []), L = 'ABCD';
+  const dq = d.qs[q.qi], hl = new Set(a && !a.ok ? docKeyNs(d, dq) : []), L = 'ABCD';
   const opts = `<div class="opts">${q.options.map((o, k) => { const cls = a ? (o === q.answer ? 'right' : o === a.val ? 'wrong' : '') : ''; return `<button class="opt ${cls} ${!a && q.sel === o ? 'sel' : ''}" ${a ? 'disabled' : ''} onclick="pickOpt(${ja(o)})"><i>${L[k]}</i><span>${esc(o)}</span></button>`; }).join('')}</div>`;
   return `<div class="rdq-box">${docText(d, hl, !!a, false)}</div>${opts}`;
 }
 function rdqDetail(q, a) {
   const d = docGet(q.did), dq = d && d.qs[q.qi];
-  return `<div class="why"><b class="wt">${a.ok ? '✅ Đọc chuẩn!' : '🧐 Xem lại câu tô vàng'}</b><div class="wi"><div class="wy">👉 ${esc(q.explain)}${!a.ok && dq && !dq.key ? ' (bài không nhắc đến điều này)' : ''}</div>${a.ok ? '' : `<div class="wtip">${ERR_CATS.meaning[0]} <b>${ERR_CATS.meaning[1]}:</b> ${ERR_CATS.meaning[2]}</div>`}</div></div>`;
+  return `<div class="why"><b class="wt">${a.ok ? '✅ Đọc chuẩn!' : dq && !dq.key && !dq.keyP ? '🧐 Xem lại bài đọc' : '🧐 Xem lại phần tô vàng'}</b><div class="wi"><div class="wy">👉 ${esc(q.explain)}${!a.ok && dq && !dq.key ? ` (${docNoKeyMsg(dq)})` : ''}</div>${a.ok ? '' : `<div class="wtip">${ERR_CATS.meaning[0]} <b>${ERR_CATS.meaning[1]}:</b> ${ERR_CATS.meaning[2]}</div>`}</div></div>`;
 }
 XK.rdq = { body: rdqBody, detail: rdqDetail, judge: (q, v) => ({ ok: v === q.answer }), ready: q => q.sel != null, val: q => q.sel };
 
