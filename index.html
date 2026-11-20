@@ -1443,6 +1443,14 @@ body.dash-on #cheer,body.dash-on #leaves{display:none!important}
 .dtx.review .dhead{font-family:Georgia,serif}.dtx.review .dtag::after{content:' · ⭐⭐⭐⭐'}
 .dtx.guide{border-color:#1F7A8C;border-style:double;border-width:4px}.dtx.guide .dph{background:rgba(31,122,140,.1);border-radius:8px;padding:2px 8px}
 
+/* v7.30 · 🤔 Câu này lạ? */
+.qrepbtn{display:block;width:100%;margin:0 0 8px;padding:7px 12px;border-radius:10px;border:1.5px dashed var(--line,#ddd);background:transparent;color:var(--muted,#6b6b6b);font:inherit;font-weight:700;font-size:calc(13px*var(--fz))}
+.qrepnote{margin:0 0 8px;font-size:calc(12.5px*var(--fz));color:var(--muted,#6b6b6b);text-align:center}
+.qrepr{width:100%;margin:0 0 6px;text-align:left}
+.qreplist{margin-top:10px;max-height:55vh;overflow:auto}
+.qrepit{position:relative;padding:8px 34px 8px 10px;border:1px solid var(--line,#e5e5e5);border-radius:10px;margin-bottom:6px}
+.qrepit .x{position:absolute;right:4px;top:4px}
+
 </style>
 </head>
 <body>
@@ -1566,7 +1574,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.29.1';
+const APP_VER = '7.30';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -3255,6 +3263,7 @@ function mePage() {
   ${badgeCard()}
   ${skillCard()}
   <button class="ptype" onclick="errbookOpen('w0')"><div class="ptop"><span class="ic r">🧾</span><span class="pt"><b>Sổ lỗi theo loại & báo cáo tuần</b><span>${(() => { const t = errTop(7); return t ? `7 ngày qua sai nhiều nhất: ${esc(catName(t[0]))} (${t[1]})` : 'Xem bạn hay sai loại lỗi nào, luyện đúng chỗ'; })()}</span></span><span class="play2">Xem</span></div></button>
+  ${qrepCard()}
   ${skinCard()}
   ${soundCard()}
   <section class="card"><div class="section-title">Hiển thị</div>
@@ -3324,6 +3333,8 @@ function distract(item, kind, field, n, extra) {
       if (out.length >= n) break;
       const v = String(x[field] || '').trim(); const f = fold(v);
       if (!v || seen.has(f)) continue;
+      /* v7.30: chọn từ tiếng Anh theo nghĩa → bỏ từ cùng nghĩa (tall/high, must/have to) */
+      if (kind === 'v' && field === 'Từ' && qaSameMean(headword(x), headword(item))) continue;
       seen.add(f); out.push(v);
     }
     if (out.length >= n) break;
@@ -3531,8 +3542,10 @@ function makeQ(kind, x) {
     for (const n of shuffle([1, 2])) {
       const s = x[`Ví dụ ${n} (Anh)`]; if (!s || !sentOk(s)) continue;
       const m = findForm(s, headword(x)); if (!m) continue;
-      const ds = distract(x, 'v', 'Từ', 3); if (ds.length < 2) return null;
-      return { kind, ref: x['Mã'], prompt: s.slice(0, m.start) + '_____' + s.slice(m.end), long: true, sub: x[`Ví dụ ${n} (Việt)`], options: opts(x['Từ'], ds), answer: x['Từ'], audioAfter: s, explain: `${s} · dạng dùng: “${m.text}”` };
+      /* v7.30: đáp án = đúng chữ điền vào chỗ trống; lựa chọn sai biến đổi cùng kiểu (số nhiều, -ed, -ing, so sánh…) */
+      const ds = qaBlankDistract(s, m.start, m.end, headword(x), x['Từ loại'], 3, { lv: x['Cấp'] }); if (ds.length < 2) continue;
+      const gx = m.text.toLowerCase() !== headword(x).toLowerCase() ? ` · gốc: ${headword(x)} → ${m.text}` : '';
+      return { kind, ref: x['Mã'], prompt: s.slice(0, m.start) + '_____' + s.slice(m.end), long: true, sub: x[`Ví dụ ${n} (Việt)`], options: opts(m.text, ds), answer: m.text, audioAfter: s, explain: `${s} · ${x['Từ']} = ${x['Nghĩa tiếng Việt']}${gx}` };
     }
     return null;
   }
@@ -3986,6 +3999,7 @@ function answer(val) {
   else if (S.errors[key]) { S.errors[key].streak++; if (S.errors[key].streak >= 2 || quiz.type === 'errors') delete S.errors[key]; }
   /* v7.22: sổ lỗi theo loại lỗi + thống kê bài luyện theo loại */
   if (!ok) errLogAdd(q, rec);
+  try { qrepAfterAnswer(q, rec); } catch (e) { }   /* v7.30: câu đáng ngờ */
   if (quiz.type === 'errcat' || q.gcat) errDrillBump(quiz.type === 'errcat' ? quiz.cat : q.gcat, ok);
   if (quiz.s) quiz.s.at = Date.now();
   statUpdate(); save(); render();
@@ -3999,7 +4013,7 @@ function selfOk() {
   const q = curQ(), a = quiz && quiz.ans[quiz.i];
   if (!q || !a || a.ok || !SELF_KINDS.includes(q.kind) || !String(a.val || '').trim()) return;
   const key = q.kind + '|' + q.ref;
-  a.ok = true; a.self = true; errLogUndo(a);
+  a.ok = true; a.self = true; errLogUndo(a); try { qrepAuto(q, a, 'Tự ghi: bấm “Tôi đã đúng”'); } catch (e) { }
   if (a.sb) Object.entries(a.sb).forEach(([k, v]) => { if (v) S.srs[k] = v; else delete S.srs[k]; });
   if (a.pe) S.errors[key] = a.pe; else delete S.errors[key];
   const e = S.errors[key]; if (e) { e.streak++; if (e.streak >= 2 || quiz.type === 'errors') delete S.errors[key]; }
@@ -4014,7 +4028,7 @@ function selfOk() {
 }
 function nextUnanswered(from) { const n = quiz.items.length; for (let d = 1; d <= n; d++) { const j = (from + d) % n; if (!quiz.ans[j]) return j; } return -1; }
 function nextQ() {
-  TTS.stop();
+  TTS.stop(); try { qrepOnLeave(curQ(), quiz.ans[quiz.i]); } catch (e) { }
   const j = nextUnanswered(quiz.i);
   if (j < 0) return finishQuiz();
   quiz.i = j; quiz.played = false; render(); window.scrollTo(0, 0);
@@ -4228,7 +4242,7 @@ function quizPage() {
     const ans = !a.ok && !['type', 'trans', 'dict', 'arrange', 'strans', 'xform', 'xformT', 'efix', 'lqa', 'self', ...SPK_KINDS].includes(q.kind) ? `<div class="fans"><small>${q.kind === 'vtrans' ? 'Đáp án tham khảo' : 'Đáp án'}</small><b>${esc(q.answer)}</b>${a.val && (q.kind === 'spell' || q.kind === 'cloze' || q.kind === 'vtrans') ? `<span class="you">bạn gõ: <s>${esc(a.val)}</s></span>` : ''}</div>` : '';
     fb = `<div class="fbsp" id="fbsp"></div><div class="feedback ${a.ok ? 'good' : 'bad'}" id="fbpanel" role="status"><div class="fhead"><span class="fm">${mas}</span><div class="ft"><div class="fh"><span>${a.ok ? 'Chính xác!' : 'Chưa đúng'}</span>${a.ok ? '<span class="xp">+10 XP</span>' : ''}</div>${praise}</div>${q.audioAfter ? `<button class="snd" onclick="qSay(${ja(q.audioAfter)},'${q.g || 'D'}')" aria-label="Nghe lại">${IC.sound}</button>` : ''}</div>
       ${ans}${detail ? `<div class="fdet">${detail}</div>` : ''}
-      ${selfBtn(q, a)}${hardBtn(q, a)}<button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
+      ${selfBtn(q, a)}${hardBtn(q, a)}${qrepBtn(q, a)}<button class="btn block fnext" id="nextBtn" onclick="nextQ()">${left ? 'Tiếp tục ›' : 'Xem kết quả ›'}</button><button class="flink" onclick="finishQuiz()">Kết thúc &amp; xem kết quả · ${c.ok + c.bad}/${n}</button></div>`;
   } else {
     const tl = q.tokens && q.kind !== 'type', ready = XK[q.kind] && XK[q.kind].ready ? XK[q.kind].ready(q) : q.options ? q.sel != null : tl ? (q.dc ? true : !q.order.length || q.order.length === q.tokens.length) : !!String(q.typed || '').trim();
     const ckLbl = tl && !q.order.length ? 'Không biết – xem đáp án' : 'Check';
@@ -5254,7 +5268,7 @@ function addDecoys(q, x) {
     }
     /* từ lạ: A1–A2 tối đa 1, B1–B2 tối đa 2 (còn lại phải là dạng sai của từ trong câu) */
     const maxF = q.kind === 'dict' || lv === 'A1' || lv === 'A2' ? 1 : 2;
-    for (let f = 0; pick.length < N && f < maxF; f++) { const d = foreignDecoy(q.en, lid, usedK); if (!d || !dcSafe(q.en, x.alts, d)) break; pick.push(d); usedK.add(d.k); }
+    for (let f = 0; pick.length < N && f < maxF; f++) { const d = foreignDecoy(q.en, lid, usedK); if (!d || !dcSafe(q.en, x.alts, d)) break; if (qaSubAny(q.en, x.alts, d.t)) continue; /* v7.30: từ lạ thay được từ trong câu (film/movie) → bỏ */ pick.push(d); usedK.add(d.k); }
     if (!pick.length) return q;
     q.dc = {}; pick.forEach(d => { const e = c => (CONTR[c] || c).split(' ')[0]; q.dc[d.k] = { cat: d.cat, why: d.why, src: d.src }; if (CONTR[d.k] && !q.dc[e(d.k)]) q.dc[e(d.k)] = { cat: d.cat, why: d.why, src: e(d.src) }; });
     q.tokens = shuffle([...q.tokens, ...pick.map((d, j) => ({ t: d.t, i: -1 - j }))]);
@@ -5962,6 +5976,8 @@ function makeEfix(x) {
       words[d.at] = sp.pre + dcTile(sp.core, d.k, start) + sp.post; bad = d.at; right = sp.core;
     }
     if (normSent(words.join(' ')) === normSent(en)) continue;
+    /* v7.30: có nút "Bỏ từ này" → bỏ từ sai mà vẫn ra câu đúng thì câu có 2 cách sửa → không dùng */
+    if (right) { const w2 = words.slice(); w2.splice(bad, 1); try { if (transJudge({ kind: 'trans', answer: en, alts: x.alts || [] }, w2.join(' ')).ok) continue; } catch (e) { } }
     const q = { ...base, words, bad, right, wrongW: stripP(words[bad]), gcat: dcErrCat(d.cat), why: d.why, lv, answer: right ? right : '(bỏ từ này)' };
     if (right && (lv === 'A1' || lv === 'A2')) {
       const wr = dcSplit(words[bad]).core, opts = [right];
@@ -6095,8 +6111,9 @@ function makeLqa(sp) {
         const sp = dcSplit(tk[j]), k = sp.core.toLowerCase(), ps = xDict().pos[k] || new Set();
         const ds = []; for (let t = 0; t < 8 && ds.length < 2; t++) { const f = /^\d+$/.test(k) ? String(+k + [1, 2, 3, -1, 5, 10][t % 6]) : null; if (f && +f > 0 && !ds.includes(f) && f !== k) ds.push(f); }
         if (!/^\d+$/.test(k)) {
-          const kind = ps.has('n') ? /^n/ : /^adj/, lim = knowLimit();
-          DATA.vocab.filter(v => { const o = DATA.order[v['Bài học']]; const h = headword(v); return o !== undefined && o <= lim && kind.test(String(v['Từ loại'] || '')) && /^[a-z]{3,12}$/.test(h) && h !== k && !avoid.has(h); }).sort(() => Math.random() - .5).slice(0, 2).forEach(v => ds.push(headword(v)));
+          /* v7.30: lựa chọn sai cùng từ loại, biến đổi cùng kiểu với chữ trong câu (people → students), không cùng nghĩa/nhóm */
+          const hw = qaHW().has(k) ? k : qaBase(k); let st = 0; for (let n = 0; n < j; n++) st = txt[i].indexOf(tk[n], st) + tk[n].length; st = txt[i].indexOf(tk[j], st) + sp.pre.length;
+          qaBlankDistract(txt[i], st, st + sp.core.length, hw, ps.has('n') ? 'n.' : 'adj.', 2, { avoid, only: ['base', 's', 'er', 'est'] }).forEach(w => ds.push(w.toLowerCase()));
         }
         if (ds.length < 2) continue;
         const cap = w => /^[A-Z]/.test(sp.core) ? xCap(w) : w;
@@ -7671,7 +7688,7 @@ function dashGenWord(kind, x, P) {
   }
   if (kind === 'meanR' || kind === 'listen') {
     if (kind === 'listen' && !TTS.ok) return null;
-    const ys = dashOthers(P, x, 2, (y, o) => { const yw = headword(y), mm = dShort(y['Nghĩa tiếng Việt']); return yw && yw.length <= 22 && fold(mm) !== mf && !dashHomo(yw, w) && !o.some(z => dashHomo(headword(z), yw)) && (kind !== 'listen' || yw[0].toLowerCase() === w[0].toLowerCase() || Math.abs(yw.length - w.length) <= 2); });
+    const ys = dashOthers(P, x, 2, (y, o) => { const yw = headword(y), mm = dShort(y['Nghĩa tiếng Việt']); return yw && yw.length <= 22 && fold(mm) !== mf && !qaSameMean(yw, w) && !dashHomo(yw, w) && !o.some(z => dashHomo(headword(z), yw)) && (kind !== 'listen' || yw[0].toLowerCase() === w[0].toLowerCase() || Math.abs(yw.length - w.length) <= 2); });
     if (ys.length < 2) return null;
     const meta = {}; ys.forEach(y => meta[headword(y)] = dShort(y['Nghĩa tiếng Việt']));
     if (kind === 'listen') return { k: 'listen', ref: x['Mã'], top: '🔊', sub: 'Bấm loa để nghe lại', audio: w, say: 1, opts: [w, ...ys.map(headword)], ans: w, en: w, vi: m,
@@ -8271,6 +8288,223 @@ function rdqDetail(q, a) {
   return `<div class="why"><b class="wt">${a.ok ? '✅ Đọc chuẩn!' : dq && !dq.key && !dq.keyP ? '🧐 Xem lại bài đọc' : '🧐 Xem lại phần tô vàng'}</b><div class="wi"><div class="wy">👉 ${esc(q.explain)}${!a.ok && dq && !dq.key ? ` (${docNoKeyMsg(dq)})` : ''}</div>${a.ok ? '' : `<div class="wtip">${ERR_CATS.meaning[0]} <b>${ERR_CATS.meaning[1]}:</b> ${ERR_CATS.meaning[2]}</div>`}</div></div>`;
 }
 XK.rdq = { body: rdqBody, detail: rdqDetail, judge: (q, v) => ({ ok: v === q.answer }), ready: q => q.sel != null, val: q => q.sel };
+
+/* v7.30 · nhận dạng & biến đổi dạng từ (số nhiều / -s, -ed / V3, -ing, so sánh -er / -est) – dùng cho lựa chọn của dạng "Điền từ vào câu"
+   và cho bộ kiểm tra tự động (src/qa_audit.js). */
+let _qaHW = null, _qaRev = null;
+function qaHW() {
+  if (_qaHW && _qaHW._d === DATA) return _qaHW;
+  _qaHW = new Set(); _qaHW._d = DATA; _qaRev = new Map();
+  DATA.vocab.forEach(v => { const h = headword(v).toLowerCase(); if (h && !/\s/.test(h)) _qaHW.add(h); });
+  Object.entries(IRR).forEach(([b, fs]) => fs.split(' ').forEach((f, i) => { if (!_qaRev.has(f)) _qaRev.set(f, { b, i, n: fs.split(' ').length }); }));
+  return _qaHW;
+}
+/* gốc của một dạng: parents → parent, studied → study, bigger → big */
+function qaBase(w) {
+  w = String(w || '').toLowerCase().trim(); const H = qaHW(); if (!w || /\s/.test(w)) return w;
+  if (H.has(w) && !_qaRev.has(w)) return w;
+  if (_qaRev.has(w)) return _qaRev.get(w).b;
+  const tries = [[/ies$/, 'y'], [/ied$/, 'y'], [/ier$/, 'y'], [/iest$/, 'y'], [/ves$/, 'f'], [/ves$/, 'fe'], [/(ss|sh|ch|x|z|o)es$/, '$1'], [/s$/, ''], [/([^aeiou])\1ed$/, '$1'], [/([^aeiou])\1ing$/, '$1'], [/([^aeiou])\1er$/, '$1'], [/([^aeiou])\1est$/, '$1'], [/ed$/, 'e'], [/ed$/, ''], [/d$/, ''], [/ing$/, 'e'], [/ing$/, ''], [/er$/, 'e'], [/er$/, ''], [/est$/, 'e'], [/est$/, '']];
+  for (const [re, r] of tries) { if (!re.test(w)) continue; const b = w.replace(re, r); if (b.length >= 2 && H.has(b)) return b; }
+  return w;
+}
+/* loại của một dạng bất quy tắc trong IRR */
+function qaIrrType(b, f) {
+  if (/ing$/.test(f)) return 'ing';
+  if (['man', 'woman', 'child', 'person', 'foot', 'tooth', 'mouse'].includes(b)) return 's';
+  if (['good', 'bad', 'far'].includes(b)) return /st$/.test(f) ? 'est' : 'er';
+  if (b === 'be') return /^(is)$/.test(f) ? 's' : /^(am|are)$/.test(f) ? 'base' : /^(was|were)$/.test(f) ? 'ed' : 'pp';
+  if (/s$/.test(f) && (f === b + 's' || f === b + 'es' || f === 'has' || f === 'does' || f === 'goes' || f === b.slice(0, -1) + 'ies')) return 's';
+  const fs = IRR[b].split(' ').filter(x => qaIrrPast(b, x));
+  return fs.length > 1 && fs.indexOf(f) === 1 ? 'pp' : 'ed';
+}
+const qaIrrPast = (b, x) => !/ing$/.test(x) && !(/s$/.test(x) && (x === b + 's' || x === b + 'es' || x === 'has' || x === 'does' || x === 'goes' || x === b.slice(0, -1) + 'ies'));
+/* loại dạng: base · s · ed · pp · ing · er · est · irr (dạng bất quy tắc khác) */
+function qaInfl(w) {
+  w = String(w || '').toLowerCase().trim(); qaHW(); if (!w || /\s/.test(w)) return 'base';
+  if (_qaHW.has(w) && !_qaRev.has(w)) return 'base';
+  const r = _qaRev.get(w); if (r) return qaIrrType(r.b, w);
+  const b = qaBase(w); if (b === w) return 'base';
+  if (/ing$/.test(w)) return 'ing'; if (/e?d$/.test(w)) return 'ed'; if (/est$/.test(w)) return 'est'; if (/er$/.test(w)) return 'er'; if (/s$/.test(w)) return 's';
+  return 'base';
+}
+const _qaSyl = w => (String(w).toLowerCase().match(/[aeiouy]+/g) || []).length;
+/* biến đổi từ gốc theo loại dạng (null nếu không chắc) */
+function qaInflect(b, t, pos) {
+  b = String(b || '').trim(); if (!b || /\s/.test(b) || t === 'base') return b;
+  const w = b.toLowerCase(), irr = IRR[w] ? IRR[w].split(' ') : null;
+  const cvc = /[^aeiou][aeiou][bdgklmnprt]$/.test(w) && _qaSyl(w) === 1;
+  if (t === 's') {
+    if (irr) { const f = irr.find(f => qaIrrType(w, f) === 's'); if (f) return f; }
+    if (/[^aeiou]y$/.test(w)) return w.slice(0, -1) + 'ies';
+    if (/(s|sh|ch|x|z)$/.test(w)) return w + 'es';
+    if (/[^aeiou]o$/.test(w) && /^v/.test(pos || '')) return w + 'es';
+    return w + 's';
+  }
+  if (t === 'ing') {
+    if (irr) { const f = irr.find(f => /ing$/.test(f)); if (f) return f; }
+    if (/ie$/.test(w)) return w.slice(0, -2) + 'ying';
+    if (/[^aeiouy]e$/.test(w) && !/(ee|ye|oe)$/.test(w)) return w.slice(0, -1) + 'ing';
+    return (cvc ? w + w.slice(-1) : w) + 'ing';
+  }
+  if (t === 'ed' || t === 'pp') {
+    if (irr && !['man', 'woman', 'child', 'person', 'foot', 'tooth', 'mouse', 'good', 'bad', 'far', 'be'].includes(w)) { const fs = irr.filter(f => qaIrrPast(w, f)); if (fs.length) return t === 'pp' && fs.length > 1 ? fs[1] : fs[0]; }
+    if (/e$/.test(w)) return w + 'd';
+    if (/[^aeiou]y$/.test(w)) return w.slice(0, -1) + 'ied';
+    return (cvc ? w + w.slice(-1) : w) + 'ed';
+  }
+  if (t === 'er' || t === 'est') {
+    if (irr && ['good', 'bad', 'far'].includes(w)) return t === 'er' ? irr[0] : irr[irr.length > 2 ? 2 : 1];
+    if (_qaSyl(w) > 2 || (_qaSyl(w) === 2 && !/y$/.test(w))) return null;
+    const s = t === 'er' ? 'er' : 'est';
+    if (/[^aeiou]y$/.test(w)) return w.slice(0, -1) + 'i' + s;
+    if (/e$/.test(w)) return w + s.slice(1);
+    return (cvc ? w + w.slice(-1) : w) + s;
+  }
+  return null;
+}
+/* nhóm từ thay thế được cho nhau trong một câu → không dùng làm lựa chọn sai của nhau */
+const QA_CLASSES = (() => {
+  const S = s => new Set(s.split(' '));
+  return {
+    'thứ': S('monday tuesday wednesday thursday friday saturday sunday weekend'),
+    'tháng': S('january february march april may june july august september october november december'),
+    'mùa': S('spring summer autumn fall winter'),
+    'số': S('zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty thirty forty fifty sixty seventy eighty ninety hundred thousand million billion dozen'),
+    'thứ tự': S('first second third fourth fifth sixth seventh eighth ninth tenth last next'),
+    'màu': S('red blue green yellow black white brown pink orange purple gray grey gold silver'),
+    'bữa': S('breakfast lunch dinner supper meal snack'),
+    'thời gian': S('second minute hour day week month year decade century morning afternoon evening night today tomorrow yesterday'),
+    'đơn vị': S('meter metre kilometer centimeter kilogram gram liter litre mile inch foot pound dollar cent percent'),
+    'hướng': S('north south east west left right'),
+  };
+})();
+/* nhóm của một từ: nhóm cố định ở trên + 'người' / 'con vật' theo nghĩa tiếng Việt của danh từ */
+let _qaCls = null;
+function qaClassOf(w) {
+  const k = String(w || '').toLowerCase().trim(), b = qaBase(k);
+  for (const [n, set] of Object.entries(QA_CLASSES)) if (set.has(k) || set.has(b)) return n;
+  if (!_qaCls || _qaCls._d !== DATA) { _qaCls = new Map(); _qaCls._d = DATA;
+    const P = /^(người|bố|mẹ|cha|ông|bà|anh|chị|em|cô|chú|bác|cậu|dì|vợ|chồng|bạn|con trai|con gái|con cái|cháu|giáo viên|thầy|bác sĩ|y tá|kỹ sư|nhân viên|quản lý|sếp|khách|học sinh|sinh viên|đồng nghiệp|hàng xóm|trẻ|đứa|cậu bé|cô bé|chàng|thiếu niên)/;
+    DATA.vocab.forEach(v => { if (!/^n/.test(String(v['Từ loại'] || ''))) return; const m = String(v['Nghĩa tiếng Việt'] || '').toLowerCase().trim(), h = headword(v).toLowerCase(); if (P.test(m)) _qaCls.set(h, 'người'); else if (/^con (?!trai|gái|cái)/.test(m)) _qaCls.set(h, 'con vật'); }); }
+  return _qaCls.get(k) || _qaCls.get(b) || '';
+}
+/* nghĩa tiếng Việt của một từ (mọi nghĩa của mọi mục cùng mặt chữ) → tập để so trùng nghĩa */
+let _qaMn = null;
+function qaMeans(w) {
+  if (!_qaMn || _qaMn._d !== DATA) { _qaMn = new Map(); _qaMn._d = DATA; DATA.vocab.forEach(v => { const h = headword(v).toLowerCase(); if (!h) return; const s = _qaMn.get(h) || new Set(); noParen(v['Nghĩa tiếng Việt']).split(/[;,/]/).forEach(p => { const n = viNorm(p).replace(VI_PRE, ''); if (n) s.add(n); }); _qaMn.set(h, s); }); }
+  const k = String(w || '').toLowerCase().trim(); return _qaMn.get(k) || _qaMn.get(qaBase(k)) || new Set();
+}
+function qaSameMean(a, b) { if (qaBase(a) === qaBase(b)) return true; const A = qaMeans(a), B = qaMeans(b); for (const x of A) if (B.has(x)) return true; return false; }
+/* dạng của chữ trong câu so với từ gốc: base · s · ed · pp · ing · er · est */
+function qaFormType(hw, f, prev) {
+  const h = String(hw || '').toLowerCase(), w = String(f || '').toLowerCase(); if (!w || w === h || /\s/.test(w)) return 'base';
+  let t = IRR[h] && IRR[h].split(' ').includes(w) ? qaIrrType(h, w) : qaInfl(w);
+  if (t === 'base') t = w.endsWith('ing') ? 'ing' : /(ed|d)$/.test(w) && !/(ed|d)$/.test(h) ? 'ed' : /est$/.test(w) ? 'est' : /er$/.test(w) && !/er$/.test(h) ? 'er' : /s$/.test(w) && !/s$/.test(h) ? 's' : 'other';
+  if (t === 'ed' && !(IRR[h] && IRR[h].split(' ').filter(x => qaIrrPast(h, x)).length > 1) && /^(have|has|had|having|been|be|being|get|got|gets|getting|is|are|was|were|am)$/.test(String(prev || '').toLowerCase())) t = 'pp';
+  return t;
+}
+/* v7.30 · lựa chọn sai cho câu có chỗ trống: cùng từ loại, biến đổi CÙNG KIỂU với chữ đúng (years → meters, happened → explained),
+   không cùng gốc, không cùng nghĩa, không cùng nhóm thay thế được, không ra câu đúng khác. */
+function qaBlankDistract(sent, start, end, hw, pos, n, opt) {
+  opt = opt || {};
+  const ans = sent.slice(start, end), al = ans.toLowerCase(), prev = (sent.slice(0, start).match(/([A-Za-z']+)\W*$/) || [])[1];
+  const t = qaFormType(hw, ans, prev); if (t === 'other' || (opt.only && !opt.only.includes(t))) return [];
+  const cap = /^[A-Z]/.test(ans) && !/^[A-Z]/.test(hw) ? w => w[0].toUpperCase() + w.slice(1) : w => w;
+  const P = String(pos || '').split(',')[0].trim(), pk = P.split(/[ .]/)[0], cls = qaClassOf(hw) || qaClassOf(ans), lim = knowLimit(), lv = opt.lv || '';
+  const seen = new Set([al, String(hw).toLowerCase()]), out = [], avoid = opt.avoid || new Set();
+  const okW = v => { const h = headword(v); return h && /^[a-z]{2,14}$/.test(h) && (!pk || String(v['Từ loại'] || '').startsWith(pk)); };
+  const tiers = [DATA.vocab.filter(v => okW(v) && (DATA.order[v['Bài học']] ?? 1e9) <= lim && (!lv || v['Cấp'] === lv)), DATA.vocab.filter(v => okW(v) && (DATA.order[v['Bài học']] ?? 1e9) <= lim), DATA.vocab.filter(okW)];
+  for (const pool of tiers) {
+    for (const v of shuffle(pool)) {
+      if (out.length >= n) break;
+      const b = headword(v); if (seen.has(b) || avoid.has(b)) continue; seen.add(b);
+      const f = qaInflect(b, t, v['Từ loại']); if (!f || (f !== b && seen.has(f)) || f === al) continue;
+      if (qaBase(f) === qaBase(al) || qaBase(b) === qaBase(String(hw).toLowerCase())) continue;
+      if (cls && (qaClassOf(b) === cls)) continue;
+      if (qaSameMean(b, hw) || qaSameMean(b, al)) continue;
+      if (t !== 'base' && !qaCorpus().tok.has(f)) continue;   /* chỉ dùng dạng có thật trong dữ liệu (tránh flours, transfered) */
+      const ft = qaInfl(f); if (ft !== t && !(t === 'pp' && ft === 'ed') && !(t === 'ed' && ft === 'pp')) continue;   /* dạng biến đổi trùng một từ khác (thank → thanks) */
+      if (qaAccepts(sent, opt.alts, sent.slice(0, start) + cap(f) + sent.slice(end))) continue;
+      seen.add(f); out.push(cap(f));
+    }
+    if (out.length >= n) break;
+  }
+  return out;
+}
+/* mọi câu tiếng Anh có trong dữ liệu (chuẩn hóa) – câu sinh ra mà trùng câu có thật thì coi là câu đúng */
+let _qaCorp = null;
+function qaCorpus() {
+  if (_qaCorp && _qaCorp._d === DATA) return _qaCorp;
+  _qaCorp = new Set(); _qaCorp._d = DATA; _qaCorp.tok = new Set(); const a = s => { if (!s) return; _qaCorp.add(normSent(s)); (String(s).toLowerCase().match(/[a-z]+/g) || []).forEach(w => _qaCorp.tok.add(w)); };
+  DATA.lines.forEach(l => a(l['Câu tiếng Anh'])); DATA.vocab.forEach(v => [1, 2].forEach(n => a(v[`Ví dụ ${n} (Anh)`])));
+  DATA.grammar.forEach(g => [1, 2, 3].forEach(n => a(g[`Ví dụ ${n} (Anh)`]))); (DATA.phrases || []).forEach(p => [1, 2].forEach(n => a(p[`Ví dụ ${n} (Anh)`])));
+  return _qaCorp;
+}
+/* câu s có được chấp nhận là đúng thay cho câu en không */
+function qaAccepts(en, alts, s) { if (normSent(s) === normSent(en) || qaCorpus().has(normSent(s))) return true; try { return transJudge({ kind: 'trans', answer: en, alts: alts || [] }, s).ok; } catch (e) { return false; } }
+/* từ w thay cho một từ bất kỳ trong câu mà vẫn ra câu đúng? (dùng để loại từ nhiễu) */
+function qaSubAny(en, alts, w) {
+  const tk = String(en).trim().split(/\s+/);
+  return tk.some((t, j) => { const m = /^([^A-Za-z]*)([A-Za-z'’-]+)([^A-Za-z]*)$/.exec(t); if (!m) return false; const ww = /^[A-Z]/.test(m[2]) ? w[0].toUpperCase() + w.slice(1) : w; if (ww.toLowerCase() === m[2].toLowerCase()) return false; return qaAccepts(en, alts, tk.map((y, k) => k === j ? m[1] + ww + m[3] : y).join(' ')); });
+}
+
+/* v7.30 · "🤔 Câu này lạ?" – người học báo câu thấy lạ (không cần chắc là lỗi) + app tự ghi câu đáng ngờ.
+   Lưu trong máy (S.qrep), xem ở Tôi → Câu lạ đã ghi lại, nút Gửi (chia sẻ qua Zalo/email hoặc sao chép). */
+const QREP_R = [['why', 'Mình không hiểu vì sao đáp án này đúng'], ['two', 'Hình như có 2 đáp án đúng'], ['av', 'Dịch / âm thanh nghe không khớp'], ['odd', 'Không chắc, chỉ thấy lạ']];
+const qrepList = () => (S.qrep = S.qrep || []);
+const qrepKey = q => q.kind + '|' + q.ref;
+function qrepSnap(q, a, r, auto) {
+  const strip = s => String(s || '').replace(/<[^>]+>/g, '').trim();
+  return { at: Date.now(), k: q.kind, ref: String(q.ref || ''), p: strip(q.prompt), sub: strip(q.sub), o: (q.options || []).map(String), ans: strip(q.answer), val: a ? strip(a.val) : '', ok: a ? !!a.ok : null, r, auto: auto ? 1 : 0, v: APP_VER };
+}
+function qrepAdd(it) { const L = qrepList(); const i = L.findIndex(x => x.k === it.k && x.ref === it.ref && !!x.auto === !!it.auto); if (i >= 0) L.splice(i, 1); L.unshift(it); if (L.length > 200) L.length = 200; save(); }
+/* app tự ghi (không hỏi người học) */
+function qrepAuto(q, a, r) { try { if (!q || !q.ref) return; const L = qrepList(); if (L.some(x => x.k === q.kind && x.ref === String(q.ref) && x.auto && x.r === r)) return; qrepAdd(qrepSnap(q, a, r, 1)); } catch (e) { } }
+/* gọi sau mỗi câu trả lời: sai ≥ 3 lần ở cùng một câu → đáng ngờ */
+function qrepAfterAnswer(q, rec) {
+  rec.t = Date.now(); if (rec.ok) return;
+  const W = S.qwrong = S.qwrong || {}, k = qrepKey(q); W[k] = (W[k] || 0) + 1;
+  if (Object.keys(W).length > 3000) S.qwrong = {};
+  if (W[k] >= 3) qrepAuto(q, rec, 'Tự ghi: sai 3 lần ở câu này');
+}
+/* gọi khi rời câu: sai rồi xem lại lâu (> 40 giây) → có thể câu khó hiểu */
+function qrepOnLeave(q, rec) { if (q && rec && !rec.ok && rec.t && Date.now() - rec.t > 40000) qrepAuto(q, rec, 'Tự ghi: xem lại rất lâu sau khi sai'); }
+const qrepDone = q => qrepList().some(x => x.k === q.kind && x.ref === String(q.ref) && !x.auto);
+function qrepBtn(q, a) { if (!q || !q.ref) return ''; return qrepDone(q) ? `<div class="qrepnote">📝 Đã ghi lại câu này – cảm ơn bạn!</div>` : `<button class="qrepbtn" type="button" onclick="qrepOpen()">🤔 Câu này lạ? Báo cho mình</button>`; }
+function qrepOpen() {
+  const q = curQ(); if (!q) return;
+  modal(`<div class="section-title" style="margin-top:0">🤔 Câu này lạ?</div><p class="small" style="margin-top:0">Không cần chắc là lỗi – thấy lạ cứ báo. App lưu lại câu này để kiểm tra.</p>
+    ${QREP_R.map(([k, t]) => `<button class="opt qrepr" onclick="qrepSave('${k}')"><span>${t}</span></button>`).join('')}
+    <textarea id="qrepNote" class="typebox" rows="2" placeholder="Ghi thêm (không bắt buộc)…" style="margin-top:8px"></textarea>
+    <button class="btn ghost block" style="margin-top:8px" onclick="closeModal()">Thôi</button>`);
+}
+function qrepSave(k) {
+  const q = curQ(), a = quiz && quiz.ans[quiz.i]; if (!q) return closeModal();
+  const note = (($('#qrepNote') || {}).value || '').trim(), r = (QREP_R.find(x => x[0] === k) || ['', ''])[1] + (note ? ' · ' + note : '');
+  qrepAdd(qrepSnap(q, a, r, 0)); closeModal(); toast('📝 Đã ghi lại. Xem ở Tôi → Câu lạ đã ghi lại'); render();
+}
+/* ---- trang danh sách (mở từ Tôi) ---- */
+function qrepText(L) {
+  return `[English Lab ${APP_VER}] ${L.length} câu lạ\n\n` + L.map((x, i) => `${i + 1}. ${new Date(x.at).toLocaleDateString('vi-VN')} · ${KIND_LABEL[x.k] || x.k} · ${x.ref}${x.auto ? ' · (app tự ghi)' : ''}\n` +
+    [x.p && 'Đề: ' + x.p, x.sub && '   ' + x.sub, x.o.length && 'Lựa chọn: ' + x.o.join(' | '), 'Đáp án: ' + x.ans, x.val && `Bạn trả lời: ${x.val}${x.ok === null ? '' : x.ok ? ' (đúng)' : ' (sai)'}`, 'Lý do: ' + x.r].filter(Boolean).join('\n')).join('\n\n');
+}
+function qrepCard() {
+  const L = qrepList(), me = L.filter(x => !x.auto).length;
+  return `<button class="ptype" onclick="qrepPage()"><div class="ptop"><span class="ic">🤔</span><span class="pt"><b>Câu lạ đã ghi lại</b><span>${L.length ? `${me} câu bạn báo · ${L.length - me} câu app tự ghi` : 'Thấy câu nào lạ, bấm “🤔 Câu này lạ?” sau khi trả lời'}</span></span></div></button>`;
+}
+function qrepPage() {
+  const L = qrepList();
+  modal(`<div class="row between"><div class="section-title" style="margin:0">🤔 Câu lạ đã ghi lại (${L.length})</div><button class="x" onclick="closeModal()">✕</button></div>
+    <p class="small">Gửi danh sách này cho người soạn app để kiểm tra. “App tự ghi” = câu bị sai nhiều lần hoặc xem lại rất lâu, có thể câu khó hiểu.</p>
+    ${L.length ? `<div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn" onclick="qrepSend()">📤 Gửi</button><button class="btn ghost" onclick="qrepCopy()">📋 Sao chép</button><button class="btn ghost" onclick="qrepClear()">🗑 Xóa hết</button></div>
+    <div class="qreplist">${L.slice(0, 60).map((x, i) => `<div class="qrepit"><div class="muted tiny">${esc(KIND_LABEL[x.k] || x.k)} · ${esc(x.ref)}${x.auto ? ' · app tự ghi' : ''}</div><div><b>${esc(x.p || x.sub)}</b></div>${x.o.length ? `<div class="small">${x.o.map(o => esc(o) === esc(x.ans) ? `<b>✓ ${esc(o)}</b>` : esc(o)).join(' · ')}</div>` : `<div class="small">Đáp án: <b>${esc(x.ans)}</b></div>`}<div class="small muted">${esc(x.r)}</div><button class="x" onclick="qrepDel(${i})" aria-label="Xóa">🗑</button></div>`).join('')}</div>` : '<p class="muted">Chưa có câu nào.</p>'}`);
+}
+function qrepDel(i) { qrepList().splice(i, 1); save(); qrepPage(); }
+function qrepClear() { if (!confirmSafe('Xóa hết danh sách câu lạ?')) return; S.qrep = []; save(); qrepPage(); render(); }
+const confirmSafe = m => { try { return window.confirm(m); } catch (e) { return true; } };
+async function qrepCopy() { const t = qrepText(qrepList()); try { await navigator.clipboard.writeText(t); toast('📋 Đã sao chép – dán vào Zalo / email để gửi'); } catch (e) { modal(`<div class="section-title" style="margin-top:0">Sao chép nội dung</div><textarea class="typebox" rows="12" readonly>${esc(t)}</textarea><button class="btn block" onclick="closeModal()">Xong</button>`); } }
+async function qrepSend() { const t = qrepText(qrepList()); if (navigator.share) { try { await navigator.share({ title: 'English Lab – câu lạ', text: t }); return; } catch (e) { if (e && e.name === 'AbortError') return; } } qrepCopy(); }
 
 (async function boot() {
   applyTheme(); try { applyFontSize(); } catch (e) { }
