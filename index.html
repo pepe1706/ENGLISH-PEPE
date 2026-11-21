@@ -1472,6 +1472,11 @@ mark.wr-k{background:#FFE58A;border-radius:4px;padding:0 2px}u.wr-c{text-decorat
 .wr-model{background:#F6F8FC;border-radius:12px;padding:12px;line-height:1.6;font-size:15px}
 .wr-tick{display:flex;gap:8px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-bottom:1px dashed var(--line);padding:9px 2px;font:inherit;color:var(--ink)}.wr-tick span{font-size:18px;line-height:1}.wr-tick.on{color:#1D7A47}
 
+/* v7.35 · nói qua micro bàn phím */
+.spkkb{margin:6px 16px 10px;padding:12px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.spkkb .mictx{display:flex;flex-direction:column;gap:2px}
+.spkkb .typebox{margin:0;width:100%;box-sizing:border-box}
+
 </style>
 </head>
 <body>
@@ -1595,7 +1600,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.34';
+const APP_VER = '7.35';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -3950,7 +3955,7 @@ function startDaily0(fresh) {
   [...srsLists('all').due].sort(() => Math.random() - .5).slice(0, 6).forEach(k => { const q = srsQuestion(k); if (q && !items.some(o => o.ref === q.ref)) items.push(q); });
   const ids = learnedLessonIds(); const pool = poolOf(ids.length ? ids : [currentLessonId()]);
   /* v7.24: micro dùng được (app tự nghe) → 1 từ + 1 câu đọc to */
-  try { if (spkMode() === 'asr') items.push(...spkDaily(pool).filter(q => !items.some(o => o.ref === q.ref))); } catch (e) { }
+  try { if (['asr', 'kb'].includes(spkMode())) items.push(...spkDaily(pool).filter(q => !items.some(o => o.ref === q.ref))); } catch (e) { }
   items.push(...buildMix(pool, Math.max(4, 15 - items.length), 6, 2, 2).filter(q => !items.some(o => o.kind === q.kind && o.ref === q.ref)));
   openSess({ key: 'd:' + dayKey(), type: 'practice', title: 'Ôn hôm nay · ' + dayKey().slice(8) + '/' + dayKey().slice(5, 7), daily: true, back: page }, () => shuffle(items.slice(0, 15)), fresh);
 }
@@ -6343,13 +6348,14 @@ const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 const SPK = { asr: !!SpeechRec, rec: !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder), perm: 'prompt', asrBad: '', live: null, liveQ: null, interim: '', err: '', errQ: null, recObj: null, recQ: null };
 try { navigator.permissions && navigator.permissions.query({ name: 'microphone' }).then(p => { SPK.perm = p.state; p.onchange = () => { SPK.perm = p.state; if (typeof page !== 'undefined' && ['practice', 'quiz'].includes(page)) render(); }; }).catch(() => { }); } catch (e) { }
 function spkMode() {
+  if ((S.settings || {}).spkMode === 'kb') return 'kb';
   if (SPK.perm === 'denied') return 'read';
   if ((S.settings || {}).spkMode === 'self') return SPK.rec ? 'rec' : 'read';
   if (SPK.asr && !SPK.asrBad && navigator.onLine !== false) return 'asr';
   return SPK.rec ? 'rec' : 'read';
 }
 const spkMicOk = () => spkMode() !== 'read';
-function spkSetMode(m) { S.settings.spkMode = m === 'self' ? 'self' : 'auto'; if (m !== 'self') SPK.asrBad = ''; save(); render(); }
+function spkSetMode(m) { spkStopAll(); S.settings.spkMode = ['self', 'kb'].includes(m) ? m : 'auto'; if (m === 'auto') SPK.asrBad = ''; save(); render(); }
 
 /* ---------- 1) chuẩn hóa từ để so (số, viết tắt, từ đồng âm) ---------- */
 const SPK_U = 'zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen'.split(' ');
@@ -6546,14 +6552,14 @@ function spkStopAll() {
 function spkListen() {
   const q = curQ(); if (!q || quiz.ans[quiz.i]) return;
   if (SPK.live) { try { SPK.live.stop(); } catch (e) { } return; }
-  TTS.stop(); SPK.interim = ''; SPK.err = ''; SPK.errQ = q;
+  TTS.stop(); SPK.interim = ''; SPK.err = ''; SPK.errQ = q; q.pend = null;
   const dual = spkDualStart(q);
   SPK.live = spkRun((err, alts) => {
     SPK.live = null; spkDualStop();
     /* máy không cho vừa nhận dạng vừa ghi âm → tắt ghi song song trên máy này (nhớ lại), không coi là hỏng nhận dạng */
     if (dual && !alts.length && err === 'audio-capture') { S.settings.spkNoDual = 1; SPK.asrBad = ''; save(); toast('Máy này không vừa nghe vừa ghi âm được – đã tắt ghi âm. Bấm 🎤 nói lại nhé.'); err = ''; }
     if (curQ() !== q || quiz.ans[quiz.i]) return;
-    if (alts.length) return spkGot(q, alts);
+    if (alts.length) { q.pend = alts; return render(); }
     SPK.err = err; render();
   }, t => { SPK.interim = t; const el = $('#spkint'); if (el) el.textContent = t; });
   SPK.liveQ = q; render();
@@ -6611,6 +6617,17 @@ function spkGot(q, alts) {
   if (res.ok || q.tries >= SPK_MAX) return spkSubmit();
   try { sfx('bad'); } catch (e) { }
   save(); render();
+}
+/* v7.35 · nói xong chưa chấm ngay – bấm "✔ Kiểm tra" mới chấm (micro trong app hoặc micro của bàn phím) */
+function spkCheck() {
+  const q = curQ(); if (!q || quiz.ans[quiz.i]) return;
+  if (spkMode() === 'kb') {
+    const el = $('#spkkb'), t = String((el && el.value) || q.kbt || '').replace(/\s+/g, ' ').trim();
+    if (!t) return toast('Chạm vào ô, bấm 🎤 trên bàn phím rồi nói trước đã');
+    q.kbt = ''; q.src = 'kb'; return spkGot(q, [t]);
+  }
+  if (!q.pend || !q.pend.length) return toast('Bấm 🎤 rồi nói trước đã');
+  const alts = q.pend; q.pend = null; q.src = 'asr'; spkGot(q, alts);
 }
 function spkSubmit() { const q = curQ(); if (!q || !q.last || quiz.ans[quiz.i]) return; q.via = 'asr'; q.spkOk = !!q.last.ok; answer(q.last.h || ''); }
 function spkSelf(ok) { const q = curQ(); if (!q || quiz.ans[quiz.i]) return; spkStopAll(); q.via = 'self'; q.spkOk = !!ok; answer(ok ? 'Tự chấm: giống mẫu' : 'Tự chấm: chưa giống'); }
@@ -6681,7 +6698,7 @@ function spkResHtml(res, q) {
       <div class="tiny">${o.heard ? (same ? '↑ cùng chỗ app nghe nhầm ở trên' : `App nghe thành: <b>“${esc(o.heard)}”</b>`) : 'App không nghe thấy từ này'}</div><span id="spkwt${i}"></span>${spkTipHtml(t)}</div>`;
   }).join('');
   const soft = res.words.some(o => o.soft) ? '<div class="muted tiny">🟡 Từ nhỏ (a, the, to…) hơi lướt – vẫn tính đúng, nhưng nhớ đọc đủ nhé.</div>' : '';
-  return `<div class="spkres ${res.ok ? 'ok' : ''}"><div class="spkheard"><small>🎤 App nghe được</small> “${esc(res.h || '…')}”</div>${ws}${items}${soft}</div>`;
+  return `<div class="spkres ${res.ok ? 'ok' : ''}"><div class="spkheard"><small>${q.src === 'kb' ? '⌨️ Bàn phím nghe được' : '🎤 App nghe được'}</small> “${esc(res.h || '…')}”</div>${ws}${items}${soft}</div>`;
 }
 function spkTop(q, a) {
   if (q.kind === 'sayw' || q.kind === 'sayst') return q.dots ? `<div class="spkdots"><span class="dots">${q.dots.s}</span><span class="muted tiny">● = âm tiết nhấn mạnh (thứ ${q.dots.k}/${q.dots.n})</span></div>` : '';
@@ -6692,20 +6709,31 @@ function spkTop(q, a) {
 function spkBody(q, a) {
   const top = spkTop(q, a);
   if (a) return top + (q.via === 'asr' && q.last ? spkResHtml(q.last, q) : '');
-  let m = spkMode(); if (q.kind === 'sayst' && m === 'asr') m = SPK.rec ? 'rec' : 'read';
+  let m = spkMode(); if (q.kind === 'sayst' && (m === 'asr' || m === 'kb')) m = SPK.rec && SPK.perm !== 'denied' ? 'rec' : 'read';
   const swap = `<button class="flink" onclick="spkSwap()">⏭ Đổi sang ${{ sayw: 'nghe chọn từ', sayst: 'chọn trọng âm', says: 'nghe chép', shadow: 'nghe chép', selfv: 'trả lời bằng cách gõ' }[q.kind]} (không tính sai)</button>`;
   const note = SPK.err && SPK.errQ === q ? `<div class="spknote">${spkErrMsg(SPK.err)}</div>` : '';
   /* Nói về mình mà không nhận dạng được (hoặc tự chọn gõ) → nói to rồi gõ lại câu đã nói */
+  if (q.kind === 'selfv' && m === 'kb') return `<div class="muted small" style="margin:0 2px 6px">⌨️ Chạm vào ô, bấm 🎤 trên bàn phím rồi nói câu trả lời. Nói xong bấm <b>Check</b> để chấm.</div>${selfBody(q, a)}<div class="spkkb">${spkKbHelp()}</div>`;
   if (q.kind === 'selfv' && (m !== 'asr' || q.forceType)) return `${note}<div class="muted small" style="margin:0 2px 6px">🗣️ Nói to câu trả lời 2 lần, rồi gõ lại câu bạn vừa nói để app chấm.</div>${selfBody(q, a)}${m === 'read' ? spkHelp(false) : ''}`;
+  if (m === 'kb') {
+    const n = q.tries || 0;
+    const box = `<div class="spkkb"><div class="mictx"><b>${n ? 'Nói lại bằng 🎤 bàn phím' : q.kind === 'shadow' ? 'Nghe xong, chạm ô rồi bấm 🎤 trên bàn phím' : 'Chạm ô, bấm 🎤 trên bàn phím rồi đọc to'}</b><span class="muted tiny">Lần ${Math.min(n + 1, SPK_MAX)}/${SPK_MAX} · nói xong bấm ✔ Kiểm tra mới chấm</span></div>
+      <textarea id="spkkb" class="typebox" rows="2" lang="en" placeholder="Chữ bạn nói sẽ hiện ở đây…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="curQ().kbt=this.value" onkeydown="if(event.key==='Enter'){event.preventDefault()}">${esc(q.kbt || '')}</textarea>
+      <div class="row" style="gap:8px"><button class="btn" onclick="spkCheck()">✔ Kiểm tra</button><button class="btn ghost" onclick="curQ().kbt='';render()">✖ Xóa</button></div>${spkKbHelp()}</div>`;
+    return `${top}${q.kind === 'shadow' ? '' : `<div class="spkrow">${spkModelBtns()}</div>`}${box}${q.last ? spkResHtml(q.last, q) : ''}
+      <div class="spkbtns">${n ? `<button class="btn ghost block" onclick="spkSubmit()">Nộp kết quả lần trước</button>` : ''}${swap}</div>`;
+  }
   if (m === 'asr') {
     const live = SPK.live && SPK.liveQ === q, n = q.tries || 0;
     const lbl = n ? 'Bấm 🎤 thử lại' : q.kind === 'selfv' ? 'Bấm 🎤 rồi trả lời' : q.kind === 'shadow' ? 'Nghe xong, bấm 🎤 rồi nhắc lại' : 'Bấm 🎤 rồi đọc to';
     const mic = `<div class="spkmic"><button class="micbtn ${live ? 'on' : ''}" onclick="spkListen()" aria-label="${live ? 'Dừng' : 'Nói'}">${live ? '⏹' : '🎤'}</button><div class="mictx">${live ? `<b>Đang nghe… nói đi!</b><span id="spkint" class="muted small">${esc(SPK.interim || '')}</span>` : `<b>${lbl}</b><span class="muted tiny">Lần ${Math.min(n + 1, SPK_MAX)}/${SPK_MAX} · nói rõ, gần máy, chỗ yên tĩnh</span>`}</div></div>`;
-    return `${top}${q.kind === 'shadow' || q.kind === 'selfv' ? '' : `<div class="spkrow">${spkModelBtns()}</div>`}${mic}${note}${q.last ? spkResHtml(q.last, q) : ''}
-      <div class="spkbtns">${n ? `<button class="btn ghost block" onclick="spkSubmit()">Nộp kết quả lần này</button>` : ''}${q.kind === 'selfv' ? `<button class="flink" onclick="curQ().forceType=1;render()">⌨️ Gõ thay vì nói</button>` : swap}</div>`;
+    const pend = q.pend && q.pend.length && !live ? `<div class="spkres"><div class="spkheard"><small>🎤 App nghe được</small> “${esc(q.pend[0])}”</div><div class="row" style="gap:8px;margin-top:8px"><button class="btn" onclick="spkCheck()">✔ Kiểm tra</button><button class="btn ghost" onclick="spkListen()">🎤 Nói lại</button></div></div>` : '';
+    return `${top}${q.kind === 'shadow' || q.kind === 'selfv' ? '' : `<div class="spkrow">${spkModelBtns()}</div>`}${mic}${note}${pend}${!pend && q.last ? spkResHtml(q.last, q) : ''}
+      <div class="spkbtns">${n && !pend ? `<button class="btn ghost block" onclick="spkSubmit()">Nộp kết quả lần trước</button>` : ''}${q.kind === 'selfv' ? `<button class="flink" onclick="curQ().forceType=1;render()">⌨️ Gõ thay vì nói</button>` : swap}${spkKbLink()}</div>`;
   }
   /* rec / read: nghe mẫu → ghi âm (hoặc đọc to) → nghe lại → tự chấm */
   const recOn = SPK.recObj && SPK.recQ === q, can = q.heardM || q.recUrl;
+  const kbl = q.kind === 'sayst' ? '' : spkKbLink();
   const msg = m === 'read' ? (SPK.perm === 'denied' ? '🔒 Micro đang bị chặn → đọc to rồi tự chấm.' : '🔇 Máy chưa ghi âm được → đọc to rồi tự chấm.') : q.kind === 'sayst' ? '' : (S.settings.spkMode === 'self' ? '🙋 Chế độ tự đánh giá.' : '🟡 Chưa nhận dạng được giọng nói (cần mạng / Chrome) → ghi âm, nghe lại, tự chấm.');
   return `${top}${note || (msg ? `<div class="spknote">${msg}</div>` : '')}<div class="spkself">
     <div class="ss"><i>1</i><span>Nghe mẫu</span>${spkModelBtns()}</div>
@@ -6713,7 +6741,16 @@ function spkBody(q, a) {
     <div class="ss"><i>3</i><span>${q.kind === 'sayst' ? 'Mình nhấn đúng âm ● như mẫu chưa?' : 'So với mẫu, mình đọc giống chưa?'}</span></div>
     <div class="row" style="gap:8px"><button class="btn spkj" ${can ? '' : 'disabled'} onclick="spkSelf(1)">✅ Giống rồi</button><button class="btn ghost spkj" ${can ? '' : 'disabled'} onclick="spkSelf(0)">❌ Chưa giống</button></div>
     ${m === 'rec' ? '<div class="muted tiny">Bản ghi chỉ nằm trên máy, không gửi đi đâu.</div>' : ''}</div>
-    ${q.kind !== 'sayst' ? spkHardHtml(q) : ''}<div class="spkbtns">${swap}</div>${m === 'read' ? spkHelp(SPK.perm === 'denied') : ''}`;
+    ${q.kind !== 'sayst' ? spkHardHtml(q) : ''}<div class="spkbtns">${swap}${kbl}</div>${m === 'read' ? spkHelp(SPK.perm === 'denied') : ''}`;
+}
+const spkKbLink = () => `<button class="flink" onclick="spkSetMode('kb')">⌨️ Micro trong app không nghe? Dùng micro của bàn phím (Gboard)</button>`;
+function spkKbHelp() {
+  return `<details class="spkhelp"><summary>⌨️ Cách nói bằng bàn phím Gboard</summary><ol>
+   <li>Chạm vào ô chữ → bàn phím hiện ra → bấm biểu tượng <b>🎤</b> trên bàn phím rồi nói.</li>
+   <li>Chữ ra tiếng Việt? Bật tiếng Anh: Gboard → <b>⚙ Cài đặt</b> → <b>Nhập liệu bằng giọng nói</b> → <b>Ngôn ngữ</b> → thêm <b>English (US)</b>. Khi nói, chạm tên ngôn ngữ trên màn hình nói để chọn English.</li>
+   <li>Nói xong bấm <b>✔ Kiểm tra</b>. Đừng gõ tay hoặc sửa chữ – như vậy app không biết bạn phát âm thế nào.</li>
+   <li>Lưu ý: bàn phím hay tự sửa về từ đúng, nên chấm dễ hơn micro trong app và không chấm trọng âm.</li></ol>
+   <button class="chip" onclick="spkSetMode('auto')">🎤 Quay lại micro trong app</button></details>`;
 }
 function spkHardHtml(q) { const w = spkHardWord(q), t = spkTipsFor(w); return `<div class="spkres"><div class="spkwh"><small class="muted">💡 Chú ý từ</small><b>${esc(w)}</b>${t.ipa ? `<span class="ipa">${esc(t.ipa)}</span>` : ''}<button class="snd sm" onclick="say(${ja(w)},'D',false,0.6)" aria-label="Nghe từ này">${IC.sound}</button></div>${spkTipHtml(t)}</div>`; }
 /* từ khó nhất trong câu (nhiều đặc điểm khó nhất) – để đưa mẹo khi tự chấm */
@@ -6766,11 +6803,11 @@ const SPK_TYPES = [
 practiceTypes = (f => function () { return [...f(), ...SPK_TYPES.map(t => ({ ...t, go: sc => `startSpeak('${t.k}','${sc}')` }))]; })(practiceTypes);
 DRILL[1].ks.push('speak'); DRILL[1].desc += ' · đọc to & nhắc lại';
 function spkStatus() {
-  const m = spkMode(), self = S.settings.spkMode === 'self';
-  const msg = m === 'asr' ? '🟢 Micro sẵn sàng · app tự nghe và chỉ ra từ nào chưa chuẩn (cần có mạng).'
+  const m = spkMode(), self = S.settings.spkMode === 'self', kb = m === 'kb';
+  const msg = kb ? '⌨️ Nói bằng micro của bàn phím (Gboard): nói xong bấm ✔ Kiểm tra mới chấm. Phần trọng âm vẫn tự chấm.' : m === 'asr' ? '🟢 Micro sẵn sàng · app tự nghe và chỉ ra từ nào chưa chuẩn (cần có mạng).'
     : m === 'rec' ? (self ? '🙋 Bạn chọn tự đánh giá: nghe mẫu → ghi âm → nghe lại → tự chấm.' : '🟡 Chưa dùng được nhận dạng giọng nói (mất mạng hoặc trình duyệt không hỗ trợ) → ghi âm, nghe lại, tự chấm.')
       : SPK.perm === 'denied' ? '🔴 Micro đang bị chặn → đọc to rồi tự chấm. Bật micro theo hướng dẫn bên dưới.' : '🔴 Máy chưa ghi âm được → đọc to rồi tự chấm.';
-  return `<div class="card spkst"><div class="small">${msg}</div><div class="chips mt"><button class="chip ${self ? '' : 'on'}" onclick="spkSetMode('auto')">🤖 App tự nghe</button><button class="chip ${self ? 'on' : ''}" onclick="spkSetMode('self')">🙋 Tự đánh giá</button><button class="chip" onclick="spkTest()">🎤 Thử micro</button></div>${spkHelp(m === 'read')}</div>`;
+  return `<div class="card spkst"><div class="small">${msg}</div><div class="chips mt"><button class="chip ${self || kb ? '' : 'on'}" onclick="spkSetMode('auto')">🤖 App tự nghe</button><button class="chip ${kb ? 'on' : ''}" onclick="spkSetMode('kb')">⌨️ Micro bàn phím</button><button class="chip ${self ? 'on' : ''}" onclick="spkSetMode('self')">🙋 Tự đánh giá</button><button class="chip" onclick="spkTest()">🎤 Thử micro</button></div>${kb ? spkKbHelp() : spkHelp(m === 'read')}</div>`;
 }
 function speakBlock(types, scope) {
   const cards = ['sayw', 'says', 'shadow', 'selfv', 'sayst'].map(k => types.find(t => t.k === k)).filter(Boolean).map(t => typeCard(t, scope)).join('');
