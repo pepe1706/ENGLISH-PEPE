@@ -1477,6 +1477,41 @@ mark.wr-k{background:#FFE58A;border-radius:4px;padding:0 2px}u.wr-c{text-decorat
 .spkkb .mictx{display:flex;flex-direction:column;gap:2px}
 .spkkb .typebox{margin:0;width:100%;box-sizing:border-box}
 
+/* v7.36 · thẻ ngữ pháp (details.gcard) – tách khỏi .gc của góc trò chơi */
+details.gcard{display:block;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:16px;color:var(--ink);cursor:auto}
+details.gcard:active{transform:none}
+details.gcard[open]>summary{padding-bottom:12px;border-bottom:1.5px dashed var(--line)}
+.gsec{margin-top:16px}
+.gsh{display:flex;align-items:center;gap:8px;font-size:calc(13px*var(--fz));font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--pd);margin:0 0 8px}
+.gsh::after{content:'';flex:1;height:1.5px;background:var(--line)}
+.gsi{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--ps);font-size:14px;letter-spacing:0}
+.gsec.err .gsh{color:var(--coral)}.gsec.err .gsi{background:var(--coral-soft)}
+.gform{border-radius:12px;background:var(--ps);border-left:5px solid var(--p);overflow:hidden}
+.gfr{display:flex;gap:10px;align-items:center;padding:10px 12px}.gfr+.gfr{border-top:1.5px solid rgba(255,255,255,.9)}
+.gfr .fl{flex:0 0 auto;min-width:64px;background:#fff}
+.gft{font-size:calc(16px*var(--fz));font-weight:800;color:var(--ink);line-height:1.4;overflow-wrap:anywhere}
+.gft small{display:block;font-size:calc(13px*var(--fz));font-weight:700;color:var(--muted)}
+.gplus{font-style:normal;color:var(--p);font-weight:900;padding:0 2px}
+.gkey{padding:12px 14px;border-radius:12px;background:#FFF0C7;color:#5A3A00;font-size:calc(15.5px*var(--fz));font-weight:700;line-height:1.5}
+.gkey b{color:#3D2700;font-weight:900}
+.gkl{display:inline-block;font-size:calc(11.5px*var(--fz));font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#B45309;margin-bottom:3px}
+.gpts{list-style:none;margin:10px 0 0;padding:0}
+.gpts li{display:flex;gap:10px;align-items:flex-start;padding:9px 0}.gpts li+li{border-top:1.5px dashed var(--line)}
+.gno{flex:0 0 24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--p);color:#fff;font-size:13px;font-weight:900;margin-top:1px}
+.gpts li.warn .gno{background:var(--coral)}
+.gpts li.warn .gpt{color:#7A1C20}
+.gpb{flex:1;min-width:0}
+.gpt{font-size:calc(14.5px*var(--fz));line-height:1.55;font-weight:600;color:var(--ink2)}.gpt b{font-weight:900;color:var(--ink)}
+.gexs{margin-top:6px;display:flex;flex-direction:column;gap:5px}
+.gex{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;border-radius:10px;background:#fff;border:1.5px solid var(--line);font-weight:800;color:var(--pd);font-size:calc(14.5px*var(--fz));overflow-wrap:anywhere}
+.gkey .gex{border-color:rgba(180,83,9,.18)}
+.gexbox{border:1.5px solid var(--line);border-radius:12px;padding:2px 12px}
+details.gcard .call.work{margin-top:16px}
+html[data-dark] details.gcard{background:var(--card)}
+html[data-dark] .gkey{background:var(--amber-soft);color:var(--ink)}html[data-dark] .gkey b{color:var(--ink)}
+html[data-dark] .gex{background:rgba(255,255,255,.06)}html[data-dark] .gfr .fl{background:rgba(255,255,255,.1)}html[data-dark] .gfr+.gfr{border-top-color:rgba(255,255,255,.08)}
+html[data-dark] .gpts li.warn .gpt{color:#FFB4A6}html[data-dark] .gex{color:var(--pd)}html[data-dark] .gfr .fl{color:var(--ink)}html[data-dark] .gkl{color:var(--amber)}
+
 </style>
 </head>
 <body>
@@ -1600,7 +1635,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.35';
+const APP_VER = '7.36';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -3170,17 +3205,51 @@ function mistakeBlock(g, mp) {
   }
   return mp ? `${mp.intro ? `<p class="gx">${esc(mp.intro)}</p>` : ''}${mp.pairs.map(([w, r]) => `<div class="fix"><span class="x">✗ ${esc(w)}</span><span class="ok">✓ ${esc(r)}</span></div>`).join('')}` : `<div class="call err">${esc(g['Lỗi thường gặp'])}</div>`;
 }
+/* v7.36 · thẻ ngữ pháp dễ nhìn: công thức dạng bảng màu, giải thích tách Ý chính / các ý phụ đánh số / ví dụ nghe được */
+function gFormRows(f) {
+  const rows = [];
+  String(f).split('|').map(r => r.trim()).filter(Boolean).forEach(r => {
+    r.split(/;\s*(?=[^;:]{1,20}:\s)/).forEach(x => rows.push(x.trim()));
+  });
+  const fmt = s => esc(s).replace(/\s\+\s/g, ' <i class="gplus">+</i> ').replace(/\s(→|=)\s/g, ' <i class="gplus">$1</i> ');
+  return rows.map(r => {
+    const m = /^([^:→]{1,22}):\s*(.+)$/.exec(r); const lb = m ? m[1].trim() : '', tx = m ? m[2] : r;
+    const c = /phủ định/i.test(lb) ? 'n' : /hỏi/i.test(lb) ? 'q' : /đáp|trả lời|khẳng định/i.test(lb) ? 'a' : 'k';
+    const pm = /^(.*?)\s*(\([^()]{6,}\))\s*$/.exec(tx);
+    const main = pm ? pm[1] : tx, note = pm ? pm[2] : '';
+    return `<div class="gfr">${lb ? `<span class="fl ${c}">${esc(lb)}</span>` : ''}<div class="gft">${fmt(main)}${note ? `<small>${esc(note)}</small>` : ''}</div></div>`;
+  }).join('');
+}
+function gEasyHtml(text) {
+  const b = x => esc(x).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const pts = [];
+  String(text || '').split('\n').map(s => s.trim()).filter(Boolean).forEach(s => {
+    let ch = ''; const w = /\s*⏳\s*([A-B]\d(?:-\d+)?)?\s*$/.exec(s);
+    if (w) { ch = ` <span class="later">${esc(w[1] ? 'sẽ học ở ' + w[1] : 'sẽ học sau')}</span>`; s = s.slice(0, w.index); }
+    const parts = s.split(/\s*»\s*/); const first = parts.shift().trim(); const exs = parts.filter(Boolean);
+    if (!first && pts.length) { pts[pts.length - 1].ex.push(...exs); pts[pts.length - 1].ch += ch; return; }
+    pts.push({ t: first, ex: exs, ch });
+  });
+  if (!pts.length) return '';
+  const exH = ex => ex.length ? `<div class="gexs">${ex.map(e => `<div class="gex">${sndBtn(e.replace(/\*\*/g, ''), 'D', 'mini')}<span>${b(e)}</span></div>`).join('')}</div>` : '';
+  const [k, ...rest] = pts;
+  const warn = t => /KHÔNG|Đừng|Cẩn thận|Chú ý|Lưu ý/.test(t);
+  let n = 0;
+  return `<div class="gkey"><span class="gkl">⭐ Ý chính</span><div>${b(k.t)}${k.ch}</div>${exH(k.ex)}</div>` +
+    (rest.length ? `<ol class="gpts">${rest.map(p => { const wr = warn(p.t); if (!wr) n++; return `<li class="${wr ? 'warn' : ''}"><span class="gno">${wr ? '!' : n}</span><div class="gpb">${p.t ? `<div class="gpt">${b(p.t)}${p.ch}</div>` : ''}${exH(p.ex)}</div></li>`; }).join('')}</ol>` : '');
+}
 function grammarCard(g, open) {
   const t = String(g['Điểm ngữ pháp'] || ''); const ci = t.indexOf(': '), pi = t.indexOf(' (');
   const cut = ci > 0 ? ci : pi > 0 ? pi : -1, main = cut > 0 ? t.slice(0, cut) : t, sub = cut > 0 ? t.slice(cut + (ci > 0 ? 2 : 1)).trim() : '';
   const mp = g['Lỗi thường gặp'] ? mistakePairs(g['Lỗi thường gặp']) : null;
   const ex = exRows(g, [1, 2, 3], '');
-  return `<details class="gc" ${open ? 'open' : ''}><summary><div class="gh"><span class="gcode">${esc(String(g['Mã']).split('-').pop())}</span><span class="lv ${esc(g['Cấp'])}">${esc(g['Cấp'])}</span><span class="gcar">▾</span></div><h3>${esc(main)}</h3>${sub ? `<div class="gsub">${esc(sub)}</div>` : ''}</summary>
-   <div class="gbody">${g['Công thức'] ? `<div class="sl">📐 Công thức</div><div class="ftab">${formulaRows(g['Công thức'])}</div>` : ''}
-   ${g['Giải thích dễ hiểu'] ? `<div class="sl">💡 Giải thích dễ hiểu</div>${tfEasyHtml(g['Giải thích dễ hiểu'])}` : g['Giải thích ngắn'] ? `<div class="sl">💡 Giải thích</div>${tfIdeasHtml(g['Giải thích ngắn'], 'gx')}` : ''}
-   ${ex ? `<div class="sl">Ví dụ</div>${ex}` : ''}
+  const sec = (ic, tt, body, cls = '') => `<section class="gsec ${cls}"><div class="gsh"><span class="gsi">${ic}</span>${tt}</div>${body}</section>`;
+  return `<details class="gc gcard" ${open ? 'open' : ''}><summary><div class="gh"><span class="gcode">${esc(String(g['Mã']).split('-').pop())}</span><span class="lv ${esc(g['Cấp'])}">${esc(g['Cấp'])}</span><span class="gcar">▾</span></div><h3>${esc(main)}</h3>${sub ? `<div class="gsub">${esc(sub)}</div>` : ''}</summary>
+   <div class="gbody">${g['Công thức'] ? sec('📐', 'Công thức', `<div class="gform">${gFormRows(g['Công thức'])}</div>`) : ''}
+   ${g['Giải thích dễ hiểu'] ? sec('💡', 'Giải thích dễ hiểu', gEasyHtml(g['Giải thích dễ hiểu'])) : g['Giải thích ngắn'] ? sec('💡', 'Giải thích', tfIdeasHtml(g['Giải thích ngắn'], 'gx')) : ''}
+   ${ex ? sec('🗣', 'Ví dụ', `<div class="gexbox">${ex}</div>`) : ''}
    ${g['Dùng khi nào trong công việc'] ? `<div class="call work"><b>💼 Dùng trong công việc</b>${esc(g['Dùng khi nào trong công việc'])}</div>` : ''}
-   ${g['Lỗi thường gặp (cấu trúc)'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${tfMistakeNew(g['Lỗi thường gặp (cấu trúc)'])}` : g['Lỗi thường gặp'] ? `<div class="sl">⚠ Lỗi thường gặp</div>${mistakeBlock(g, mp)}` : ''}
+   ${g['Lỗi thường gặp (cấu trúc)'] ? sec('⚠', 'Lỗi thường gặp', tfMistakeNew(g['Lỗi thường gặp (cấu trúc)']), 'err') : g['Lỗi thường gặp'] ? sec('⚠', 'Lỗi thường gặp', mistakeBlock(g, mp), 'err') : ''}
    ${g['Nguồn'] ? `<div class="src">Nguồn: ${esc(g['Nguồn'])}</div>` : ''}</div></details>`;
 }
 function grammarTab(it) {
