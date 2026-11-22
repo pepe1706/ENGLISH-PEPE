@@ -1635,7 +1635,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.36';
+const APP_VER = '7.36.1';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -3330,7 +3330,7 @@ function lookupPage() {
   <input id="lq" class="search" type="search" placeholder="Tìm tiếng Anh hoặc nghĩa tiếng Việt (không dấu cũng được)…" value="${esc(lookQ)}" oninput="lookQ=this.value;lookN=40;clearTimeout(window._t);window._t=setTimeout(()=>{render();const i=$('#lq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)">
   <div class="chips" style="margin-bottom:12px"><button class="chip ${!lookLv ? 'on' : ''}" onclick="lookLv='';render()">Mọi cấp</button>${LEVELS.map(lv => `<button class="chip ${lookLv === lv ? 'on' : ''}" onclick="lookLv='${lv}';render()">${lv}</button>`).join('')}</div>
   <div class="muted small" style="margin-bottom:8px">${list.length} kết quả</div>
-  ${shown.map(x => `<div onclick="openItem('${x['Mã']}')" style="cursor:pointer">${card(x)}</div>`).join('') || '<div class="empty">Không có kết quả.</div>'}
+  ${shown.map(x => `<div onclick="${lookTab === 'g' ? 'event.preventDefault();' : ''}openItem('${x['Mã']}')" style="cursor:pointer">${card(x)}</div>`).join('') || '<div class="empty">Không có kết quả.</div>'}
   ${list.length > lookN ? `<button class="btn ghost block" onclick="lookN+=60;render()">Xem thêm (${list.length - lookN})</button>` : ''}</div>`;
 }
 
