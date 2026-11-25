@@ -869,7 +869,7 @@ html[data-dark]{color-scheme:dark}
 #celeb{position:fixed;left:0;right:0;top:0;bottom:0;pointer-events:none;z-index:100002;overflow:hidden}
 #celeb i{position:absolute;left:50%;top:60%;font-style:normal;opacity:0;animation:celebPop 2.4s cubic-bezier(.2,.7,.3,1) forwards}
 @keyframes celebPop{0%{opacity:0;transform:translate(0,0) rotate(0) scale(.4)}12%{opacity:1}45%{transform:translate(var(--dx),var(--up)) rotate(calc(var(--rot)/2)) scale(1)}100%{opacity:0;transform:translate(calc(var(--dx)*1.25),var(--dn)) rotate(var(--rot)) scale(.9)}}
-#celebcard{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:100003;background:var(--card);border:2px solid var(--p);border-radius:20px;padding:14px 22px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:200px;max-width:86vw;animation:ccIn .5s cubic-bezier(.2,1.3,.4,1)}
+#celebcard{pointer-events:none;position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:100003;background:var(--card);border:2px solid var(--p);border-radius:20px;padding:14px 22px 16px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:200px;max-width:86vw;animation:ccIn .5s cubic-bezier(.2,1.3,.4,1)}
 #celebcard b{font-size:19px;color:var(--ink)}#celebcard span{font-size:13px;color:var(--muted)}
 @keyframes ccIn{from{opacity:0;transform:translate(-50%,-30%) scale(.7)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 @media (prefers-reduced-motion:reduce){#celeb{display:none}}
@@ -1698,7 +1698,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.43';
+const APP_VER = '7.46';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -1741,7 +1741,7 @@ function load() {
   } catch (e) { }
   return structuredClone(DEFAULTS);
 }
-function save() { try { localStorage.setItem(STATE_KEY, JSON.stringify(S)); try { saveOk(); } catch (e) { } } catch (e) { try { saveFail(e); } catch (e2) { } } }   // v7.43: lưu lỗi → băng đỏ (cloud.js)
+function save() { try { _doneC.t = 0; _frontC.t = 0; } catch (e) { } try { localStorage.setItem(STATE_KEY, JSON.stringify(S)); try { saveOk(); } catch (e) { } } catch (e) { try { saveFail(e); } catch (e2) { } } }   // v7.43: lưu lỗi → băng đỏ (cloud.js) · v7.46: xóa bộ nhớ tạm doneIdx/frontierIdx (xóa/khôi phục tiến độ hiện đúng ngay)
 function lessonState(id) { if (!S.lessons[id]) S.lessons[id] = { text: false, vocab: false, grammar: false, best: null, tries: 0 }; return S.lessons[id]; }
 function bump(field, n = 1) { const k = dayKey(); const fresh = !S.days[k] && (field === 'a' || field === 'cards'), before = todayCount(); S.days[k] = S.days[k] || { a: 0, ok: 0, cards: 0, fresh: 0 }; S.days[k][field] = (S.days[k][field] || 0) + n;
   if (fresh) setTimeout(() => { try { cheerNewDay(); } catch (e) { } }, 1200);
@@ -6413,6 +6413,7 @@ function makeLqa(sp) {
           const hw = qaHW().has(k) ? k : qaBase(k); let st = 0; for (let n = 0; n < j; n++) st = txt[i].indexOf(tk[n], st) + tk[n].length; st = txt[i].indexOf(tk[j], st) + sp.pre.length;
           qaBlankDistract(txt[i], st, st + sp.core.length, hw, ps.has('n') ? 'n.' : 'adj.', 2, { avoid, only: ['base', 's', 'er', 'est'] }).forEach(w => ds.push(w.toLowerCase()));
         }
+        { const sn = new Set([normSent(k)]); for (let n = ds.length - 1; n >= 0; n--) { const z = normSent(ds[n]); if (sn.has(z)) ds.splice(n, 1); else sn.add(z); } }   /* v7.45: bỏ lựa chọn sai trùng nhau khi chuẩn hóa Anh-Anh/Mỹ (truck/lorry) */
         if (ds.length < 2) continue;
         const cap = w => /^[A-Z]/.test(sp.core) ? xCap(w) : w;
         return { ...base, ref: base.ref + ':' + j, prompt: `Điền từ bạn nghe được`, sub: `“${tag(sps[i], tk.map((w, n) => n === j ? sp.pre + '_____' + sp.post : w).join(' '))}”`, options: shuffle([cap(sp.core), ...ds.map(cap)]), answer: cap(sp.core), key: i };
@@ -8714,6 +8715,7 @@ function teenPage() {
    - Sai: tô vàng câu chứa đáp án + giải thích; lỗi vào Sổ lỗi loại "Hiểu nghĩa câu" (kind 'rdq', ref 'D:Rxx:i').
    - Làm lại từ Sổ lỗi: câu hỏi 'rdq' trong khung quiz (XK.rdq) hiện lại bài đọc + đúng câu hỏi đó.
    - S.doc.done[id] = {best, of, at}. Lần đầu làm xong: +5 ⭐ (B1 +8, B2 +10) và +3 ⭐ mỗi câu đúng (vào ⭐ Word Dash).
+   - v7.45: bài 'Chế độ' = HS (đọc theo chủ đề thi vào 10, R58–R75) chỉ hiện ở chế độ Học sinh (docAll lọc).
    - v7.28: B1–B2; dạng câu hỏi main (ý chính) · ref (tham chiếu) · inf (suy luận) · purp (mục đích/thái độ); key 'Đn' = cả đoạn n. */
 const DOC = { id: null, ans: {}, all: false, lv: null };
 const DOC_KIND = { msg: ['💬', 'Tin nhắn'], note: ['📝', 'Giấy nhắn'], notice: ['📢', 'Thông báo'], mail: ['✉️', 'Email'], ad: ['🏷️', 'Quảng cáo'], menu: ['🍽️', 'Thực đơn'], news: ['📰', 'Bài báo'], post: ['🌐', 'Bài viết trên mạng'], job: ['💼', 'Tin tuyển dụng'], diary: ['📔', 'Nhật ký'], report: ['📊', 'Báo cáo'], recipe: ['🍳', 'Công thức nấu ăn'], review: ['🎬', 'Bài nhận xét'], guide: ['🗺️', 'Tờ hướng dẫn'] };
@@ -8724,7 +8726,7 @@ function docParse(rows) {
   rows.forEach(r => {
     const id = r['Mã bài đọc']; if (!id) return;
     let d = by[id];
-    if (!d) { d = by[id] = { id, lv: r['Cấp'], unlock: r['Mở sau bài'], kind: r['Dạng văn bản'] || 'notice', icon: r['Biểu tượng'] || '📰', title: r['Tiêu đề (Anh)'], vi: r['Tiêu đề (Việt)'], paras: [], ss: [], qs: [] }; out.push(d); }
+    if (!d) { d = by[id] = { id, lv: r['Cấp'], unlock: r['Mở sau bài'], kind: r['Dạng văn bản'] || 'notice', icon: r['Biểu tượng'] || '📰', title: r['Tiêu đề (Anh)'], vi: r['Tiêu đề (Việt)'], mode: String(r['Chế độ'] || '').trim(), topic: r['Chủ đề thi'] || '', paras: [], ss: [], qs: [] }; out.push(d); }
     if (r['Loại dòng'] === 'hỏi') {
       d.qs.push({ k: r['Dạng câu hỏi'] || 'mc', q: r['Tiếng Anh'], o: String(r['Lựa chọn (cách nhau |)'] || '').split('|').map(x => x.trim()).filter(Boolean), a: (+r['Đáp án (từ 1)'] || 1) - 1, ...docKey(r['Câu chứa đáp án (STT, 0 = không có)']), why: r['Giải thích'] || '' });
     } else {
@@ -8741,7 +8743,9 @@ function docKey(v) { const m = /^Đ(\d+)$/.exec(String(v || '').trim()); return 
 const docKeyNs = (d, q) => q.key ? [q.key] : q.keyP && d.paras[q.keyP - 1] ? d.paras[q.keyP - 1].ss.map(s => s.n) : [];
 const docNoKeyMsg = q => q.k === 'main' || q.k === 'purp' ? 'đọc lại ' + (q.keyP ? 'đoạn tô vàng' : 'cả bài') + ' để thấy ý chung' : 'bài không nhắc đến điều này';
 const docSt = () => { const t = S.doc = S.doc || {}; t.done = t.done || {}; return t; };
-const docAll = () => (DATA && DATA.doc) || [];
+/* v7.45: bài có cột 'Chế độ' = HS (chủ đề thi vào 10) chỉ hiện ở chế độ Học sinh */
+const docModeOk = d => d.mode !== 'HS' || (typeof isStudent === 'function' && isStudent());
+const docAll = () => ((DATA && DATA.doc) || []).filter(docModeOk);
 const docOpenOk = d => lessonDone(d.unlock);
 const docAt = lid => docAll().find(d => d.unlock === lid);
 const docGet = id => docAll().find(d => d.id === id);
@@ -8816,7 +8820,7 @@ function docPage() {
   return `${head('Văn bản thật, chỉ dùng từ đã học · mở dần theo bài')}<div class="page">
    <section class="card"><div class="small">Tin nhắn, email, thông báo, quảng cáo, bài báo, nhật ký, bài nhận xét… gắn với chủ đề bài học. Không chặn đường học – làm lúc nào cũng được. Lần đầu làm xong được ⭐ dùng ở Word Dash.</div><div class="muted tiny mt">Đã làm ${nd}/${all.length} bài</div>
     <div class="chips mt">${lvs.map(l => `<button class="chip ${l === cur ? 'on' : ''}" onclick="DOC.lv='${l}';render()">${l}</button>`).join('')}</div></section>
-   ${list.map(x => { const ok = docOpenOk(x), dn = t.done[x.id], k = DOC_KIND[x.kind] || DOC_KIND.notice; return `<button class="teen-ep doc-ep ${ok ? (dn ? '' : 'new') : 'lock'}" onclick="${ok ? `docOpen('${x.id}')` : `toast('Học xong bài ${x.unlock} để mở bài đọc này')`}"><span class="ic">${ok ? x.icon : '🔒'}</span><span><b>${esc(x.title)}</b><small>${k[1]} · ${esc(x.vi)} · ${ok ? (dn ? `đã làm · đúng ${dn.best}/${dn.of}` : 'mới mở – đọc ngay!') : 'mở sau bài ' + esc(x.unlock)}</small></span>${dn ? '<span class="ok">✓</span>' : ''}</button>`; }).join('')}</div>`;
+   ${list.map(x => { const ok = docOpenOk(x), dn = t.done[x.id], k = DOC_KIND[x.kind] || DOC_KIND.notice; return `<button class="teen-ep doc-ep ${ok ? (dn ? '' : 'new') : 'lock'}" onclick="${ok ? `docOpen('${x.id}')` : `toast('Học xong bài ${x.unlock} để mở bài đọc này')`}"><span class="ic">${ok ? x.icon : '🔒'}</span><span><b>${esc(x.title)}</b><small>${k[1]}${x.topic ? ' · 🎯 ' + esc(x.topic) : ''} · ${esc(x.vi)} · ${ok ? (dn ? `đã làm · đúng ${dn.best}/${dn.of}` : 'mới mở – đọc ngay!') : 'mở sau bài ' + esc(x.unlock)}</small></span>${dn ? '<span class="ok">✓</span>' : ''}</button>`; }).join('')}</div>`;
 }
 function docNextBtn(d) {
   const nx = docAll().find(x => docOpenOk(x) && !docSt().done[x.id] && x.id !== d.id);
@@ -9437,14 +9441,14 @@ function exCache() {
     rows.forEach(r => {
       const id = String(r['Mã'] || '').trim(); if (!id) return;
       const t = r['Dạng'], lid = r['Mở sau bài'], o = String(r['Lựa chọn (cách nhau |)'] || '').split('|').map(x => x.trim()).filter(Boolean), a = (+r['Đáp án (từ 1)'] || 1) - 1;
-      const it = { id, t, lid, ctx: String(r['Ngữ cảnh (Anh)'] || ''), vi: String(r['Ngữ cảnh (Việt)'] || ''), q: String(r['Câu hỏi (Anh)'] || ''), o, a, why: String(r['Giải thích'] || ''), grp: r['Nhóm'] || id };
-      if (t === 'cloze') { const g = grp[it.grp] = grp[it.grp] || { id: it.grp, t: 'cloze', lid, ctx: '', vi: '', bl: [] }; if (it.ctx) { g.ctx = it.ctx; g.vi = it.vi; } g.bl.push(it); if (g.bl.length === 1) C.dt.push(g); }
+      const it = { id, t, lid, mode: String(r['Chế độ'] || '').trim(), ctx: String(r['Ngữ cảnh (Anh)'] || ''), vi: String(r['Ngữ cảnh (Việt)'] || ''), q: String(r['Câu hỏi (Anh)'] || ''), o, a, why: String(r['Giải thích'] || ''), grp: r['Nhóm'] || id };
+      if (t === 'cloze') { const g = grp[it.grp] = grp[it.grp] || { id: it.grp, t: 'cloze', lid, mode: it.mode, ctx: '', vi: '', bl: [] }; if (it.ctx) { g.ctx = it.ctx; g.vi = it.vi; } g.bl.push(it); if (g.bl.length === 1) C.dt.push(g); }
       else C.dt.push(it);
     });
   } catch (e) { }
   return (DATA._ex = C);
 }
-const exDtOpen = it => { const i = DATA.order[it.lid]; return i !== undefined && i <= knowLimit(); };
+const exDtOpen = it => { const i = DATA.order[it.lid]; return i !== undefined && i <= knowLimit() && (it.mode !== 'HS' || exStudent()); };   /* v7.45: đề 'Chế độ' HS chỉ ở chế độ Học sinh */
 const exDt = t => exCache().dt.filter(x => x.t === t && exDtOpen(x));
 
 /* ---------- 1) Phát âm: đuôi -ed / -s, th, nguyên âm (chỉ chọn từ đọc giống nhau ở giọng Mỹ và Anh) ---------- */
@@ -9577,7 +9581,7 @@ function exMakeWf(n, typed) {
 /* ---------- 4) Tìm lỗi sai A–D (từ dạng Tìm & sửa lỗi) ---------- */
 function exEfindQ(ref) {
   const x = sentRef(ref); if (!x || exHsBad(x.en)) return null;
-  for (let k = 0; k < 6; k++) {
+  for (let k = 0; k < 24; k++) {   /* v7.45: 6 → 24 lần thử (Sổ lỗi dựng lại ổn định hơn) */
     let q0 = null; try { q0 = makeEfix(x); } catch (e) { }
     if (!q0 || q0.noErr || q0.bad == null) continue;
     const ws = q0.words, ok = ws.map((w, i) => i).filter(i => i !== q0.bad && /[a-z]/i.test(ws[i]) && stripP(ws[i]).toLowerCase() !== stripP(ws[q0.bad]).toLowerCase());

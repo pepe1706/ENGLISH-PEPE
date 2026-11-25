@@ -11,7 +11,7 @@ Kho → **Settings → Pages** → Source: *Deploy from a branch* → Branch: `m
 - Mở app lần đầu khi có mạng: app tự tải dữ liệu bài học. Sau đó học được cả khi không có mạng.
 
 ## Lưu ý
-- Tiến độ lưu trên chính máy đó. Vào **Tôi → Xuất sao lưu** mỗi tuần (app nhắc sau 7 ngày). Sang máy mới: cài app rồi **Khôi phục** file sao lưu.
+- Tiến độ lưu trên máy và tự đồng bộ lên máy chủ theo mã truy cập. Vẫn nên **Tôi → Xuất sao lưu** mỗi tuần (app nhắc sau 7 ngày). Đổi máy: quản trị **Gỡ máy** → máy mới nhập mã → app tự lấy tiến độ về (hoặc **Khôi phục** file sao lưu).
 - Giọng đọc: **Tôi → Giọng đọc**.
 
 ## Cập nhật
