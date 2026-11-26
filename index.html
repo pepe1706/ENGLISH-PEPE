@@ -1698,7 +1698,7 @@ const XLSX_MINI = (() => {
 
 /* ===== English Lab · core: dữ liệu, lưu trữ, giọng đọc, tiện ích ===== */
 'use strict';
-const APP_VER = '7.46';
+const APP_VER = '7.47';
 const LEVELS = ['A1', 'A2', 'B1', 'B2'];
 const PASS = 85;
 const $ = s => document.querySelector(s);
@@ -7556,7 +7556,7 @@ function gateScreen(mode, msg) {
     <form onsubmit="gateSubmit(event)" autocomplete="off"><input id="gcode" class="gin" placeholder="${adm ? 'MÃ QUẢN TRỊ' : 'ABCDE-FGHJK'}" maxlength="40" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" inputmode="text" aria-label="${adm ? 'Mã quản trị' : 'Mã truy cập'}" oninput="gateFmt(this)">
     <button class="btn ${adm ? 'amber' : ''} block mt" id="gbtn" type="submit">${adm ? 'Vào quản trị' : 'Vào học'}</button></form><div class="gmsg" id="gmsg">${esc(msg || '')}</div>
     ${ios && !adm ? `<div class="gtip">📱 iPhone/iPad: hãy bấm <b>Chia sẻ → Thêm vào MH chính</b> trước, rồi mở app từ biểu tượng và nhập mã ở đó. App đã cài và trang Safari là hai nơi lưu riêng, nhập ở Safari rồi chuyển sang app sẽ bị báo “mã đã dùng trên máy khác”.</div>` : ''}
-    <div class="gtip">${adm ? 'Admin vào học luôn bằng mã quản trị, không cần tạo thêm mã cho mình. Trong app: <b>Tôi → Quản trị mã truy cập</b>.' : 'Nhập mã một lần, các lần sau app tự vào. Mỗi mã chỉ dùng được trên một máy. Chưa có mã? Hãy xin người đã gửi link app cho bạn.'}</div></div>`;
+    <div class="gtip">${adm ? 'Admin vào học luôn bằng mã quản trị, dùng được trên mọi máy (mất điện thoại cứ nhập lại mã ở máy mới, tiến độ tự lấy về). Trong app: <b>Tôi → Quản trị mã truy cập</b>.' : 'Nhập mã một lần, các lần sau app tự vào. Mỗi mã chỉ dùng được trên một máy. Chưa có mã? Hãy xin người đã gửi link app cho bạn.'}</div></div>`;
   setTimeout(() => { const i = $('#gcode'); if (i) i.focus(); }, 80);
 }
 function gateFmt(i) {   // chỉ giữ chữ + số; mã người dùng (10 ký tự) tự thêm gạch giữa, mã quản trị dài hơn thì để nguyên
@@ -7953,7 +7953,7 @@ function rateRows() {
 /* ===== English Lab · v7.43 chống mất dữ liệu =====
    1) Lưu trữ bền vững: navigator.storage.persist() khi mở app.
    2) Báo lỗi lưu: save() thất bại → băng đỏ + nút Xuất sao lưu (không hiện lặp liên tục).
-   3) Đồng bộ tiến độ lên Cloudflare (Worker englab-access: /sync/get, /sync/put), chỉ với mã người học.
+   3) Đồng bộ tiến độ lên Cloudflare (Worker englab-access: /sync/get, /sync/put), với mã người học và mã quản trị (v7.47: đăng nhập admin ở máy mới → tự lấy lại tiến độ).
       - Tự gửi khi mở app (tối đa ~1 lần/ngày, chỉ khi tiến độ đổi) và sau khi xong bài (gom lại, cách nhau ≥ 10 phút).
       - Máy trống tiến độ → tự lấy về. Máy có tiến độ mà bản máy chủ khác → hỏi, so sánh. Không bao giờ tự ghi đè.
       - Lỗi mạng / máy chủ: im lặng, thử lại khi có mạng hoặc lần mở sau; Cài đặt hiện "☁️ Chưa đồng bộ được". */
@@ -7987,7 +7987,7 @@ function saveBadHide() { saveBadUntil = Date.now() + 10 * 60e3; saveBadOn = fals
 /* ---------- 3) đồng bộ ---------- */
 function csMeta() { try { return JSON.parse(localStorage.getItem(CS_KEY) || '{}') || {}; } catch (e) { return {}; } }
 function csSetMeta(m) { try { localStorage.setItem(CS_KEY, JSON.stringify({ ...csMeta(), ...m })); } catch (e) { } }
-const csOn = () => { try { return isWeb() && GATE && GATE.role === 'user' && !!GATE.h && !!gateCfg() && DEV_RE.test(devId()); } catch (e) { return false; } };
+const csOn = () => { try { return isWeb() && GATE && (GATE.role === 'admin' ? !!GATE.admin : GATE.role === 'user' && !!GATE.h) && !!gateCfg() && DEV_RE.test(devId()); } catch (e) { return false; } };
 function csEmpty(st) { return !Object.keys(st.days || {}).length && !Object.values(st.lessons || {}).some(l => l && (l.best !== null && l.best !== undefined || l.text || l.vocab || l.grammar)); }
 function csSum(st) {
   const old = S; let xp = 0; try { S = st; xp = xpTotal(); } catch (e) { } finally { S = old; }
@@ -8008,8 +8008,8 @@ async function csUnzip(e) {
   const bin = atob(e.data), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
   return JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text());
 }
-const csAuth = () => ({ h: GATE.h, device: devId() });
-async function csApi(path, extra) { return gateApi(path, { ...csAuth(), ...extra }); }
+const csAuth = () => ({ h: GATE.h || '', device: devId() });
+async function csApi(path, extra) { return gateApi(path, { ...csAuth(), ...extra }, GATE.role === 'admin' ? GATE.admin : undefined); }   // admin: gửi mã quản trị (Bearer), khóa đồng bộ chung 'admin'
 function csFail(r) {
   if (r.s === 403 || r.s === 409 && r.j && r.j.error === 'device') { try { gateVerify(); } catch (e) { } }   // mã bị thu hồi / sai máy: để khóa truy cập xử lý
   csSetMeta({ err: Date.now(), errWhy: r.s === 0 ? 'network' : r.s === 429 ? 'limit' : r.s === 413 ? 'big' : 'server' });
@@ -8100,7 +8100,7 @@ async function csNow() { if (!csOn()) return; toast('Đang đồng bộ…'); aw
 function csCard() {
   const p = CS.persist, persistRow = `<div class="set"><span>${p ? '🛡️ <b>Đã bảo vệ</b>' : p === false ? '🛡️ <b>Chưa bảo vệ</b>' : '🛡️ Trình duyệt không hỗ trợ'}<br><span class="muted tiny">${p ? 'trình duyệt không tự xóa dữ liệu app khi máy đầy bộ nhớ' : p === false ? 'trình duyệt có thể tự xóa khi máy đầy bộ nhớ · cài app vào màn hình chính và dùng thường xuyên để được bảo vệ' : 'hãy xuất sao lưu thường xuyên'}</span></span>${p === false ? '<button class="chip" onclick="csPersistRetry()">Thử lại</button>' : ''}</div>`;
   if (!isWeb() || typeof GATE === 'undefined' || !GATE) return persistRow;
-  if (GATE.role !== 'user') return persistRow + `<div class="set"><span>☁️ Đồng bộ<br><span class="muted tiny">chỉ dùng với mã người học (mã quản trị không đồng bộ)</span></span></div>`;
+  if (GATE.role !== 'user' && GATE.role !== 'admin') return persistRow;
   const m = csMeta();
   const st = m.ask ? '☁️ <b>Bản trên máy chủ khác máy này</b>' : m.err && (!m.at || m.err > m.at) ? '☁️ <b>Chưa đồng bộ được</b>' : m.at ? `☁️ Đồng bộ lúc <b>${csDate(m.at)}</b>` : '☁️ Chưa đồng bộ';
   const sub = m.ask ? 'chưa gửi lên để tránh ghi đè · bấm So sánh để chọn' : m.err && (!m.at || m.err > m.at) ? (m.at ? 'lần thành công gần nhất ' + csDate(m.at) + ' · ' : '') + 'app vẫn học bình thường, sẽ tự thử lại' : 'tự gửi khi mở app và sau khi xong bài';
